@@ -1,0 +1,199 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SearchBar from '../../components/SearchBar.astro';
+import Sidebar from '../../components/Sidebar.astro';
+import FAQSection from '../../components/FAQSection.astro';
+import { ARTICLES } from '../../data/articles';
+
+const categories = [
+  { id: 'all', label: 'All Articles' },
+  { id: 'basics', label: 'Basics & Structure' },
+  { id: 'girl-names', label: 'Girl Name Guides' },
+  { id: 'boy-names', label: 'Boy Name Guides' },
+  { id: 'last-names', label: 'Last Name & Clan Guides' },
+  { id: 'seasonal', label: 'Seasonal & Registry Updates' }
+];
+
+const articleFaqs = [
+  {
+    question: 'Are all articles written by Korean naming experts?',
+    answer: 'Yes. Our editorial content is researched and written by native Korean culture researchers and linguists specializing in Sino-Korean Hanja etymology and modern naming statistics.'
+  }
+];
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  'name': 'Korean Naming Articles & Cultural Guides Hub',
+  'url': 'https://korean-names.info/articles'
+};
+---
+
+<BaseLayout
+  title="Korean Naming Articles & Cultural Guides Hub"
+  description="Explore in-depth cultural articles on how Korean names work, Sino-Korean Hanja etymology, top baby name trends, generation syllables, and clan histories."
+  jsonLd={schema}
+>
+  <div class="container margin-top-lg">
+    <!-- Header Section -->
+    <header class="page-header">
+      <div class="breadcrumb">
+        <a href="/">Home</a> &rsaquo; <span>Articles & Guides Hub</span>
+      </div>
+      <h1 class="page-title">Korean Naming Articles & Guides</h1>
+      <p class="page-description">
+        In-depth cultural research, naming rules, generation markers (Dollimja), Hanja registry updates, and modern baby name trends in South Korea.
+      </p>
+
+      <div class="search-box-wrapper">
+        <SearchBar placeholder="Search articles by topic, Hanja, or baby name trend..." />
+      </div>
+    </header>
+
+    <!-- Main Content Layout -->
+    <div class="content-layout">
+      <main class="main-column">
+        <!-- Articles Cards Grid -->
+        <section class="section-group">
+          <div class="articles-hub-grid">
+            {ARTICLES.map((art) => (
+              <article class="article-hub-card">
+                <div class="card-meta">
+                  <span class="category-badge">{art.categoryLabel}</span>
+                  <span class="read-time">{art.readTime}</span>
+                </div>
+                <h2 class="card-title">
+                  <a href={`/articles/${art.slug}`}>{art.title}</a>
+                </h2>
+                <p class="card-summary">{art.summary}</p>
+                <div class="card-footer">
+                  <span class="author-name">By {art.author}</span>
+                  <a href={`/articles/${art.slug}`} class="read-more-btn">Read Article &rarr;</a>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <FAQSection faqs={articleFaqs} />
+      </main>
+
+      <!-- Sidebar -->
+      <Sidebar />
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .margin-top-lg { margin-top: 2rem; }
+
+  .page-header {
+    background: #FFF;
+    padding: 2rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    margin-bottom: 2rem;
+  }
+
+  .breadcrumb {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+  }
+
+  .page-title {
+    font-size: 2.2rem;
+    color: var(--brand-teal-dark);
+    margin-bottom: 0.5rem;
+  }
+
+  .page-description {
+    font-size: 1rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+
+  .search-box-wrapper {
+    max-width: 550px;
+  }
+
+  .articles-hub-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .article-hub-card {
+    background: #FFF;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 1.75rem;
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: var(--brand-teal);
+      box-shadow: var(--shadow-sm);
+    }
+  }
+
+  .card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.6rem;
+  }
+
+  .category-badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--brand-teal-dark);
+    background: #E0F7F7;
+    padding: 0.2rem 0.6rem;
+    border-radius: var(--radius-full);
+  }
+
+  .read-time {
+    font-size: 0.8rem;
+    color: var(--text-light);
+  }
+
+  .card-title {
+    font-size: 1.35rem;
+    color: var(--text-main);
+    margin-bottom: 0.6rem;
+
+    a {
+      color: inherit;
+      &:hover { color: var(--brand-teal-dark); }
+    }
+  }
+
+  .card-summary {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.55;
+    margin-bottom: 1.25rem;
+  }
+
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--border-color);
+  }
+
+  .author-name {
+    font-size: 0.825rem;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+
+  .read-more-btn {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--brand-teal-dark);
+  }
+</style>

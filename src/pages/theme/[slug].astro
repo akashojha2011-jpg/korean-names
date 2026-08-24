@@ -1,0 +1,70 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import InfiniteNameList from '../../components/InfiniteNameList.astro';
+import Sidebar from '../../components/Sidebar.astro';
+import FAQSection from '../../components/FAQSection.astro';
+import { THEME_CATEGORIES } from '../../data/categories';
+import { KOREAN_NAMES } from '../../data/names';
+import type { ThemeCategory } from '../../types/name';
+
+export async function getStaticPaths() {
+  return THEME_CATEGORIES.map((cat) => ({
+    params: { slug: cat.slug },
+    props: { category: cat }
+  }));
+}
+
+export interface Props {
+  category: ThemeCategory;
+}
+
+const { category } = Astro.props;
+const namesInTheme = KOREAN_NAMES.filter(n => n.themes.some(t => t.toLowerCase() === category.slug.toLowerCase()));
+
+const themeFaqs = [
+  {
+    question: `What makes a Korean name fit the "${category.name}" theme?`,
+    answer: `Names in this category feature Hanja characters or native Korean words representing ${category.description.toLowerCase()}`
+  }
+];
+---
+
+<BaseLayout
+  title={`Korean Names Meaning "${category.name}" (${category.koreanName}) - Infinite Directory`}
+  description={category.seoDescription}
+>
+  <div class="container page-wrapper">
+    <nav class="comp-breadcrumbs">
+      <a href="/">Home</a> &rsaquo;
+      <span>Themes</span> &rsaquo;
+      <span class="current">{category.name}</span>
+    </nav>
+
+    <div class="content-layout">
+      <main class="main-column">
+        <header class="group-header">
+          <h1 class="group-title">
+            {category.icon} {category.name} Names <span class="count-badge">({namesInTheme.length.toLocaleString()})</span>
+          </h1>
+          <p class="category-sub">{category.seoDescription}</p>
+        </header>
+
+        <!-- Infinite Name List -->
+        <InfiniteNameList names={namesInTheme} />
+
+        <FAQSection faqs={themeFaqs} title={`FAQ for ${category.name} Korean Names`} />
+      </main>
+
+      <Sidebar />
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .page-wrapper { padding-top: 1rem; padding-bottom: 4rem; }
+  .comp-breadcrumbs { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.25rem; display: flex; gap: 0.4rem; }
+  .group-header { margin-bottom: 1.25rem; }
+  .group-title { font-size: 1.8rem; color: var(--text-main); }
+  .category-sub { font-size: 0.95rem; color: var(--text-muted); margin-top: 0.25rem; }
+  .count-badge { font-size: 1.1rem; color: var(--text-muted); font-weight: 400; }
+</style>

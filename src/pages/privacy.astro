@@ -1,0 +1,56 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Privacy Policy - KoreanNames.info"
+  description="Privacy Policy detailing data collection, cookies, local storage practices, and user privacy compliance on KoreanNames.info."
+>
+  <div class="container page-wrapper">
+    <nav class="comp-breadcrumbs">
+      <a href="/">Home</a> &rsaquo;
+      <span class="current">Privacy Policy</span>
+    </nav>
+
+    <main class="card legal-card">
+      <h1 class="legal-title">Privacy Policy</h1>
+      <p class="effective-date">Last Updated: August 20, 2026</p>
+
+      <section class="legal-section">
+        <h2>1. Information We Collect</h2>
+        <p>At <strong>KoreanNames.info</strong>, accessible from https://korean-names.info, your privacy is extremely important to us. We do not require account registration or collect personal identity credentials to browse our database.</p>
+        <ul>
+          <li><strong>Local Storage Data:</strong> We store your bookmarked favorite names locally in your web browser (<code>localStorage</code>). This data stays entirely on your device and is never transmitted to our servers.</li>
+          <li><strong>Analytics & Server Logs:</strong> Standard web server log files automatically record IP addresses, browser type, referring pages, and timestamp data strictly for server security and performance diagnostics.</li>
+        </ul>
+      </section>
+
+      <section class="legal-section">
+        <h2>2. Cookies and Web Beacons</h2>
+        <p>Like any other website, KoreanNames.info uses basic session cookies to store user preferences (such as light/dark mode settings). Third-party vendors, including Google, may use cookies to serve ads based on prior visits to our website.</p>
+      </section>
+
+      <section class="legal-section">
+        <h2>3. GDPR & CCPA Compliance</h2>
+        <p>Under GDPR and CCPA regulations, users have the right to request information on data practices, opt out of non-essential cookies, and clear browser local storage at any time.</p>
+      </section>
+
+      <section class="legal-section">
+        <h2>4. Contact Us</h2>
+        <p>If you have additional questions or require more information about our Privacy Policy, do not hesitate to contact us at <a href="/contact">our contact page</a>.</p>
+      </section>
+    </main>
+  </div>
+</BaseLayout>
+
+<style>
+  .page-wrapper { padding-top: 1rem; padding-bottom: 4rem; }
+  .comp-breadcrumbs { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.25rem; display: flex; gap: 0.4rem; }
+  .legal-card { padding: 3rem; max-width: 900px; margin: 0 auto; line-height: 1.7; }
+  .legal-title { font-size: 2.2rem; margin-bottom: 0.25rem; color: var(--text-main); }
+  .effective-date { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 2rem; border-bottom: 1px dashed var(--border-color); padding-bottom: 0.75rem; }
+  .legal-section { margin-bottom: 2rem; }
+  .legal-section h2 { font-size: 1.3rem; color: var(--brand-teal-dark); margin-bottom: 0.6rem; }
+  .legal-section p, .legal-section ul { color: var(--text-main); font-size: 0.95rem; }
+  .legal-section ul { padding-left: 1.5rem; margin-top: 0.5rem; }
+</style>

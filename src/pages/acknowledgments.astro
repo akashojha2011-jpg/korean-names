@@ -1,0 +1,46 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Acknowledgments & Data Sources - KoreanNames.info"
+  description="Academic, linguistic, and historical acknowledgments for Korean Hanja dictionaries and Supreme Court registry data."
+>
+  <div class="container page-wrapper">
+    <nav class="comp-breadcrumbs">
+      <a href="/">Home</a> &rsaquo;
+      <span class="current">Acknowledgments</span>
+    </nav>
+
+    <main class="card legal-card">
+      <h1 class="legal-title">Acknowledgments & Cultural Citations</h1>
+      <p class="effective-date">Linguistic & Registry Resources</p>
+
+      <section class="legal-section">
+        <h2>1. Supreme Court of Korea Naming Registry</h2>
+        <p>Our Hanja character lookup system is modeled according to official legal registries approved by the <strong>Supreme Court of South Korea (대법원 인명용 한자표)</strong>, which dictates permissible Hanja characters for official birth certificate registration.</p>
+      </section>
+
+      <section class="legal-section">
+        <h2>2. National Institute of Korean Language (국립국어원)</h2>
+        <p>Phonetic transcriptions and Romanization rules strictly follow the official <strong>Revised Romanization of Korean (국어의 로마자 표기법)</strong> standard established by the Ministry of Culture, Sports and Tourism.</p>
+      </section>
+
+      <section class="legal-section">
+        <h2>3. Genealogical & Clan History Archives</h2>
+        <p>Surname origin clan data (Bon-gwan 본관) and noble lineage histories trace back to historic records preserved by the National Library of Korea and traditional Korean family lineage associations.</p>
+      </section>
+    </main>
+  </div>
+</BaseLayout>
+
+<style>
+  .page-wrapper { padding-top: 1rem; padding-bottom: 4rem; }
+  .comp-breadcrumbs { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.25rem; display: flex; gap: 0.4rem; }
+  .legal-card { padding: 3rem; max-width: 900px; margin: 0 auto; line-height: 1.7; }
+  .legal-title { font-size: 2.2rem; margin-bottom: 0.25rem; color: var(--text-main); }
+  .effective-date { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 2rem; border-bottom: 1px dashed var(--border-color); padding-bottom: 0.75rem; }
+  .legal-section { margin-bottom: 2rem; }
+  .legal-section h2 { font-size: 1.3rem; color: var(--brand-teal-dark); margin-bottom: 0.6rem; }
+  .legal-section p { color: var(--text-main); font-size: 0.95rem; }
+</style>

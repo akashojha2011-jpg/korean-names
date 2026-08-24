@@ -1,0 +1,192 @@
+---
+import type { KoreanName } from '../types/name';
+
+export interface Props {
+  names: KoreanName[];
+  batchSize?: number;
+}
+
+const { names, batchSize = 15 } = Astro.props;
+
+// Initial batch rendered statically on server for SSG / Googlebot indexing
+const initialItems = names.slice(0, batchSize);
+---
+
+<div class="infinite-list-wrapper">
+  
+  <!-- Main Name Rows Container -->
+  <div id="infinite-list-container" class="name-rows-container">
+    {initialItems.map((name) => {
+      const genderSymbol = name.gender === 'boy' ? '♂' : name.gender === 'girl' ? '♀' : '⚥';
+      const viewCount = 10 + (Math.abs((name.popularityRank * 37 + 19) % 191));
+      const variationsCount = Math.floor(8 + (name.alternateHanjaList.length * 2) + ((name.popularityRank * 3) % 9));
+
+      return (
+        <div class="name-row-item">
+          <div class="name-row-header">
+            <div class="name-row-title-group">
+              <a href={`/name/${name.slug}`} class="name-row-title">{name.english}</a>
+              <span class={`badge badge-${name.gender}`}>{genderSymbol}</span>
+              <button class="audio-btn audio-btn-sm" data-speech-text={name.hangul} aria-label={`Listen to ${name.hangul}`}>🔊</button>
+              <button class="bookmark-btn" data-slug={name.slug} data-name={name.english} aria-label={`Save ${name.english}`}>
+                <svg class="star-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+              </button>
+            </div>
+            <span class="name-row-views">{viewCount} views</span>
+          </div>
+
+          <div class="name-row-characters">
+            <span class="row-hangul">{name.hangul}</span>
+            <span class="row-hanja">{name.hanja}</span>
+            <div class="name-row-meanings">
+              {name.syllables.map((s, idx) => (
+                <span>
+                  <strong>{s.hanja}</strong> ({s.hangul}) means "{s.meaning}." {idx < name.syllables.length - 1 ? ' ' : ''}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <a href={`/name/${name.slug}`} class="more-vars-link">
+            {variationsCount} more variations &rarr;
+          </a>
+        </div>
+      );
+    })}
+  </div>
+
+  <!-- Loading Spinner Sentinel Element -->
+  <div id="scroll-sentinel" class="sentinel-box">
+    {names.length > batchSize && (
+      <div class="spinner-wrapper">
+        <div class="loading-spinner"></div>
+        <span class="loading-text">Loading more Korean names...</span>
+      </div>
+    )}
+  </div>
+
+  <!-- End of List Indicator -->
+  <div id="end-list-msg" class="end-list-box" style="display: none;">
+    🎉 You have viewed all <strong>{names.length}</strong> listed Korean names in this category.
+  </div>
+</div>
+
+<script is:inline define:vars={{ fullNamesList: names, initialBatchSize: batchSize }}>
+  let currentIndex = initialBatchSize;
+  const container = document.getElementById('infinite-list-container');
+  const sentinel = document.getElementById('scroll-sentinel');
+  const endMsg = document.getElementById('end-list-msg');
+
+  function renderNextBatch() {
+    if (currentIndex >= fullNamesList.length) {
+      if (sentinel) sentinel.style.display = 'none';
+      if (endMsg) endMsg.style.display = 'block';
+      return;
+    }
+
+    const nextItems = fullNamesList.slice(currentIndex, currentIndex + 15);
+    currentIndex += 15;
+
+    const html = nextItems.map(name => {
+      const genderSymbol = name.gender === 'boy' ? '♂' : name.gender === 'girl' ? '♀' : '⚥';
+      const viewCount = 10 + (Math.abs((name.popularityRank * 37 + 19) % 191));
+      const variationsCount = Math.floor(8 + (name.alternateHanjaList.length * 2) + ((name.popularityRank * 3) % 9));
+
+      const syllablesHtml = name.syllables.map((s, idx) => `
+        <span><strong>${s.hanja}</strong> (${s.hangul}) means "${s.meaning}." ${idx < name.syllables.length - 1 ? ' ' : ''}</span>
+      `).join('');
+
+      return `
+        <div class="name-row-item">
+          <div class="name-row-header">
+            <div class="name-row-title-group">
+              <a href="/name/${name.slug}" class="name-row-title">${name.english}</a>
+              <span class="badge badge-${name.gender}">${genderSymbol}</span>
+              <button class="audio-btn audio-btn-sm" data-speech-text="${name.hangul}">🔊</button>
+              <button class="bookmark-btn" data-slug="${name.slug}" data-name="${name.english}">
+                <svg class="star-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+              </button>
+            </div>
+            <span class="name-row-views">${viewCount} views</span>
+          </div>
+          <div class="name-row-characters">
+            <span class="row-hangul">${name.hangul}</span>
+            <span class="row-hanja">${name.hanja}</span>
+            <div class="name-row-meanings">${syllablesHtml}</div>
+          </div>
+          <a href="/name/${name.slug}" class="more-vars-link">${variationsCount} more variations &rarr;</a>
+        </div>
+      `;
+    }).join('');
+
+    if (container) {
+      container.insertAdjacentHTML('beforeend', html);
+    }
+
+    if (currentIndex >= fullNamesList.length) {
+      if (sentinel) sentinel.style.display = 'none';
+      if (endMsg) endMsg.style.display = 'block';
+    }
+  }
+
+  // IntersectionObserver setup for infinite scroll
+  if ('IntersectionObserver' in window && sentinel) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          renderNextBatch();
+        }
+      });
+    }, { rootMargin: '200px' });
+
+    observer.observe(sentinel);
+  }
+</script>
+
+<style>
+  .infinite-list-wrapper {
+    width: 100%;
+  }
+
+  .sentinel-box {
+    padding: 2rem 0;
+    text-align: center;
+  }
+
+  .spinner-wrapper {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--brand-teal-dark);
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+
+  .loading-spinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid var(--border-color);
+    border-top-color: var(--brand-teal-dark);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .end-list-box {
+    padding: 1.5rem;
+    text-align: center;
+    background: #F0FAF9;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-top: 1.5rem;
+  }
+</style>

@@ -1,0 +1,215 @@
+---
+const basicArticles = [
+  { slug: "introduction-to-korean-names", title: "What's in a Korean name? Introduction to how Korean names work", icon: "📖" },
+  { slug: "mixed-nationality-korean-names", title: "The popular names for children of mixed nationality couples", icon: "👨‍👩‍👧" },
+  { slug: "comparing-korean-names-1912-vs-modern", title: "Comparing Korean Names in 1912 with Modern Names", icon: "📜" }
+];
+
+const girlArticles = [
+  { slug: "how-korean-girl-names-work", title: "How Korean Girl Names Work: Hanja, Hangul & Sound Explained", icon: "🌸" },
+  { slug: "most-popular-korean-girl-names-2026", title: "Most Popular Korean Girl Names in 2026: Meanings, Hanja & Trends", icon: "🎀" }
+];
+
+const boyArticles = [
+  { slug: "how-korean-boy-names-work", title: "How Korean Boy Names Work: Hanja, Tradition & Modern Trends", icon: "👦" },
+  { slug: "most-popular-korean-boy-names-2026", title: "Most Popular Korean Boy Names in 2026: Meanings & Trends", icon: "🏆" }
+];
+
+const lastNameArticles = [
+  { slug: "korean-last-names-101", title: "Korean Last Names 101: Meaning, Clan (Bon-gwan) & How They Work", icon: "👑" },
+  { slug: "most-common-korean-last-names", title: "Most Common Korean Last Names and Their Meanings", icon: "🏛️" }
+];
+
+const newArticles = [
+  { slug: "korean-names-born-in-august", title: "A Naming Guide for Babies Born in August: The Height of Summer", tag: "8月" },
+  { slug: "korean-given-names-that-are-also-surnames", title: "Korean Given Names That Are Also Surnames — A Cultural Guide", tag: "Name Duality" },
+  { slug: "korean-names-born-in-july", title: "A Naming Guide for Babies Born in July: Star Festival & Summer", tag: "7月" },
+  { slug: "new-hanja-for-korean-baby-names", title: "A New Hanja for Korean Baby Names: Registry Updates", tag: "Registry Update" }
+];
+---
+
+<aside class="sidebar-container">
+  <!-- Basics Section -->
+  <div class="sidebar-box">
+    <div class="sidebar-header-teal">The Basics of Korean Names</div>
+    <div class="sidebar-content">
+      <span class="start-here-tag">START HERE</span>
+      <div class="article-mini-list">
+        {basicArticles.map((art) => (
+          <a href={`/articles/${art.slug}`} class="sidebar-article-item">
+            <div class="article-icon-box">{art.icon}</div>
+            <span class="article-title">{art.title}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <!-- Girl Name Section -->
+  <div class="sidebar-box">
+    <div class="sidebar-header-light">Girl Name Guides</div>
+    <div class="sidebar-content">
+      <div class="article-mini-list">
+        {girlArticles.map((art) => (
+          <a href={`/articles/${art.slug}`} class="sidebar-article-item">
+            <div class="article-icon-box">{art.icon}</div>
+            <span class="article-title">{art.title}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <!-- Boy Name Section -->
+  <div class="sidebar-box">
+    <div class="sidebar-header-light">Boy Name Guides</div>
+    <div class="sidebar-content">
+      <div class="article-mini-list">
+        {boyArticles.map((art) => (
+          <a href={`/articles/${art.slug}`} class="sidebar-article-item">
+            <div class="article-icon-box">{art.icon}</div>
+            <span class="article-title">{art.title}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <!-- Last Name Section -->
+  <div class="sidebar-box">
+    <div class="sidebar-header-light">Last Name Guides</div>
+    <div class="sidebar-content">
+      <div class="article-mini-list">
+        {lastNameArticles.map((art) => (
+          <a href={`/articles/${art.slug}`} class="sidebar-article-item">
+            <div class="article-icon-box">{art.icon}</div>
+            <span class="article-title">{art.title}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <!-- New Articles Section -->
+  <div class="sidebar-box">
+    <div class="sidebar-header-teal">New Articles</div>
+    <div class="sidebar-content">
+      <div class="article-mini-list">
+        {newArticles.map((art) => (
+          <a href={`/articles/${art.slug}`} class="sidebar-article-item">
+            <div class="article-tag-box">{art.tag}</div>
+            <span class="article-title">{art.title}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+</aside>
+
+<style>
+  .sidebar-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .sidebar-box {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+
+  .sidebar-header-teal {
+    background: #AEEAEA;
+    color: #1F5A58;
+    font-weight: 700;
+    font-size: 0.875rem;
+    padding: 0.5rem 0.85rem;
+  }
+
+  :global([data-theme="dark"]) .sidebar-header-teal,
+  :global(body.dark-mode) .sidebar-header-teal {
+    background: #134E4A;
+    color: #5EEAD4;
+  }
+
+  .sidebar-header-light {
+    background: #E8F7F7;
+    color: var(--brand-teal-dark);
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 0.4rem 0.85rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  :global([data-theme="dark"]) .sidebar-header-light,
+  :global(body.dark-mode) .sidebar-header-light {
+    background: rgba(45, 212, 191, 0.12);
+    color: #2DD4BF;
+    border-bottom-color: var(--border-color);
+  }
+
+  .sidebar-content {
+    padding: 0.75rem;
+  }
+
+  .start-here-tag {
+    display: inline-block;
+    font-size: 0.725rem;
+    font-weight: 800;
+    color: var(--brand-teal-dark);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .article-mini-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .sidebar-article-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    font-size: 0.775rem;
+    color: var(--text-main);
+    line-height: 1.35;
+  }
+
+  .sidebar-article-item:hover .article-title {
+    color: var(--brand-teal-dark);
+    text-decoration: underline;
+  }
+
+  .article-icon-box {
+    width: 36px;
+    height: 36px;
+    background: #F0FAF9;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 1rem;
+    color: var(--text-main);
+  }
+
+  :global([data-theme="dark"]) .article-icon-box,
+  :global(body.dark-mode) .article-icon-box {
+    background: #1E293B;
+    border-color: #334155;
+  }
+
+  .article-tag-box {
+    padding: 0.2rem 0.4rem;
+    background: var(--brand-teal);
+    color: white;
+    font-weight: 700;
+    font-size: 0.7rem;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+</style>

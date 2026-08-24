@@ -1,0 +1,51 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Terms of Service - KoreanNames.info"
+  description="Terms of Service for using KoreanNames.info database, cultural articles, and baby name generator."
+>
+  <div class="container page-wrapper">
+    <nav class="comp-breadcrumbs">
+      <a href="/">Home</a> &rsaquo;
+      <span class="current">Terms of Service</span>
+    </nav>
+
+    <main class="card legal-card">
+      <h1 class="legal-title">Terms of Service</h1>
+      <p class="effective-date">Last Updated: August 20, 2026</p>
+
+      <section class="legal-section">
+        <h2>1. Agreement to Terms</h2>
+        <p>By accessing <strong>KoreanNames.info</strong>, you agree to be bound by these Terms of Service. If you do not agree with any part of these terms, you may not access our site or services.</p>
+      </section>
+
+      <section class="legal-section">
+        <h2>2. Intellectual Property & Content Rights</h2>
+        <p>All database compilations, cultural analysis guides, audio synthesis integrations, and custom Hanja translation models published on KoreanNames.info are protected by copyright law. You may quote brief excerpts for educational or personal use provided attribution is given.</p>
+      </section>
+
+      <section class="legal-section">
+        <h2>3. Educational Disclaimer</h2>
+        <p>Information provided regarding Korean Hanja meanings, surname lineages (Bon-gwan), and name harmony ratings is compiled for cultural education and personal baby naming reference. We recommend consulting with cultural elders or official family registry offices when finalizing official legal documents.</p>
+      </section>
+
+      <section class="legal-section">
+        <h2>4. Governing Law</h2>
+        <p>These terms shall be governed and construed in accordance with standard international copyright and digital service laws.</p>
+      </section>
+    </main>
+  </div>
+</BaseLayout>
+
+<style>
+  .page-wrapper { padding-top: 1rem; padding-bottom: 4rem; }
+  .comp-breadcrumbs { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.25rem; display: flex; gap: 0.4rem; }
+  .legal-card { padding: 3rem; max-width: 900px; margin: 0 auto; line-height: 1.7; }
+  .legal-title { font-size: 2.2rem; margin-bottom: 0.25rem; color: var(--text-main); }
+  .effective-date { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 2rem; border-bottom: 1px dashed var(--border-color); padding-bottom: 0.75rem; }
+  .legal-section { margin-bottom: 2rem; }
+  .legal-section h2 { font-size: 1.3rem; color: var(--brand-teal-dark); margin-bottom: 0.6rem; }
+  .legal-section p { color: var(--text-main); font-size: 0.95rem; }
+</style>

@@ -1,0 +1,346 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Serif+KR:wght@600;900&display=swap');
+
+:root {
+  /* Competitor Japanese-Names.info Inspired Teal & Celadon Palette */
+  --bg-primary: #FFFFFF;
+  --bg-surface: #FFFFFF;
+  --bg-hero: #E6F7F7;
+  --bg-secondary: #F4FBFB;
+  --bg-sidebar: #D5F3F3;
+  --bg-footer: #DDF5F5;
+  --bg-footer-bottom: #3BBAB6;
+  
+  --border-color: #CBECEC;
+  --border-focus: #2CB3AF;
+
+  --text-main: #2C3E50;
+  --text-muted: #627D98;
+  --text-light: #829AB1;
+  
+  /* Brand Teal Colors */
+  --brand-teal: #3BBAB6;
+  --brand-teal-dark: #29A4A0;
+  --brand-teal-light: #E0F7F7;
+
+  /* Gender Accent Colors */
+  --gender-girl: #EE5A87;
+  --gender-girl-bg: #FFEAF1;
+  --gender-boy: #389BD6;
+  --gender-boy-bg: #E1F3FE;
+  --gender-unisex: #70B857;
+  --gender-unisex-bg: #EAF7E6;
+
+  --accent-gold: #D97706;
+  --accent-indigo: #4F46E5;
+
+  --shadow-sm: 0 1px 3px rgba(44, 62, 80, 0.06);
+  --shadow-md: 0 4px 12px rgba(44, 62, 80, 0.08);
+  --shadow-lg: 0 10px 25px rgba(44, 62, 80, 0.12);
+
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 24px;
+  --radius-full: 9999px;
+
+  --font-sans: 'Inter', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-korean: 'Noto Serif KR', 'Noto Sans KR', serif;
+}
+
+/* High-Contrast Modern Dark Mode Theme Palette */
+[data-theme="dark"], body.dark-mode {
+  --bg-primary: #0B132B;
+  --bg-surface: #1C2541;
+  --bg-hero: #142036;
+  --bg-secondary: #1C2541;
+  --bg-sidebar: #1C2541;
+  --bg-footer: #0B132B;
+  --bg-footer-bottom: #1C2541;
+
+  --border-color: #2A3656;
+  --border-focus: #3BBAB6;
+
+  --text-main: #F1F5F9;
+  --text-muted: #CBD5E1;
+  --text-light: #94A3B8;
+
+  --brand-teal: #3BBAB6;
+  --brand-teal-dark: #38BDF8;
+  --brand-teal-light: rgba(59, 186, 182, 0.15);
+
+  --gender-girl: #FF7597;
+  --gender-girl-bg: rgba(255, 117, 151, 0.15);
+  --gender-boy: #4FB0EE;
+  --gender-boy-bg: rgba(79, 176, 238, 0.15);
+  --gender-unisex: #8AD170;
+  --gender-unisex-bg: rgba(138, 209, 112, 0.15);
+}
+
+/* Reset & Global Base - Prevent Mac Trackpad Horizontal Swipe & Right Side Cropping */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  font-family: var(--font-sans);
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  line-height: 1.5;
+  margin: 0;
+  padding: 0;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-root-container {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+/* Main Layout Grid - minmax(0, 1fr) ensures grid children never expand past available width */
+.container {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  box-sizing: border-box;
+}
+
+.content-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 1.75rem;
+  margin-top: 1.5rem;
+  margin-bottom: 3rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.main-column {
+  min-width: 0;
+  max-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.sidebar-container, .sidebar-column {
+  min-width: 0;
+  max-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1024px) {
+  .content-layout {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+/* A-Z Index Box */
+.az-box {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.az-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--brand-teal-dark);
+  transition: all 0.15s ease;
+}
+
+.az-btn:hover, .az-btn.active {
+  background: var(--brand-teal);
+  color: white;
+  border-color: var(--brand-teal);
+}
+
+/* Sort Bar */
+.sort-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+  font-size: 0.8rem;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.sort-label {
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.sort-pill {
+  padding: 0.25rem 0.65rem;
+  background: var(--bg-surface);
+  color: var(--brand-teal-dark);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  font-size: 0.775rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.sort-pill.active, .sort-pill:hover {
+  background: var(--brand-teal);
+  color: white;
+  border-color: var(--brand-teal);
+}
+
+/* Inline Name Row Item Style (Competitor Match) */
+.name-row-item {
+  padding: 0.85rem 0;
+  border-bottom: 1px dashed var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.name-row-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 0.5rem;
+}
+
+.name-row-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.name-row-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--brand-teal-dark);
+  word-break: break-word;
+}
+
+.name-row-views {
+  font-size: 0.725rem;
+  color: var(--text-light);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.name-row-characters {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.row-hangul {
+  font-family: var(--font-korean);
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: var(--text-main);
+}
+
+.row-hanja {
+  font-size: 1.2rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.name-row-meanings {
+  font-size: 0.825rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.more-vars-link {
+  font-size: 0.75rem;
+  color: var(--brand-teal-dark);
+  font-weight: 600;
+  margin-top: 0.15rem;
+}
+
+/* Card Utility */
+.card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 1.25rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+}
+
+.badge-girl { background: var(--gender-girl-bg); color: var(--gender-girl); }
+.badge-boy { background: var(--gender-boy-bg); color: var(--gender-boy); }
+.badge-unisex { background: var(--gender-unisex-bg); color: var(--gender-unisex); }
+
+/* Additional Dark Mode High Contrast Adjustments */
+[data-theme="dark"] .page-header, body.dark-mode .page-header,
+[data-theme="dark"] .top-surname-card, body.dark-mode .top-surname-card,
+[data-theme="dark"] .surname-list-item, body.dark-mode .surname-list-item,
+[data-theme="dark"] .hanja-card, body.dark-mode .hanja-card,
+[data-theme="dark"] .article-hub-card, body.dark-mode .article-hub-card {
+  background: var(--bg-surface);
+  border-color: var(--border-color);
+  color: var(--text-main);
+}

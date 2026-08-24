@@ -1,0 +1,260 @@
+---
+import { KOREAN_NAMES } from '../data/names';
+import { SURNAMES } from '../data/surnames';
+import { HANJA_ENTRIES } from '../data/hanja';
+
+const firstNameCount = KOREAN_NAMES.length;
+const surnameCount = SURNAMES.length;
+const hanjaCount = HANJA_ENTRIES.length * 15;
+
+const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
+
+const isActive = (path: string) => {
+  if (path === '/') return pathname === '/';
+  return pathname.startsWith(path);
+};
+---
+
+<!-- Top Statistics Utility Bar -->
+<div class="top-stats-bar">
+  <div class="container stats-inner">
+    <div class="stats-left">
+      <span class="baby-icon">👶</span>
+      <span class="stats-text">
+        <strong>{firstNameCount.toLocaleString()}</strong> first names, <strong>{surnameCount.toLocaleString()}</strong> last names, <strong>{hanjaCount.toLocaleString()}</strong> Hanja variations. One of the best Korean name search tools for your baby!
+      </span>
+    </div>
+    <div class="stats-right">
+      <button id="share-site-top-btn" class="icon-utility-btn" aria-label="Share Site" title="Share link">🔗 Share</button>
+      <a href="/tools/favorite-names" class="fav-pill-btn">
+        <span class="heart-icon">❤️</span> My Favorites
+      </a>
+      <button id="theme-toggle-top-btn" class="theme-toggle-btn" aria-label="Toggle Dark Mode" title="Toggle Theme">
+        <span id="theme-toggle-icon">🌙</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Competitor Style Celadon Teal Navigation Header -->
+<header class="main-teal-navbar">
+  <div class="container">
+    <div class="brand-bar">
+      <a href="/" class="site-brand">
+        <img src="/logo.jpg" alt="Korean Names Info Logo" class="brand-logo-img" />
+        <span class="brand-title">Korean Names <span class="info-tag">info</span></span>
+      </a>
+    </div>
+
+    <!-- Horizontal Tab Navigation Bar with Dynamic Active Route Highlighting -->
+    <nav class="nav-tabs-bar" id="main-nav-tabs">
+      <a href="/" class={`nav-tab ${isActive('/') ? 'active' : ''}`}>Home</a>
+      <a href="/gender/girl" class={`nav-tab ${isActive('/gender/girl') ? 'active' : ''}`}>Girl Names</a>
+      <a href="/gender/boy" class={`nav-tab ${isActive('/gender/boy') ? 'active' : ''}`}>Boy Names</a>
+      <a href="/gender/unisex" class={`nav-tab ${isActive('/gender/unisex') ? 'active' : ''}`}>Unisex Names</a>
+      <a href="/surname" class={`nav-tab ${isActive('/surname') ? 'active' : ''}`}>Last Names</a>
+      <a href="/tools/name-generator" class={`nav-tab ${isActive('/tools/name-generator') ? 'active' : ''}`}>Name Generator</a>
+      <a href="/hanja" class={`nav-tab ${isActive('/hanja') ? 'active' : ''}`}>Hanja List</a>
+      <a href="/articles" class={`nav-tab ${isActive('/articles') ? 'active' : ''}`}>Articles</a>
+    </nav>
+  </div>
+</header>
+
+<script>
+  // Sleek Minimal Dark Mode Toggle Logic
+  const themeToggleBtn = document.getElementById('theme-toggle-top-btn');
+  const themeToggleIcon = document.getElementById('theme-toggle-icon');
+
+  function applyTheme(theme: string) {
+    const isDark = theme === 'dark';
+    document.documentElement.setAttribute('data-theme', theme);
+    if (isDark) {
+      document.body.classList.add('dark-mode');
+      if (themeToggleIcon) themeToggleIcon.textContent = '☀️';
+    } else {
+      document.body.classList.remove('dark-mode');
+      if (themeToggleIcon) themeToggleIcon.textContent = '🌙';
+    }
+  }
+
+  // Read stored preference
+  const savedTheme = localStorage.getItem('hanname-theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  applyTheme(savedTheme);
+
+  themeToggleBtn?.addEventListener('click', () => {
+    const isDark = document.body.classList.contains('dark-mode');
+    const newTheme = isDark ? 'light' : 'dark';
+    localStorage.setItem('hanname-theme', newTheme);
+    applyTheme(newTheme);
+  });
+
+  // Dynamic Client-side Active Navigation Highlight
+  const currentPath = window.location.pathname.replace(/\/$/, '') || '/';
+  const navTabs = document.querySelectorAll('#main-nav-tabs .nav-tab');
+
+  navTabs.forEach((tab) => {
+    const href = tab.getAttribute('href')?.replace(/\/$/, '') || '/';
+    tab.classList.remove('active');
+    
+    if (href === '/' && currentPath === '/') {
+      tab.classList.add('active');
+    } else if (href !== '/' && currentPath.startsWith(href)) {
+      tab.classList.add('active');
+    }
+  });
+
+  const shareTopBtn = document.getElementById('share-site-top-btn');
+  shareTopBtn?.addEventListener('click', () => {
+    navigator.clipboard.writeText(window.location.origin);
+    alert('Site link copied to clipboard!');
+  });
+</script>
+
+<style>
+  .top-stats-bar {
+    width: 100%;
+    max-width: 100%;
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0.4rem 0;
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    box-sizing: border-box;
+  }
+
+  .stats-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .stats-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .stats-right {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .icon-utility-btn {
+    font-size: 0.825rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    padding: 0.2rem 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-full);
+    background: var(--bg-surface);
+  }
+
+  .fav-pill-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.85rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-full);
+    font-weight: 700;
+    color: var(--text-main);
+    background: var(--bg-surface);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .theme-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--border-color);
+    background: var(--bg-surface);
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+  }
+
+  .theme-toggle-btn:hover {
+    border-color: var(--brand-teal);
+    transform: scale(1.05);
+  }
+
+  .main-teal-navbar {
+    width: 100%;
+    max-width: 100%;
+    background: var(--brand-teal);
+    color: white;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .brand-bar {
+    padding: 0.6rem 0 0.4rem 0;
+  }
+
+  .site-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+  }
+
+  .brand-logo-img {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid white;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    background: var(--brand-teal);
+    flex-shrink: 0;
+  }
+
+  .brand-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    font-family: 'Comic Sans MS', 'Inter', sans-serif;
+    letter-spacing: -0.02em;
+    color: white;
+  }
+
+  .info-tag {
+    font-style: italic;
+    font-weight: 400;
+  }
+
+  .nav-tabs-bar {
+    display: flex;
+    align-items: center;
+    overflow-x: auto;
+    gap: 0.15rem;
+    padding-bottom: 0.25rem;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    max-width: 100%;
+  }
+
+  .nav-tabs-bar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nav-tab {
+    padding: 0.5rem 0.9rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: white;
+    white-space: nowrap;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    transition: background 0.15s ease;
+  }
+
+  .nav-tab:hover, .nav-tab.active {
+    background: var(--brand-teal-dark);
+  }
+
+  @media (max-width: 768px) {
+    .stats-inner { flex-direction: column; gap: 0.4rem; text-align: center; }
+  }
+</style>

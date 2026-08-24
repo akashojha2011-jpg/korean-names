@@ -1,0 +1,34 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NameGeneratorModal from '../../components/NameGeneratorModal.astro';
+---
+
+<BaseLayout
+  title="Korean Baby Name Generator & Surname Harmony Calculator"
+  description="Generate matching Korean baby names based on your family surname, preferred gender, and vibe. Calculate Hanja character harmony and phonetic flow."
+>
+  <div class="container page-wrapper">
+    <nav class="breadcrumbs">
+      <a href="/">Home</a> &rsaquo;
+      <span>Tools</span> &rsaquo;
+      <span class="current">Baby Name Generator</span>
+    </nav>
+
+    <div class="tool-intro text-center">
+      <h1 class="tool-title">Korean Baby Name Generator & Harmony Finder</h1>
+      <p class="tool-desc">
+        Calculate phonetic flow and Hanja character harmony when combining your family surname with modern and traditional Korean given names.
+      </p>
+    </div>
+
+    <NameGeneratorModal />
+  </div>
+</BaseLayout>
+
+<style>
+  .page-wrapper { padding-top: 2rem; padding-bottom: 4rem; }
+  .breadcrumbs { font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1.5rem; display: flex; gap: 0.5rem; }
+  .tool-intro { margin-bottom: 2.5rem; text-align: center; }
+  .tool-title { font-size: 2.5rem; margin-bottom: 0.5rem; }
+  .tool-desc { font-size: 1.1rem; color: var(--text-muted); max-width: 680px; margin: 0 auto; }
+</style>

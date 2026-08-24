@@ -1,0 +1,85 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { KOREAN_NAMES } from '../../data/names';
+---
+
+<BaseLayout
+  title="My Saved Favorites - HanName Korean Names"
+  description="View and manage your bookmarked list of favorite Korean baby names."
+>
+  <div class="container page-wrapper">
+    <nav class="breadcrumbs">
+      <a href="/">Home</a> &rsaquo;
+      <span>Tools</span> &rsaquo;
+      <span class="current">Saved Favorites</span>
+    </nav>
+
+    <header class="card fav-hero">
+      <h1 class="fav-title">⭐ Your Saved Favorite Names</h1>
+      <p class="fav-desc">Here are the Korean names you have star-bookmarked. They are saved locally on your device.</p>
+    </header>
+
+    <div id="favorites-container" class="grid grid-cols-3">
+      <div class="card loading-placeholder">Loading your saved names...</div>
+    </div>
+  </div>
+</BaseLayout>
+
+<script is:inline define:vars={{ namesList: KOREAN_NAMES }}>
+  function renderSavedFavorites() {
+    const container = document.getElementById('favorites-container');
+    const savedSlugs = JSON.parse(localStorage.getItem('hanname-saved-names') || '[]');
+
+    if (!container) return;
+
+    if (savedSlugs.length === 0) {
+      container.innerHTML = `
+        <div class="card empty-fav-box" style="grid-column: 1 / -1; text-align: center; padding: 4rem;">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">⭐</div>
+          <h3>No saved names yet!</h3>
+          <p style="color: var(--text-muted); margin: 0.5rem 0 1.5rem 0;">Click the star button on any name card across the site to bookmark it here.</p>
+          <a href="/gender/boy" class="highlight-link" style="display: inline-block; padding: 0.6rem 1.5rem;">Explore Names Now &rarr;</a>
+        </div>
+      `;
+      return;
+    }
+
+    const matches = namesList.filter(n => savedSlugs.includes(n.slug));
+
+    container.innerHTML = matches.map(name => `
+      <div class="card name-card">
+        <div class="card-top" style="display:flex; justify-between; align-items:center; margin-bottom: 1rem;">
+          <span class="badge badge-${name.gender}">${name.gender}</span>
+          <button class="remove-fav-btn" data-slug="${name.slug}" style="font-size:0.8rem; color:var(--accent-crimson); font-weight:700;">&times; Remove</button>
+        </div>
+        <a href="/name/${name.slug}" class="name-main-link" style="display:block; margin-bottom: 0.75rem;">
+          <div style="font-family: var(--font-korean); font-size: 2rem; font-weight: 900;">${name.hangul} <span style="font-size:1.1rem; color:var(--text-muted);">(${name.hanja})</span></div>
+          <h3 style="font-size: 1.1rem; color: var(--accent-crimson);">${name.english}</h3>
+        </a>
+        <p style="font-size:0.875rem; color:var(--text-muted); margin-bottom:1rem;">${name.overallMeaning}</p>
+        <a href="/name/${name.slug}" style="font-size:0.8125rem; font-weight:700; color:var(--text-main);">View Details &rarr;</a>
+      </div>
+    `).join('');
+
+    // Attach click listener for remove buttons
+    container.querySelectorAll('.remove-fav-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const slug = btn.getAttribute('data-slug');
+        let current = JSON.parse(localStorage.getItem('hanname-saved-names') || '[]');
+        current = current.filter(s => s !== slug);
+        localStorage.setItem('hanname-saved-names', JSON.stringify(current));
+        renderSavedFavorites();
+      });
+    });
+  }
+
+  renderSavedFavorites();
+</script>
+
+<style>
+  .page-wrapper { padding-top: 2rem; padding-bottom: 4rem; }
+  .breadcrumbs { font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1.5rem; display: flex; gap: 0.5rem; }
+  .fav-hero { padding: 2.5rem; margin-bottom: 3rem; }
+  .fav-title { font-size: 2.2rem; }
+  .fav-desc { color: var(--text-muted); font-size: 1rem; }
+</style>

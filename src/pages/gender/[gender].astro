@@ -1,0 +1,89 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import InfiniteNameList from '../../components/InfiniteNameList.astro';
+import Sidebar from '../../components/Sidebar.astro';
+import FAQSection from '../../components/FAQSection.astro';
+import { KOREAN_NAMES } from '../../data/names';
+
+export async function getStaticPaths() {
+  return [
+    { params: { gender: 'boy' }, props: { genderName: 'Korean Boy Names', desc: 'Popular, strong, and meaningful Korean given names for baby boys.' } },
+    { params: { gender: 'girl' }, props: { genderName: 'Korean Girl Names', desc: 'Beautiful, elegant, and graceful Korean given names for baby girls.' } },
+    { params: { gender: 'unisex' }, props: { genderName: 'Unisex Korean Names', desc: 'Modern gender-neutral Korean names suitable for both boys and girls.' } }
+  ];
+}
+
+const { gender } = Astro.params;
+const { genderName, desc } = Astro.props;
+
+const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+const filteredNames = KOREAN_NAMES.filter(n => n.gender === gender);
+
+const genderFaqs = [
+  {
+    question: `What are the top 3 most popular ${genderName}?`,
+    answer: `The top choices in our database include: ${filteredNames.slice(0, 3).map(n => `${n.english} (${n.hangul})`).join(', ')}.`
+  },
+  {
+    question: `How do parents choose ${genderName}?`,
+    answer: `Korean parents often consult naming philosophers or select Hanja characters that balance five elements (water, wood, fire, earth, metal) alongside family generation syllables (Dollimja).`
+  }
+];
+---
+
+<BaseLayout
+  title={`${genderName} - Meaning, Hanja & Infinite Directory (${filteredNames.length} names)`}
+  description={desc}
+>
+  <div class="container page-wrapper">
+    <nav class="comp-breadcrumbs">
+      <a href="/">Home</a> &rsaquo;
+      <a href="/gender/boy">Korean First Names</a> &rsaquo;
+      <span class="current">{genderName}</span>
+    </nav>
+
+    <div class="content-layout">
+      <!-- Main Content Column -->
+      <main class="main-column">
+        
+        <header class="group-header">
+          <h1 class="group-title">
+            {gender === 'girl' ? '🌸' : gender === 'boy' ? '👦' : '✳️'} {genderName} <span class="count-badge">({filteredNames.length.toLocaleString()})</span>
+          </h1>
+        </header>
+
+        <!-- A-Z Letter Box -->
+        <div class="az-box">
+          {letters.map((l) => (
+            <a href={`/letter/${l.toLowerCase()}`} class="az-btn">{l}</a>
+          ))}
+        </div>
+
+        <!-- Sort Bar -->
+        <div class="sort-bar">
+          <span class="sort-label">Sort by:</span>
+          <span class="sort-pill active">Most Hanja Variations</span>
+          <span class="sort-pill">Most Viewed</span>
+          <span class="sort-pill">A-Z</span>
+          <span class="sort-pill">Random</span>
+        </div>
+
+        <!-- Infinite Scroll Name Listing -->
+        <InfiniteNameList names={filteredNames} />
+
+        <FAQSection faqs={genderFaqs} title={`FAQ for ${genderName}`} />
+      </main>
+
+      <!-- Right Sticky Sidebar -->
+      <Sidebar />
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .page-wrapper { padding-top: 1rem; padding-bottom: 4rem; }
+  .comp-breadcrumbs { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.25rem; display: flex; gap: 0.4rem; }
+  .group-header { margin-bottom: 0.75rem; }
+  .group-title { font-size: 1.8rem; color: var(--text-main); }
+  .count-badge { font-size: 1.1rem; color: var(--text-muted); font-weight: 400; }
+</style>

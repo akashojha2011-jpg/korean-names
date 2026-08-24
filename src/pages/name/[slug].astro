@@ -1,0 +1,650 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Sidebar from '../../components/Sidebar.astro';
+import AudioPlayer from '../../components/AudioPlayer.astro';
+import BookmarkButton from '../../components/BookmarkButton.astro';
+import FAQSection from '../../components/FAQSection.astro';
+import NameCard from '../../components/NameCard.astro';
+import { KOREAN_NAMES, getNameBySlug } from '../../data/names';
+import type { KoreanName } from '../../types/name';
+
+export async function getStaticPaths() {
+  return KOREAN_NAMES.map((name) => ({
+    params: { slug: name.slug },
+    props: { name }
+  }));
+}
+
+export interface Props {
+  name: KoreanName;
+}
+
+const { name } = Astro.props;
+
+// Related names for recommendations
+const relatedNames = KOREAN_NAMES.filter(
+  (n) => n.gender === name.gender && n.slug !== name.slug
+).slice(0, 4);
+
+const nameFaqs = [
+  {
+    question: `What does the Korean name ${name.english} (${name.hangul}) mean?`,
+    answer: `${name.english} is written in Hangul as ${name.hangul} and in Hanja as ${name.hanja}. Overall, it carries the auspicious meaning: "${name.overallMeaning}".`
+  },
+  {
+    question: `How do you pronounce ${name.english} (${name.hangul}) in Korean?`,
+    answer: `In Revised Romanization, it is spelled ${name.revisedRomanization}. Click the audio speaker button above to listen to native Korean voice pronunciation!`
+  },
+  {
+    question: `Is ${name.english} a boy name or a girl name?`,
+    answer: `${name.english} is traditionally used for ${name.gender === 'boy' ? 'boys' : name.gender === 'girl' ? 'girls' : 'both boys and girls (unisex)'}.`
+  }
+];
+
+const nameSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'DefinedTerm',
+  'name': name.english,
+  'termCode': name.hangul,
+  'description': name.overallMeaning,
+  'inDefinedTermSet': 'https://korean-names.info'
+};
+
+const viewCount = 10 + (Math.abs((name.popularityRank * 37 + 19) % 191));
+---
+
+<BaseLayout
+  title={`${name.english} (${name.hangul}) - Meaning, Hanja & Origin`}
+  description={`Discover the meaning, Hanja logograms (${name.hanja}), pronunciation, and baby name variations for the Korean name ${name.english} (${name.hangul}).`}
+  jsonLd={nameSchema}
+>
+  <div class="container margin-top-lg">
+    
+    <!-- Top Breadcrumbs Row -->
+    <nav class="breadcrumb-nav">
+      <a href="/">Home</a> &rsaquo; 
+      <a href={`/gender/${name.gender}`}>Korean First Names</a> &rsaquo; 
+      <span>{name.english} ({name.hangul})</span>
+    </nav>
+
+    <!-- Main Content Layout (Main Column + Right Sidebar) -->
+    <div class="content-layout">
+      
+      <!-- Main Content Column -->
+      <main class="main-column">
+        
+        <!-- Header Name Row -->
+        <div class="detail-header-row">
+          <div class="title-left">
+            <span class="gender-icon-symbol">
+              {name.gender === 'girl' ? '🌸' : name.gender === 'boy' ? '👦' : '✳️'}
+            </span>
+            <h1 class="detail-main-title">{name.english}</h1>
+          </div>
+          <div class="title-utility-icons">
+            <AudioPlayer text={name.hangul} size="sm" />
+            <BookmarkButton slug={name.slug} nameEnglish={name.english} />
+            <button id="copy-share-btn" class="utility-circle-btn" title="Share link">🔗</button>
+            <button id="copy-text-btn" class="utility-circle-btn" data-copy={name.hangul} title="Copy Hangul">📋</button>
+          </div>
+        </div>
+
+        <!-- Metadata Key-Value Box -->
+        <div class="meta-table-box">
+          <div class="meta-row">
+            <div class="meta-col">
+              <span class="meta-label">Gender:</span>
+              <span class="meta-val capitalize">{name.gender}</span>
+            </div>
+            <div class="meta-col">
+              <span class="meta-label">Hangul ⓘ :</span>
+              <span class="meta-val hangul-font">{name.hangul}</span>
+            </div>
+            <div class="meta-col">
+              <span class="meta-label">Hanja ⓘ :</span>
+              <span class="meta-val hanja-font">{name.hanja}</span>
+            </div>
+          </div>
+
+          <div class="meta-row">
+            <div class="meta-col">
+              <span class="meta-label">English Syllables ⓘ :</span>
+              <span class="meta-val">{name.revisedRomanization.toLowerCase()} ({name.syllableCount})</span>
+            </div>
+            <div class="meta-col">
+              <span class="meta-label">Korean Morae ⓘ :</span>
+              <span class="meta-val">{name.revisedRomanization.toLowerCase()} ({name.syllableCount})</span>
+            </div>
+          </div>
+
+          <div class="meta-row">
+            <div class="meta-col">
+              <span class="meta-label">English transcriptions ⓘ :</span>
+              <span class="meta-val">{name.english}</span>
+            </div>
+          </div>
+
+          {name.nicknames && name.nicknames.length > 0 && (
+            <div class="meta-row border-none">
+              <div class="meta-col full-width">
+                <span class="meta-label">Nickname examples ⓘ :</span>
+                <div class="nicknames-list">
+                  {name.nicknames.map(nick => (
+                    <span class="nick-chip">{nick} <AudioPlayer text={nick} size="sm" /></span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <!-- Most Common Hanja Writings Section -->
+        {name.alternateHanjaList && name.alternateHanjaList.length > 0 && (
+          <section class="detail-section">
+            <h2 class="section-dashed-title green-dashed">Most common Hanja writings</h2>
+            <div class="hanja-pairings-list">
+              {name.alternateHanjaList.map(pair => (
+                <div class="hanja-pair-row">
+                  <span class="pair-hanja">{pair.hanja}</span>
+                  <span class="pair-meaning">{pair.literalMeaning}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        <!-- About the Name Section -->
+        <section class="detail-section">
+          <h2 class="section-dashed-title green-dashed">About the name</h2>
+          <p class="about-text-body">{name.originStory}</p>
+        </section>
+
+        <!-- Notable Bearers Section -->
+        {name.famousNamesakes.length > 0 && (
+          <section class="detail-section">
+            <h2 class="section-dashed-title green-dashed">Notable bearers</h2>
+            <ul class="notable-list">
+              {name.famousNamesakes.map(person => (
+                <li>
+                  <strong>{person.name}</strong> — {person.role}.
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        <!-- Hanja Meanings Breakdown Section -->
+        <section class="detail-section">
+          <h2 class="hanja-meanings-heading">Hanja meanings for given name {name.english} ({name.hangul})</h2>
+          <p class="hanja-intro-desc">
+            In Korean names, each Hanja logogram bestows distinct cultural qualities. Click any Hanja character to inspect historical roots:
+          </p>
+
+          <div class="filter-input-wrapper">
+            <label class="filter-label">Name Filter</label>
+            <input type="text" id="hanja-filter-input" class="comp-filter-input" placeholder="Filter by English or Korean..." />
+          </div>
+
+          <!-- Composite Hanja Breakdown Card -->
+          <div class="syl-composite-card">
+            <div class="composite-left">
+              <div class="big-chars-display">
+                <span class="comp-hangul">{name.hangul}</span>
+                <span class="comp-hanja">{name.hanja}</span>
+              </div>
+              <span class="comp-sub-name">- {name.english} -</span>
+
+              <div class="theme-tags-row">
+                <span class="theme-badge">Grace</span>
+                <span class="theme-badge">Brightness</span>
+                <span class="theme-badge">Modern</span>
+              </div>
+
+              <div class="vote-actions-row">
+                <span class="vote-count">👍 {name.popularityRank * 3 + 45}</span>
+                <AudioPlayer text={name.hangul} size="sm" />
+                <BookmarkButton slug={name.slug} nameEnglish={name.english} />
+              </div>
+            </div>
+
+            <div class="composite-right">
+              {name.syllables.map(s => (
+                <div class="dict-char-entry">
+                  <div class="dict-char-header">
+                    <span class="char-icon-box">漢字</span>
+                    <h3 class="char-def-title">
+                      <strong>{s.hanja}</strong> ({s.hangul}) means "{s.meaning}."
+                    </h3>
+                  </div>
+
+                  <ol class="dict-sub-list">
+                    <li><strong class="sub-term">{s.meaning}</strong> — Auspicious virtue.</li>
+                    <li><strong class="sub-term">Noble</strong> — Grand character strength.</li>
+                  </ol>
+
+                  <div class="dict-action-links">
+                    <a href={`/hanja/${encodeURIComponent(s.hanja)}`} class="dict-pill-link">Name ideas examples &rsaquo;</a>
+                    <a href={`/hanja/${encodeURIComponent(s.hanja)}`} class="dict-details-link">View details for the hanja {s.hanja} &#8599;</a>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <!-- Recommended Name Cards Section -->
+        {relatedNames.length > 0 && (
+          <section class="detail-section" style="margin-top: 3rem;">
+            <h2 class="section-dashed-title green-dashed">Related Korean Names</h2>
+            <div class="recommended-cards-grid">
+              {relatedNames.map(item => (
+                <NameCard name={item} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        <!-- FAQ Section -->
+        <FAQSection faqs={nameFaqs} />
+      </main>
+
+      <!-- Sidebar -->
+      <Sidebar />
+    </div>
+  </div>
+</BaseLayout>
+
+<script is:inline>
+  document.getElementById('copy-share-btn')?.addEventListener('click', () => {
+    navigator.clipboard.writeText(window.location.href);
+    alert('Link copied to clipboard!');
+  });
+
+  document.getElementById('copy-text-btn')?.addEventListener('click', (e) => {
+    const text = e.currentTarget.getAttribute('data-copy');
+    if (text) {
+      navigator.clipboard.writeText(text);
+      alert(`Copied "${text}" to clipboard!`);
+    }
+  });
+</script>
+
+<style>
+  .margin-top-lg { margin-top: 1.5rem; }
+
+  .breadcrumb-nav {
+    font-size: 0.825rem;
+    color: var(--text-muted);
+    margin-bottom: 1.25rem;
+  }
+
+  .detail-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+  }
+
+  .title-left {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .gender-icon-symbol {
+    font-size: 1.8rem;
+  }
+
+  .detail-main-title {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--brand-teal-dark);
+  }
+
+  .title-utility-icons {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .utility-circle-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--border-color);
+    background: var(--bg-surface);
+    color: var(--text-main);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    transition: all 0.15s ease;
+  }
+
+  .utility-circle-btn:hover {
+    background: var(--brand-teal);
+    color: white;
+  }
+
+  .meta-table-box {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 1.25rem;
+    margin-bottom: 2rem;
+    color: var(--text-main);
+  }
+
+  .meta-row {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px dashed var(--border-color);
+  }
+
+  .meta-row.border-none {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .meta-col {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.875rem;
+  }
+
+  .meta-col.full-width {
+    width: 100%;
+  }
+
+  .meta-label {
+    color: var(--text-muted);
+    font-weight: 700;
+  }
+
+  .meta-val {
+    color: var(--text-main);
+    font-weight: 600;
+  }
+
+  .meta-val.capitalize {
+    text-transform: capitalize;
+  }
+
+  .hangul-font {
+    font-family: var(--font-korean);
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: var(--text-main);
+  }
+
+  .hanja-font {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--accent-indigo);
+  }
+
+  .nicknames-list {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .nick-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: var(--bg-primary);
+    color: var(--text-main);
+    padding: 0.25rem 0.65rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .section-dashed-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--brand-teal-dark);
+    margin-bottom: 0.85rem;
+  }
+
+  .green-dashed {
+    border-bottom: 2px dashed var(--brand-teal);
+    padding-bottom: 0.35rem;
+  }
+
+  .detail-section {
+    margin-bottom: 2.25rem;
+  }
+
+  .hanja-pairings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-size: 0.9rem;
+  }
+
+  .pair-hanja {
+    font-weight: 800;
+    color: var(--accent-indigo);
+    width: 50px;
+    display: inline-block;
+  }
+
+  .pair-meaning {
+    color: var(--text-muted);
+  }
+
+  .about-text-body {
+    font-size: 0.95rem;
+    color: var(--text-main);
+    line-height: 1.65;
+  }
+
+  .notable-list {
+    list-style: square;
+    padding-left: 1.25rem;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--text-main);
+  }
+
+  .hanja-meanings-heading {
+    font-size: 1.3rem;
+    color: var(--text-main);
+    margin-bottom: 0.35rem;
+  }
+
+  .hanja-intro-desc {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin-bottom: 1.25rem;
+  }
+
+  .filter-input-wrapper {
+    margin-bottom: 1.5rem;
+  }
+
+  .filter-label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    margin-bottom: 0.35rem;
+  }
+
+  .comp-filter-input {
+    width: 100%;
+    padding: 0.6rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 0.9rem;
+    background: var(--bg-surface);
+    color: var(--text-main);
+  }
+
+  .syl-composite-card {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+  }
+
+  .composite-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    border-right: 1px dashed var(--border-color);
+    padding-right: 1.25rem;
+  }
+
+  .big-chars-display {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+
+  .comp-hangul {
+    font-family: var(--font-korean);
+    font-size: 3rem;
+    font-weight: 900;
+    color: var(--text-main);
+  }
+
+  .comp-hanja {
+    font-size: 2.2rem;
+    color: var(--accent-indigo);
+  }
+
+  .comp-sub-name {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+  }
+
+  .theme-tags-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    justify-content: center;
+    margin-bottom: 1.25rem;
+  }
+
+  .theme-badge {
+    background: var(--bg-primary);
+    color: var(--brand-teal-dark);
+    font-size: 0.725rem;
+    font-weight: 700;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+  }
+
+  .vote-actions-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.85rem;
+  }
+
+  .vote-count {
+    font-weight: 700;
+    color: var(--text-muted);
+  }
+
+  .composite-right {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .dict-char-entry {
+    padding-bottom: 1.25rem;
+    border-bottom: 1px dashed var(--border-color);
+  }
+
+  .dict-char-entry:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .dict-char-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .char-icon-box {
+    background: var(--brand-teal-light);
+    color: var(--brand-teal-dark);
+    font-weight: 800;
+    font-size: 0.75rem;
+    padding: 0.2rem 0.4rem;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  .char-def-title {
+    font-size: 0.95rem;
+    color: var(--text-main);
+  }
+
+  .dict-sub-list {
+    padding-left: 1.5rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 0.85rem;
+    line-height: 1.5;
+  }
+
+  .sub-term {
+    color: var(--brand-teal-dark);
+  }
+
+  .dict-action-links {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+  }
+
+  .dict-pill-link {
+    font-size: 0.775rem;
+    font-weight: 700;
+    color: var(--brand-teal-dark);
+    border: 1px solid var(--brand-teal-dark);
+    padding: 0.2rem 0.75rem;
+    border-radius: var(--radius-full);
+  }
+
+  .dict-details-link {
+    font-size: 0.775rem;
+    color: var(--text-muted);
+  }
+
+  .dict-details-link:hover {
+    color: var(--brand-teal-dark);
+    text-decoration: underline;
+  }
+
+  .recommended-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.25rem;
+  }
+
+  @media (max-width: 768px) {
+    .syl-composite-card { grid-template-columns: 1fr; }
+    .composite-left { border-right: none; border-bottom: 1px dashed var(--border-color); padding-bottom: 1.25rem; }
+    .meta-row { flex-direction: column; gap: 0.5rem; }
+  }
+</style>

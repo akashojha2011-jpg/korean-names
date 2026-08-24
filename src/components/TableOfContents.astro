@@ -1,0 +1,101 @@
+---
+import type { TocItem } from '../types/article';
+
+export interface Props {
+  toc: TocItem[];
+}
+
+const { toc } = Astro.props;
+---
+
+<div class="toc-box card">
+  <div class="toc-header">
+    <span class="toc-icon">📜</span>
+    <span class="toc-title">Table of Contents</span>
+  </div>
+  <nav class="toc-nav">
+    <ol class="toc-list">
+      {toc.map((item) => (
+        <li class={`toc-item level-${item.level}`}>
+          <a href={`#${item.id}`} class="toc-link">
+            {item.heading}
+          </a>
+        </li>
+      ))}
+    </ol>
+  </nav>
+</div>
+
+<script>
+  // Highlight TOC link on scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.getAttribute('id');
+        document.querySelectorAll('.toc-link').forEach(link => {
+          if (link.getAttribute('href') === `#${id}`) {
+            link.classList.add('active');
+          } else {
+            link.classList.remove('active');
+          }
+        });
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+
+  document.querySelectorAll('section[id]').forEach(section => {
+    observer.observe(section);
+  });
+</script>
+
+<style>
+  .toc-box {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    padding: 1.25rem;
+    margin-bottom: 2rem;
+  }
+
+  .toc-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 2px dashed var(--brand-teal);
+    margin-bottom: 0.85rem;
+  }
+
+  .toc-icon {
+    font-size: 1.1rem;
+  }
+
+  .toc-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--brand-teal-dark);
+  }
+
+  .toc-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    font-size: 0.85rem;
+  }
+
+  .toc-item.level-3 {
+    padding-left: 1rem;
+    font-size: 0.8rem;
+  }
+
+  .toc-link {
+    color: var(--text-muted);
+    font-weight: 600;
+    transition: color 0.15s ease;
+  }
+
+  .toc-link:hover, .toc-link.active {
+    color: var(--brand-teal-dark);
+    text-decoration: underline;
+  }
+</style>

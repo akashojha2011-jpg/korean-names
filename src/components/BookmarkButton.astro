@@ -1,0 +1,88 @@
+---
+export interface Props {
+  slug: string;
+  nameEnglish: string;
+}
+
+const { slug, nameEnglish } = Astro.props;
+---
+
+<button
+  class="bookmark-btn"
+  data-slug={slug}
+  data-name={nameEnglish}
+  aria-label={`Bookmark ${nameEnglish}`}
+  title="Save to favorites"
+>
+  <svg class="star-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+  </svg>
+</button>
+
+<script>
+  function updateBookmarkStates() {
+    const saved = JSON.parse(localStorage.getItem('hanname-saved-names') || '[]');
+    document.querySelectorAll('.bookmark-btn').forEach((btn) => {
+      const slug = (btn as HTMLElement).dataset.slug;
+      if (slug && saved.includes(slug)) {
+        btn.classList.add('saved');
+      } else {
+        btn.classList.remove('saved');
+      }
+    });
+  }
+
+  document.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement)?.closest('.bookmark-btn') as HTMLElement;
+    if (!btn) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    const slug = btn.dataset.slug;
+    if (!slug) return;
+
+    let saved = JSON.parse(localStorage.getItem('hanname-saved-names') || '[]');
+    if (saved.includes(slug)) {
+      saved = saved.filter((s: string) => s !== slug);
+      btn.classList.remove('saved');
+    } else {
+      saved.push(slug);
+      btn.classList.add('saved');
+    }
+    localStorage.setItem('hanname-saved-names', JSON.stringify(saved));
+  });
+
+  // Initialize on page render
+  updateBookmarkStates();
+</script>
+
+<style>
+  .bookmark-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-full);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    transition: all 0.2s ease;
+  }
+
+  .bookmark-btn:hover {
+    color: var(--accent-gold);
+    border-color: var(--accent-gold);
+  }
+
+  .bookmark-btn.saved {
+    background: var(--accent-gold-light);
+    color: var(--accent-gold);
+    border-color: var(--accent-gold);
+  }
+
+  .bookmark-btn.saved .star-icon {
+    fill: currentColor;
+  }
+</style>

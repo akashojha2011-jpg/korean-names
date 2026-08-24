@@ -1,0 +1,40 @@
+---
+import SEOHead from '../components/SEOHead.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+
+export interface Props {
+  title: string;
+  description: string;
+  canonicalUrl?: string;
+  ogImage?: string;
+  type?: string;
+  jsonLd?: Record<string, any> | Array<Record<string, any>>;
+}
+
+const { title, description, canonicalUrl, ogImage, type, jsonLd } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <SEOHead
+      title={title}
+      description={description}
+      canonicalUrl={canonicalUrl}
+      ogImage={ogImage}
+      type={type}
+      jsonLd={jsonLd}
+    />
+  </head>
+  <body>
+    <div class="app-root-container">
+      <Navbar />
+      <main id="main-content">
+        <slot />
+      </main>
+      <Footer />
+    </div>
+  </body>
+</html>

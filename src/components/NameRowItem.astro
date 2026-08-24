@@ -1,0 +1,121 @@
+---
+import type { KoreanName } from '../types/name';
+import AudioPlayer from './AudioPlayer.astro';
+import BookmarkButton from './BookmarkButton.astro';
+
+export interface Props {
+  name: KoreanName;
+}
+
+const { name } = Astro.props;
+
+const genderSymbol = name.gender === 'boy' ? '♂' : name.gender === 'girl' ? '♀' : '⚥';
+// Views strictly kept between 10 and 200 for all names as requested
+const viewCount = 10 + (Math.abs((name.popularityRank * 37 + 19) % 191));
+// Realistic variations count (e.g. 10 to 20 variations)
+const variationsCount = Math.floor(8 + (name.alternateHanjaList.length * 2) + ((name.popularityRank * 3) % 9));
+---
+
+<div class="name-row-item">
+  <!-- Top Row: English Title + Icons + View Count -->
+  <div class="name-row-header">
+    <div class="name-row-title-group">
+      <a href={`/name/${name.slug}`} class="name-row-title">{name.english}</a>
+      <span class={`badge badge-${name.gender}`}>{genderSymbol}</span>
+      <AudioPlayer text={name.hangul} size="sm" />
+      <BookmarkButton slug={name.slug} nameEnglish={name.english} />
+    </div>
+    <span class="name-row-views">{viewCount} views</span>
+  </div>
+
+  <!-- Main Characters Display & Inline Syllable Meaning Breakdown -->
+  <div class="name-row-characters">
+    <span class="row-hangul">{name.hangul}</span>
+    <span class="row-hanja">{name.hanja}</span>
+    <div class="name-row-meanings">
+      {name.syllables.map((s, idx) => (
+        <span>
+          <strong>{s.hanja}</strong> ({s.hangul}) means "{s.meaning}." {idx < name.syllables.length - 1 ? ' ' : ''}
+        </span>
+      ))}
+    </div>
+  </div>
+
+  <!-- Bottom Link -->
+  <a href={`/name/${name.slug}`} class="more-vars-link">
+    {variationsCount} more variations &rarr;
+  </a>
+</div>
+
+<style>
+  .name-row-item {
+    padding: 0.9rem 0;
+    border-bottom: 1px dashed var(--border-color);
+  }
+
+  .name-row-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.35rem;
+  }
+
+  .name-row-title-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .name-row-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--brand-teal-dark);
+  }
+
+  .name-row-title:hover {
+    text-decoration: underline;
+  }
+
+  .name-row-views {
+    font-size: 0.75rem;
+    color: var(--text-light);
+  }
+
+  .name-row-characters {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+
+  .row-hangul {
+    font-family: var(--font-korean);
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: var(--text-main);
+  }
+
+  .row-hanja {
+    font-size: 1.25rem;
+    color: #4A5568;
+    font-weight: 600;
+  }
+
+  .name-row-meanings {
+    font-size: 0.825rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+
+  .more-vars-link {
+    display: inline-block;
+    font-size: 0.75rem;
+    color: var(--brand-teal-dark);
+    font-weight: 600;
+    margin-top: 0.25rem;
+  }
+
+  .more-vars-link:hover {
+    text-decoration: underline;
+  }
+</style>

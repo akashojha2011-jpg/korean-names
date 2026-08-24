@@ -1,0 +1,207 @@
+---
+const articleThumbnails = [
+  { slug: "korean-names-born-in-august", title: "A Naming Guide for Babies Born in August: The Height of Summer", icon: "☀️" },
+  { slug: "korean-given-names-that-are-also-surnames", title: "Korean Given Names That Are Also Surnames — Cultural Naming Duality", icon: "📜" },
+  { slug: "korean-names-born-in-july", title: "A Naming Guide for Babies Born in July: Star Festival & Summer", icon: "🎋" },
+  { slug: "new-hanja-for-korean-baby-names", title: "A New Hanja for Korean Baby Names: Supreme Court Registry Updates", icon: "✍️" }
+];
+---
+
+<footer class="competitor-footer">
+  <div class="container footer-main-grid">
+    
+    <!-- Column 1: Navigation & Name Lists -->
+    <div class="footer-column">
+      <div class="footer-brand-header">
+        <a href="/" class="footer-brand-link">
+          <img src="/logo.jpg" alt="Korean Names Info Logo" class="footer-logo-img" />
+          <span class="footer-brand-text">KoreanNames.info</span>
+        </a>
+      </div>
+      
+      <h4 class="footer-subtitle">Korean First Names</h4>
+      <ul class="footer-link-list">
+        <li><a href="/gender/girl">🌸 Korean Girl(female) Names</a></li>
+        <li><a href="/gender/boy">👦 Korean Boy(male) Names</a></li>
+        <li><a href="/gender/unisex">✳️ Korean Unisex Names</a></li>
+      </ul>
+
+      <ul class="footer-link-list margin-top-list">
+        <li><a href="/surname">Korean Last Names</a></li>
+        <li><a href="/sitemap">Allowed Characters</a></li>
+        <li><a href="/hanja">Hanja List for Korean Names</a></li>
+        <li><a href="/letter/a">Hangul List for Korean Names</a></li>
+        <li><a href="/sitemap">Symbols List for Korean Names</a></li>
+      </ul>
+    </div>
+
+    <!-- Column 2: Tools & Information -->
+    <div class="footer-column">
+      <h3 class="footer-title">Tools & Site Information</h3>
+      <ul class="footer-link-list">
+        <li><a href="/tools/favorite-names">❤️ My Favorites</a></li>
+        <li><a href="/tools/name-generator">My Name in Korean</a></li>
+        <li><a href="/tools/name-generator">Korean Name Generator</a></li>
+        <li><a href="/acknowledgments">Acknowledgments</a></li>
+        <li><a href="/author">Author & Editorial Standards</a></li>
+        <li><a href="/contact">Contact Us</a></li>
+        <li><a href="/privacy">Privacy Policy</a></li>
+        <li><a href="/terms">Terms of Service</a></li>
+      </ul>
+    </div>
+
+    <!-- Column 3: Korean Name Articles with Thumbnails -->
+    <div class="footer-column">
+      <h3 class="footer-title">Korean Name Articles</h3>
+      <div class="footer-articles-list">
+        {articleThumbnails.map((art) => (
+          <a href={`/articles/${art.slug}`} class="footer-article-card">
+            <div class="footer-art-icon">{art.icon}</div>
+            <span class="footer-art-text">{art.title}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bottom Teal Bar -->
+  <div class="footer-teal-bottom">
+    <div class="container text-center">
+      <p>&copy; {new Date().getFullYear()} KoreanNames.info All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .competitor-footer {
+    background-color: var(--bg-footer);
+    border-top: 1px solid var(--border-color);
+    padding-top: 3.5rem;
+    margin-top: 5rem;
+  }
+
+  .footer-main-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3rem;
+    margin-bottom: 3rem;
+  }
+
+  .footer-brand-header {
+    margin-bottom: 0.85rem;
+  }
+
+  .footer-brand-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    text-decoration: none;
+  }
+
+  .footer-logo-img {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--brand-teal);
+    flex-shrink: 0;
+  }
+
+  .footer-brand-text {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-main);
+    line-height: 1;
+  }
+
+  .footer-brand-link:hover .footer-brand-text {
+    color: var(--brand-teal-dark);
+    text-decoration: underline;
+  }
+
+  .footer-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-main);
+  }
+
+  .footer-subtitle {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-top: 0.75rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .footer-link-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .margin-top-list {
+    margin-top: 0.75rem;
+  }
+
+  .footer-link-list a {
+    color: var(--text-muted);
+    font-size: 0.825rem;
+    font-weight: 600;
+    transition: color 0.15s ease;
+  }
+
+  .footer-link-list a:hover {
+    color: var(--brand-teal-dark);
+    text-decoration: underline;
+  }
+
+  .footer-articles-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .footer-article-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    font-size: 0.775rem;
+    color: var(--text-main);
+    line-height: 1.35;
+  }
+
+  .footer-article-card:hover .footer-art-text {
+    color: var(--brand-teal-dark);
+    text-decoration: underline;
+  }
+
+  .footer-art-icon {
+    width: 38px;
+    height: 38px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 1.1rem;
+  }
+
+  .footer-teal-bottom {
+    background: var(--brand-teal);
+    color: white;
+    padding: 0.85rem 0;
+    font-size: 0.825rem;
+    font-weight: 600;
+  }
+
+  @media (max-width: 868px) {
+    .footer-main-grid {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+  }
+</style>

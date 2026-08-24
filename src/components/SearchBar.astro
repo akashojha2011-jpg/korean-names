@@ -1,0 +1,216 @@
+---
+import { KOREAN_NAMES } from '../data/names';
+
+export interface Props {
+  placeholder?: string;
+  large?: boolean;
+}
+
+const { placeholder = 'Search Korean names by Hangul (민준), English (Min-jun), Hanja (敏俊), or meaning (wisdom)...', large = false } = Astro.props;
+---
+
+<div class={`search-wrapper ${large ? 'search-large' : ''}`}>
+  <div class="search-input-box">
+    <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="11" cy="11" r="8"></circle>
+      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+    </svg>
+    <input
+      type="text"
+      id="main-search-input"
+      class="search-input"
+      placeholder={placeholder}
+      autocomplete="off"
+    />
+    <button id="search-clear-btn" class="clear-btn" aria-label="Clear Search">&times;</button>
+  </div>
+
+  <!-- Search Results Dropdown -->
+  <div id="search-results-overlay" class="results-overlay">
+    <div id="results-container" class="results-container"></div>
+  </div>
+</div>
+
+<script is:inline define:vars={{ namesList: KOREAN_NAMES }}>
+  const input = document.getElementById('main-search-input');
+  const clearBtn = document.getElementById('search-clear-btn');
+  const overlay = document.getElementById('search-results-overlay');
+  const container = document.getElementById('results-container');
+
+  function renderResults(query) {
+    const q = query.trim().toLowerCase();
+    if (!q) {
+      overlay.classList.remove('active');
+      return;
+    }
+
+    const matches = namesList.filter(item => 
+      item.english.toLowerCase().includes(q) ||
+      item.hangul.includes(q) ||
+      item.hanja.includes(q) ||
+      item.overallMeaning.toLowerCase().includes(q) ||
+      item.slug.includes(q)
+    ).slice(0, 8);
+
+    if (matches.length === 0) {
+      container.innerHTML = `<div class="no-results">No Korean names found matching "${query}". Try searching by gender, theme, or letter!</div>`;
+    } else {
+      container.innerHTML = matches.map(name => `
+        <a href="/name/${name.slug}" class="result-item">
+          <div class="result-left">
+            <span class="result-hangul">${name.hangul}</span>
+            <span class="result-hanja">(${name.hanja})</span>
+            <span class="result-english">${name.english}</span>
+          </div>
+          <div class="result-right">
+            <span class="badge badge-${name.gender}">${name.gender}</span>
+          </div>
+        </a>
+      `).join('');
+    }
+
+    overlay.classList.add('active');
+  }
+
+  input?.addEventListener('input', (e) => renderResults(e.target.value));
+
+  clearBtn?.addEventListener('click', () => {
+    if (input) {
+      input.value = '';
+      overlay?.classList.remove('active');
+      input.focus();
+    }
+  });
+
+  // Close overlay on click outside
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.search-wrapper')) {
+      overlay?.classList.remove('active');
+    }
+  });
+</script>
+
+<style>
+  .search-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  .search-input-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 1.25rem;
+    color: var(--text-muted);
+    pointer-events: none;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 0.9rem 3rem 0.9rem 3.25rem;
+    font-size: 0.95rem;
+    border-radius: var(--radius-full);
+    border: 2px solid var(--border-color);
+    background: var(--bg-surface);
+    color: var(--text-main);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease;
+  }
+
+  .search-large .search-input {
+    padding: 1.15rem 3.25rem 1.15rem 3.5rem;
+    font-size: 1.05rem;
+    box-shadow: var(--shadow-md);
+  }
+
+  .search-input:focus {
+    outline: none;
+    border-color: var(--accent-crimson);
+    box-shadow: var(--shadow-glow);
+  }
+
+  .clear-btn {
+    position: absolute;
+    right: 1.25rem;
+    font-size: 1.5rem;
+    color: var(--text-muted);
+    display: none;
+  }
+
+  .search-input:not(:placeholder-shown) ~ .clear-btn {
+    display: block;
+  }
+
+  .results-overlay {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    max-height: 380px;
+    overflow-y: auto;
+  }
+
+  .results-overlay.active {
+    display: block;
+  }
+
+  .results-container {
+    padding: 0.5rem;
+  }
+
+  :global(.result-item) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-sm);
+    transition: background 0.15s ease;
+  }
+
+  :global(.result-item:hover) {
+    background: var(--bg-secondary);
+  }
+
+  :global(.result-left) {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+  }
+
+  :global(.result-hangul) {
+    font-family: var(--font-korean);
+    font-size: 1.25rem;
+    font-weight: 900;
+    color: var(--text-main);
+  }
+
+  :global(.result-hanja) {
+    font-size: 0.9rem;
+    color: var(--accent-indigo);
+  }
+
+  :global(.result-english) {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+
+  :global(.no-results) {
+    padding: 1.25rem;
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+  }
+</style>

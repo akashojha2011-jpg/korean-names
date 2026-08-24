@@ -1,0 +1,29 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="404 - Page Not Found"
+  description="The requested Korean name page could not be found."
+>
+  <div class="container page-wrapper text-center">
+    <div class="card error-box">
+      <div class="error-code">404</div>
+      <h1 class="error-title">Page Not Found (페이지를 찾을 수 없습니다)</h1>
+      <p class="error-desc">We couldn't find the Korean name or programmatic route you were looking for.</p>
+      <div class="error-actions">
+        <a href="/" class="highlight-link">Return to Homepage &rarr;</a>
+        <a href="/tools/name-generator" class="secondary-action-btn">Use Name Finder Tool</a>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .page-wrapper { padding: 5rem 0; text-align: center; }
+  .error-box { max-width: 600px; margin: 0 auto; padding: 4rem 2rem; }
+  .error-code { font-size: 5rem; font-weight: 900; color: var(--accent-crimson); line-height: 1; margin-bottom: 0.5rem; }
+  .error-title { font-size: 1.6rem; margin-bottom: 1rem; }
+  .error-desc { color: var(--text-muted); margin-bottom: 2rem; }
+  .error-actions { display: flex; justify-content: center; gap: 1rem; }
+</style>

@@ -1,0 +1,250 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SearchBar from '../../components/SearchBar.astro';
+import Sidebar from '../../components/Sidebar.astro';
+import FAQSection from '../../components/FAQSection.astro';
+import { SURNAMES } from '../../data/surnames';
+
+const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+
+const surnameFaqs = [
+  {
+    question: 'What are the most common Korean surnames?',
+    answer: 'Kim (김), Lee (이), Park (박), Choi (최), and Jung (정) account for over 50% of the entire South Korean population. Kim alone accounts for over 21.5% of South Koreans.'
+  },
+  {
+    question: 'What is a Bon-gwan (본관) in Korean surnames?',
+    answer: 'A Bon-gwan (clan ancestral seat) indicates the geographical origin of a specific surname branch. For example, Gimhae Kim (김해 김씨) and Gyeongju Kim (경주 김씨) share the same surname Kim but trace back to different royal ancestral seats.'
+  },
+  {
+    question: 'Do Korean women change their surname after marriage?',
+    answer: 'No. In traditional Korean culture, individuals retain their family birth surname for life. Children traditionally inherit their father surname.'
+  }
+];
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  'name': 'Korean Surnames Directory - 500 Family Clan Names & Origins',
+  'url': 'https://korean-names.info/surname'
+};
+---
+
+<BaseLayout
+  title="Korean Surnames Directory - 500 Family Clan Names & Origins"
+  description="Search 500 Korean surnames, family clan origins (Bon-gwan), Hanja logograms, meanings, and historical royal lineages."
+  jsonLd={schema}
+>
+  <div class="container margin-top-lg">
+    <!-- Header Section -->
+    <header class="page-header">
+      <div class="breadcrumb">
+        <a href="/">Home</a> &rsaquo; <span>Korean Surnames</span>
+      </div>
+      <h1 class="page-title">Korean Surnames Directory</h1>
+      <p class="page-description">
+        Explore 500 Korean family surnames (성씨 - Seong-ssi), clan origins (본관 - Bon-gwan), Sino-Korean Hanja characters, and historical lineages.
+      </p>
+
+      <div class="search-box-wrapper">
+        <SearchBar placeholder="Search 500 Korean surnames by Hangul (김), English (Kim), or Clan (Gimhae)..." />
+      </div>
+    </header>
+
+    <!-- Main Content Layout -->
+    <div class="content-layout">
+      <main class="main-column">
+        <!-- Top 5 Core Surnames Highlight -->
+        <section class="section-group">
+          <h2 class="section-heading">👑 Most Common Royal Korean Surnames</h2>
+          <div class="top-surnames-grid">
+            {SURNAMES.slice(0, 5).map((s) => (
+              <a href={`/surname/${s.slug}`} class="top-surname-card">
+                <div class="surname-hangul-lg">{s.hangul}</div>
+                <div class="surname-english-lg">{s.english}</div>
+                <div class="surname-hanja-badge">{s.hanja}</div>
+                <p class="surname-meaning-text">{s.meaning}</p>
+                <span class="view-clan-link">View Clan Info &rarr;</span>
+              </a>
+            ))}
+          </div>
+        </section>
+
+        <!-- All 500 Surnames Grid -->
+        <section class="section-group" style="margin-top: 3rem;">
+          <h2 class="section-heading">📜 All 500 Korean Surnames Directory</h2>
+
+          <div class="surnames-list-grid">
+            {SURNAMES.map((s) => (
+              <a href={`/surname/${s.slug}`} class="surname-list-item">
+                <div class="item-left">
+                  <span class="item-hangul">{s.hangul}</span>
+                  <span class="item-english">{s.english}</span>
+                  <span class="item-hanja">({s.hanja})</span>
+                </div>
+                <span class="item-meaning">{s.meaning}</span>
+              </a>
+            ))}
+          </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <FAQSection faqs={surnameFaqs} />
+      </main>
+
+      <!-- Sidebar -->
+      <Sidebar />
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .margin-top-lg { margin-top: 2rem; }
+
+  .page-header {
+    background: #FFF;
+    padding: 2rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    margin-bottom: 2rem;
+  }
+
+  .breadcrumb {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+  }
+
+  .page-title {
+    font-size: 2.2rem;
+    color: var(--brand-teal-dark);
+    margin-bottom: 0.5rem;
+  }
+
+  .page-description {
+    font-size: 1rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+
+  .search-box-wrapper {
+    max-width: 550px;
+  }
+
+  .section-heading {
+    font-size: 1.4rem;
+    color: var(--text-main);
+    margin-bottom: 1.25rem;
+  }
+
+  .top-surnames-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .top-surname-card {
+    background: #FFF;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 1.5rem 1rem;
+    text-align: center;
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: var(--brand-teal);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
+    }
+  }
+
+  .surname-hangul-lg {
+    font-family: var(--font-korean);
+    font-size: 2.4rem;
+    font-weight: 900;
+    color: var(--brand-teal-dark);
+    margin-bottom: 0.2rem;
+  }
+
+  .surname-english-lg {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-main);
+  }
+
+  .surname-hanja-badge {
+    display: inline-block;
+    padding: 0.15rem 0.6rem;
+    background: #F0FAF9;
+    color: var(--brand-teal-dark);
+    font-size: 0.85rem;
+    font-weight: 700;
+    border-radius: 4px;
+    margin: 0.5rem 0;
+  }
+
+  .surname-meaning-text {
+    font-size: 0.775rem;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+  }
+
+  .view-clan-link {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--brand-teal-dark);
+  }
+
+  .surnames-list-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .surname-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    background: #FFF;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+    transition: all 0.15s ease;
+
+    &:hover {
+      border-color: var(--brand-teal);
+      background: #F0FAF9;
+    }
+  }
+
+  .item-left {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .item-hangul {
+    font-family: var(--font-korean);
+    font-weight: 900;
+    font-size: 1.1rem;
+    color: var(--brand-teal-dark);
+  }
+
+  .item-english {
+    font-weight: 700;
+    color: var(--text-main);
+  }
+
+  .item-hanja {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+  }
+
+  .item-meaning {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-align: right;
+  }
+</style>

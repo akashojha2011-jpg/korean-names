@@ -1,0 +1,70 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import InfiniteNameList from '../../components/InfiniteNameList.astro';
+import Sidebar from '../../components/Sidebar.astro';
+import { KOREAN_NAMES } from '../../data/names';
+
+export async function getStaticPaths() {
+  const letters = 'abcdefghijklmnopqrstuvwxyz'.split('');
+  return letters.map((l) => ({
+    params: { letter: l },
+    props: { letterUpper: l.toUpperCase() }
+  }));
+}
+
+const { letter } = Astro.params;
+const { letterUpper } = Astro.props;
+
+const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+const namesInLetter = KOREAN_NAMES.filter((n) => n.firstLetter.toLowerCase() === letter.toLowerCase());
+---
+
+<BaseLayout
+  title={`Korean Names Starting with Letter ${letterUpper} - Infinite Directory`}
+  description={`Browse all Korean baby names starting with the letter ${letterUpper}. View Hanja meanings, romanizations, and popularity rankings.`}
+>
+  <div class="container page-wrapper">
+    <nav class="comp-breadcrumbs">
+      <a href="/">Home</a> &rsaquo;
+      <span>A-Z Directory</span> &rsaquo;
+      <span class="current">Letter {letterUpper}</span>
+    </nav>
+
+    <div class="content-layout">
+      <main class="main-column">
+        <header class="group-header">
+          <h1 class="group-title">
+            Korean Names Starting with "{letterUpper}" <span class="count-badge">({namesInLetter.length.toLocaleString()})</span>
+          </h1>
+        </header>
+
+        <!-- A-Z Letter Box -->
+        <div class="az-box">
+          {letters.map((l) => (
+            <a href={`/letter/${l.toLowerCase()}`} class={`az-btn ${l === letterUpper ? 'active' : ''}`}>{l}</a>
+          ))}
+        </div>
+
+        <!-- Infinite Name List -->
+        {namesInLetter.length === 0 ? (
+          <div class="card empty-box">
+            <p>No Korean names currently listed under letter "{letterUpper}". Try exploring our <a href="/gender/boy">Boys Directory</a> or <a href="/gender/girl">Girls Directory</a>!</p>
+          </div>
+        ) : (
+          <InfiniteNameList names={namesInLetter} />
+        )}
+      </main>
+
+      <Sidebar />
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .page-wrapper { padding-top: 1rem; padding-bottom: 4rem; }
+  .comp-breadcrumbs { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.25rem; display: flex; gap: 0.4rem; }
+  .group-header { margin-bottom: 0.75rem; }
+  .group-title { font-size: 1.8rem; color: var(--text-main); }
+  .count-badge { font-size: 1.1rem; color: var(--text-muted); font-weight: 400; }
+  .empty-box { padding: 3rem; text-align: center; color: var(--text-muted); }
+</style>

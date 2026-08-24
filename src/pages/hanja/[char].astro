@@ -1,0 +1,82 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NameCard from '../../components/NameCard.astro';
+import { HANJA_ENTRIES } from '../../data/hanja';
+import { KOREAN_NAMES } from '../../data/names';
+import type { HanjaEntry } from '../../types/name';
+
+export async function getStaticPaths() {
+  return HANJA_ENTRIES.map((h) => ({
+    params: { char: h.hangul },
+    props: { hanjaData: h }
+  }));
+}
+
+export interface Props {
+  hanjaData: HanjaEntry;
+}
+
+const { hanjaData } = Astro.props;
+
+// Find all names containing this Hangul / Hanja syllable
+const matchingNames = KOREAN_NAMES.filter((n) =>
+  n.syllables.some((s) => s.hangul === hanjaData.hangul || s.hanja === hanjaData.hanja)
+);
+---
+
+<BaseLayout
+  title={`Korean Name Syllable "${hanjaData.hangul}" (${hanjaData.hanja}) Meaning & Character Names`}
+  description={`Learn the meaning of the Korean Hanja character ${hanjaData.hanja} (${hanjaData.hangul} - "${hanjaData.meaning}"). Explore all Korean names formed with this character.`}
+>
+  <div class="container page-wrapper">
+    <nav class="breadcrumbs">
+      <a href="/">Home</a> &rsaquo;
+      <span>Hanja Dictionary</span> &rsaquo;
+      <span class="current">{hanjaData.hangul} ({hanjaData.hanja})</span>
+    </nav>
+
+    <header class="card hanja-hero">
+      <div class="hanja-hero-top">
+        <span class="hanja-big-hangul">{hanjaData.hangul}</span>
+        <span class="hanja-big-symbol">{hanjaData.hanja}</span>
+      </div>
+      <h1 class="hanja-hero-title">Hanja Character: {hanjaData.meaning}</h1>
+
+      <div class="hanja-meta-grid">
+        <div class="meta-card">
+          <span class="m-label">Stroke Count</span>
+          <span class="m-val">{hanjaData.strokeCount} Strokes</span>
+        </div>
+        <div class="meta-card">
+          <span class="m-label">Radical</span>
+          <span class="m-val">{hanjaData.radical}</span>
+        </div>
+      </div>
+    </header>
+
+    <section class="section-block">
+      <h2 class="section-title">All Korean Names Containing "{hanjaData.hangul}" ({hanjaData.hanja})</h2>
+      <p class="section-sub">Showing {matchingNames.length} names built using this character.</p>
+
+      <div class="grid grid-cols-3">
+        {matchingNames.map((item) => (
+          <NameCard name={item} />
+        ))}
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .page-wrapper { padding-top: 2rem; padding-bottom: 4rem; }
+  .breadcrumbs { font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1.5rem; display: flex; gap: 0.5rem; }
+  .hanja-hero { padding: 3rem; margin-bottom: 3.5rem; background: linear-gradient(135deg, var(--bg-surface) 0%, var(--accent-indigo-light) 100%); }
+  .hanja-hero-top { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 0.5rem; }
+  .hanja-big-hangul { font-family: var(--font-korean); font-size: 4rem; font-weight: 900; }
+  .hanja-big-symbol { font-size: 3rem; color: var(--accent-indigo); }
+  .hanja-hero-title { font-size: 1.8rem; margin-bottom: 1.5rem; }
+  .hanja-meta-grid { display: flex; gap: 1.5rem; }
+  .meta-card { background: var(--bg-surface); padding: 0.85rem 1.25rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); }
+  .m-label { display: block; font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
+  .m-val { font-size: 1.05rem; font-weight: 700; color: var(--text-main); }
+</style>

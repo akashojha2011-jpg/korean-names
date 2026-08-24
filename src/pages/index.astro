@@ -1,0 +1,290 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SearchBar from '../components/SearchBar.astro';
+import NameRowItem from '../components/NameRowItem.astro';
+import Sidebar from '../components/Sidebar.astro';
+import NameGeneratorModal from '../components/NameGeneratorModal.astro';
+import FAQSection from '../components/FAQSection.astro';
+import { KOREAN_NAMES } from '../data/names';
+
+const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+
+const girlNames = KOREAN_NAMES.filter(n => n.gender === 'girl' || n.gender === 'unisex');
+const boyNames = KOREAN_NAMES.filter(n => n.gender === 'boy');
+
+const homeFaqs = [
+  {
+    question: 'How are Korean given names structured?',
+    answer: 'Traditional Korean given names usually consist of two Sino-Korean syllables written in Hangul (한글), with corresponding Hanja (漢字) characters chosen for their specific meanings. Many families also use single-syllable names (외자) or native "Pure Korean" words like Haneul (Sky).'
+  },
+  {
+    question: 'What is Hanja in Korean names?',
+    answer: 'Hanja refers to Chinese logographic characters adapted into Korean. Even when two Korean names sound identical in Hangul (e.g. Min-jun 민준), different Hanja character combinations give each person a unique meaning.'
+  },
+  {
+    question: 'Are Korean surnames placed first or last?',
+    answer: 'In Korean culture, the surname comes first, followed by the given name (e.g., Kim Min-jun, where Kim is the surname and Min-jun is the given name).'
+  }
+];
+
+const websiteSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  'name': 'KoreanNames.info Directory',
+  'url': 'https://korean-names.info'
+};
+---
+
+<BaseLayout
+  title="Korean Name Dictionary - First Names, Last Names & Hanja Meanings"
+  description="The most comprehensive database for searching Korean names. Search 100+ first names, last names, Hanja meanings, pronunciations, and baby name combinations."
+  jsonLd={websiteSchema}
+>
+  <!-- Hero Section with Calligraphic Watermark Background -->
+  <section class="competitor-hero">
+    <div class="watermark-bg">
+      <span class="wm-char c1">韓</span>
+      <span class="wm-char c2">字</span>
+      <span class="wm-char c3">美</span>
+      <span class="wm-char c4">結</span>
+      <span class="wm-char c5">智</span>
+      <span class="wm-char c6">純</span>
+    </div>
+
+    <div class="container hero-content text-center">
+      <h1 class="hero-main-heading">Korean Name Dictionary</h1>
+      <p class="hero-subtext">
+        Created for parents and Korean culture enthusiasts. The most comprehensive web database for searching Korean names.
+      </p>
+
+      <!-- Pill Buttons Grid -->
+      <div class="pills-grid">
+        <a href="/gender/boy" class="hero-pill">› First Names</a>
+        <a href="/gender/girl" class="hero-pill">› Girl Names</a>
+        <a href="/gender/boy" class="hero-pill">› Boy Names</a>
+        <a href="/gender/unisex" class="hero-pill">› Unisex Names</a>
+        <a href="/surname" class="hero-pill">› Last Names</a>
+        <a href="/tools/name-generator" class="hero-pill">› My Name in Korean</a>
+        <a href="/tools/name-generator" class="hero-pill">› Name Generator</a>
+        <a href="/tools/favorite-names" class="hero-pill">› My Favorites</a>
+        <a href="/articles" class="hero-pill">› Articles</a>
+        <a href="/hanja" class="hero-pill">› Hanja List</a>
+        <a href="/letter/a" class="hero-pill">› Hangul List</a>
+      </div>
+
+      <div class="search-container-hero">
+        <SearchBar placeholder="Search Korean names by Hangul (민준), English (Min-jun), or meaning..." />
+      </div>
+    </div>
+  </section>
+
+  <!-- 2-Column Content Layout (Main Feed + Right Sidebar) -->
+  <div class="container">
+    <div class="content-layout">
+      
+      <!-- Main Content Column -->
+      <main class="main-column">
+        
+        <!-- Girl Names Section -->
+        <section class="section-group">
+          <div class="group-header">
+            <h2 class="group-title">
+              <span class="pink-dot">🌸</span> Girl Names A-Z <span class="count-badge">({girlNames.length.toLocaleString()})</span>
+            </h2>
+            <a href="/gender/girl" class="group-search-link">🔍 Girl Name Search</a>
+          </div>
+
+          <!-- A-Z Letter Box -->
+          <div class="az-box">
+            {letters.map((l) => (
+              <a href={`/letter/${l.toLowerCase()}`} class="az-btn">{l}</a>
+            ))}
+          </div>
+
+          <!-- Sort Bar -->
+          <div class="sort-bar">
+            <span class="sort-label">Sort by:</span>
+            <span class="sort-pill active">Most Hanja Variations</span>
+            <span class="sort-pill">Most Viewed</span>
+            <span class="sort-pill">A-Z</span>
+            <span class="sort-pill">Random</span>
+            <span class="sort-pill">Fewest characters</span>
+          </div>
+
+          <!-- List of Name Rows -->
+          <div class="name-rows-container">
+            {girlNames.map((item) => (
+              <NameRowItem name={item} />
+            ))}
+          </div>
+        </section>
+
+        <!-- Baby Name Generator Tool -->
+        <section class="section-group" style="margin-top: 3rem;">
+          <NameGeneratorModal />
+        </section>
+
+        <!-- Boy Names Section -->
+        <section class="section-group" style="margin-top: 3rem;">
+          <div class="group-header">
+            <h2 class="group-title">
+              <span class="blue-dot">👦</span> Boy Names A-Z <span class="count-badge">({boyNames.length.toLocaleString()})</span>
+            </h2>
+            <a href="/gender/boy" class="group-search-link">🔍 Boy Name Search</a>
+          </div>
+
+          <!-- A-Z Letter Box -->
+          <div class="az-box">
+            {letters.map((l) => (
+              <a href={`/letter/${l.toLowerCase()}`} class="az-btn">{l}</a>
+            ))}
+          </div>
+
+          <!-- Sort Bar -->
+          <div class="sort-bar">
+            <span class="sort-label">Sort by:</span>
+            <span class="sort-pill active">Most Hanja Variations</span>
+            <span class="sort-pill">Most Viewed</span>
+            <span class="sort-pill">A-Z</span>
+            <span class="sort-pill">Random</span>
+          </div>
+
+          <!-- List of Name Rows -->
+          <div class="name-rows-container">
+            {boyNames.map((item) => (
+              <NameRowItem name={item} />
+            ))}
+          </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <FAQSection faqs={homeFaqs} />
+      </main>
+
+      <!-- Right Sticky Sidebar Column -->
+      <Sidebar />
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .competitor-hero {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    background: var(--bg-hero);
+    padding: 3.5rem 0 3rem 0;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border-color);
+    box-sizing: border-box;
+  }
+
+  .watermark-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    max-width: 100%;
+    pointer-events: none;
+    user-select: none;
+    opacity: 0.12;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .wm-char {
+    font-family: var(--font-korean);
+    font-size: 11rem;
+    font-weight: 900;
+    color: #2CB3AF;
+    white-space: nowrap;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 10;
+    max-width: 920px;
+  }
+
+  .hero-main-heading {
+    font-size: 2.8rem;
+    font-weight: 800;
+    color: #70B857;
+    margin-bottom: 0.5rem;
+  }
+
+  .hero-subtext {
+    font-size: 1.05rem;
+    color: var(--text-main);
+    margin-bottom: 1.75rem;
+  }
+
+  .pills-grid {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    max-width: 820px;
+    margin: 0 auto 2rem auto;
+  }
+
+  .hero-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.45rem 1.15rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-full);
+    font-size: 0.925rem;
+    font-weight: 700;
+    color: var(--brand-teal-dark);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease;
+  }
+
+  .hero-pill:hover {
+    background: var(--brand-teal);
+    color: white;
+    border-color: var(--brand-teal);
+    transform: translateY(-1px);
+  }
+
+  .search-container-hero {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .group-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+  }
+
+  .group-title {
+    font-size: 1.4rem;
+    color: var(--text-main);
+  }
+
+  .count-badge {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-weight: 400;
+  }
+
+  .group-search-link {
+    font-size: 0.825rem;
+    color: var(--brand-teal-dark);
+    font-weight: 600;
+  }
+
+  @media (max-width: 768px) {
+    .hero-main-heading { font-size: 2.1rem; }
+    .wm-char { font-size: 6rem; }
+  }
+</style>

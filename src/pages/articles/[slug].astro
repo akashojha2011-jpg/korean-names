@@ -1,0 +1,211 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import TableOfContents from '../../components/TableOfContents.astro';
+import NameCard from '../../components/NameCard.astro';
+import Sidebar from '../../components/Sidebar.astro';
+import { ARTICLES } from '../../data/articles';
+import { KOREAN_NAMES } from '../../data/names';
+import type { Article } from '../../types/article';
+
+export async function getStaticPaths() {
+  return ARTICLES.map((article) => ({
+    params: { slug: article.slug },
+    props: { article }
+  }));
+}
+
+export interface Props {
+  article: Article;
+}
+
+const { article } = Astro.props;
+
+// Hydrate recommended names linked in this article
+const recommendedNames = article.relatedNameSlugs
+  ? KOREAN_NAMES.filter((n) => article.relatedNameSlugs?.includes(n.slug)).slice(0, 3)
+  : KOREAN_NAMES.slice(0, 3);
+
+// Schema.org Article JSON-LD
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  'headline': article.title,
+  'description': article.summary,
+  'author': {
+    '@type': 'Person',
+    'name': article.author
+  },
+  'datePublished': article.publishedDate,
+  'publisher': {
+    '@type': 'Organization',
+    'name': 'KoreanNames.info'
+  }
+};
+---
+
+<BaseLayout
+  title={`${article.title} | KoreanNames.info`}
+  description={article.summary}
+  jsonLd={articleSchema}
+>
+  <div class="container page-wrapper">
+    <!-- Breadcrumbs -->
+    <nav class="comp-breadcrumbs">
+      <a href="/">Home</a> &rsaquo;
+      <a href="/articles">Articles</a> &rsaquo;
+      <span class="current">{article.title}</span>
+    </nav>
+
+    <!-- 2-Column Content Layout -->
+    <div class="content-layout">
+      
+      <!-- Main Content Column -->
+      <main class="main-column">
+        
+        <!-- Article Header -->
+        <header class="article-header card">
+          <span class="category-badge">{article.categoryLabel}</span>
+          <h1 class="article-main-title">{article.title}</h1>
+          <p class="article-subtitle">{article.subtitle}</p>
+
+          <div class="article-meta-row">
+            <span class="author-info">✍️ By {article.author}</span>
+            <span class="dot-sep">•</span>
+            <span class="date-info">📅 {article.publishedDate}</span>
+            <span class="dot-sep">•</span>
+            <span class="time-info">⏱️ {article.readTime}</span>
+          </div>
+        </header>
+
+        <!-- Table of Contents Widget -->
+        <TableOfContents toc={article.toc} />
+
+        <!-- Article Sections Body -->
+        <article class="article-body-content card">
+          {article.sections.map((section) => (
+            <section id={section.id} class="article-section-block">
+              <h2 class="section-heading-title">{section.heading}</h2>
+              <div class="section-html-content" set:html={section.content} />
+            </section>
+          ))}
+        </article>
+
+        <!-- Recommended Names Cards Section -->
+        {recommendedNames.length > 0 && (
+          <section class="related-names-block" style="margin-top: 3rem;">
+            <h2 class="related-heading">Featured Korean Names Mentioned in This Guide</h2>
+            <div class="recommended-grid">
+              {recommendedNames.map((item) => (
+                <NameCard name={item} />
+              ))}
+            </div>
+          </section>
+        )}
+
+      </main>
+
+      <!-- Right Sidebar Column -->
+      <Sidebar />
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .page-wrapper { padding-top: 1rem; padding-bottom: 4rem; }
+  
+  .comp-breadcrumbs {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 1.25rem;
+    display: flex;
+    gap: 0.4rem;
+  }
+
+  .article-header {
+    padding: 2.25rem;
+    margin-bottom: 1.75rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+  }
+
+  .category-badge {
+    display: inline-block;
+    background: var(--brand-teal-light);
+    color: var(--brand-teal-dark);
+    font-size: 0.775rem;
+    font-weight: 800;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-full);
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+
+  .article-main-title {
+    font-size: 2.2rem;
+    font-weight: 800;
+    line-height: 1.25;
+    color: var(--text-main);
+    margin-bottom: 0.6rem;
+  }
+
+  .article-subtitle {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 1.25rem;
+  }
+
+  .article-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.825rem;
+    color: var(--text-light);
+    font-weight: 600;
+  }
+
+  .article-body-content {
+    padding: 2.5rem;
+    line-height: 1.8;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+  }
+
+  .article-section-block {
+    margin-bottom: 2.5rem;
+  }
+
+  .section-heading-title {
+    font-size: 1.5rem;
+    color: var(--brand-teal-dark);
+    border-bottom: 2px dashed var(--brand-teal);
+    padding-bottom: 0.4rem;
+    margin-bottom: 1rem;
+  }
+
+  :global(.section-html-content p) {
+    font-size: 1.025rem;
+    color: var(--text-main);
+    margin-bottom: 1rem;
+    line-height: 1.75;
+  }
+
+  :global(.section-html-content ul) {
+    padding-left: 1.5rem;
+    margin-bottom: 1.25rem;
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+
+  .related-heading {
+    font-size: 1.3rem;
+    margin-bottom: 1.25rem;
+    color: var(--text-main);
+  }
+
+  .recommended-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.25rem;
+  }
+</style>

@@ -1,0 +1,18 @@
+{
+  "name": "korean-names-info",
+  "version": "1.0.0",
+  "description": "Programmatic SEO platform for Korean names, Hanja breakdown, meanings, popularity, and name generator",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.1.6",
+    "astro": "^4.16.19",
+    "typescript": "^5.9.3"
+  }
+}
