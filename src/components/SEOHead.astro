@@ -18,7 +18,7 @@ const {
 } = Astro.props;
 
 const siteName = 'KoreanNames.info - Korean Names Directory & Meaning';
-const fullTitle = title.includes('KoreanNames') ? title : `${title} | KoreanNames.info`;
+const fullTitle = title.includes('KoreanNames') || title.startsWith('Korean Names:') ? title : `${title} | KoreanNames.info`;
 ---
 
 <!-- Global Metadata -->
