@@ -1,6 +1,2 @@
 User-agent: *
 Allow: /
-
-Sitemap: https://www.korean-names.info/sitemap.xml
-Sitemap: https://www.korean-names.info/sitemap-0.xml
-Sitemap: https://www.korean-names.info/sitemap-index.xml
