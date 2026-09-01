@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import InfiniteNameList from '../../components/InfiniteNameList.astro';
+import PaginatedNameList from '../../components/PaginatedNameList.astro';
 import Sidebar from '../../components/Sidebar.astro';
 import FAQSection from '../../components/FAQSection.astro';
 import { THEME_CATEGORIES } from '../../data/categories';
@@ -30,7 +30,7 @@ const themeFaqs = [
 ---
 
 <BaseLayout
-  title={`Korean Names Meaning "${category.name}" (${category.koreanName}) - Infinite Directory`}
+  title={`Korean Names Meaning "${category.name}" (${category.koreanName}) - Directory`}
   description={category.seoDescription}
 >
   <div class="container page-wrapper">
@@ -49,8 +49,8 @@ const themeFaqs = [
           <p class="category-sub">{category.seoDescription}</p>
         </header>
 
-        <!-- Infinite Name List -->
-        <InfiniteNameList names={namesInTheme} />
+        <!-- Paginated Name List -->
+        <PaginatedNameList names={namesInTheme} />
 
         <FAQSection faqs={themeFaqs} title={`FAQ for ${category.name} Korean Names`} />
       </main>

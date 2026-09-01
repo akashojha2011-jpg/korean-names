@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import InfiniteNameList from '../../components/InfiniteNameList.astro';
+import PaginatedNameList from '../../components/PaginatedNameList.astro';
 import Sidebar from '../../components/Sidebar.astro';
 import { KOREAN_NAMES } from '../../data/names';
 
@@ -20,7 +20,7 @@ const namesInLetter = KOREAN_NAMES.filter((n) => n.firstLetter.toLowerCase() ===
 ---
 
 <BaseLayout
-  title={`Korean Names Starting with Letter ${letterUpper} - Infinite Directory`}
+  title={`Korean Names Starting with Letter ${letterUpper} - Directory`}
   description={`Browse all Korean baby names starting with the letter ${letterUpper}. View Hanja meanings, romanizations, and popularity rankings.`}
 >
   <div class="container page-wrapper">
@@ -45,13 +45,13 @@ const namesInLetter = KOREAN_NAMES.filter((n) => n.firstLetter.toLowerCase() ===
           ))}
         </div>
 
-        <!-- Infinite Name List -->
+        <!-- Paginated Name List -->
         {namesInLetter.length === 0 ? (
           <div class="card empty-box">
             <p>No Korean names currently listed under letter "{letterUpper}". Try exploring our <a href="/gender/boy">Boys Directory</a> or <a href="/gender/girl">Girls Directory</a>!</p>
           </div>
         ) : (
-          <InfiniteNameList names={namesInLetter} />
+          <PaginatedNameList names={namesInLetter} />
         )}
       </main>
 

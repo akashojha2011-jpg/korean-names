@@ -1,0 +1,177 @@
+---
+import type { KoreanName } from '../types/name';
+
+export interface Props {
+  names: KoreanName[];
+  pageSize?: number;
+}
+
+const { names, pageSize = 25 } = Astro.props;
+const totalPages = Math.ceil(names.length / pageSize);
+---
+
+<div class="paginated-list-wrapper">
+  <!-- Name Rows Container -->
+  <div id="paginated-list-container" class="name-rows-container">
+    {names.map((name, index) => {
+      const genderSymbol = name.gender === 'boy' ? '♂' : name.gender === 'girl' ? '♀' : '⚥';
+      const viewCount = 10 + (Math.abs((name.popularityRank * 37 + 19) % 191));
+      const variationsCount = Math.floor(8 + (name.alternateHanjaList.length * 2) + ((name.popularityRank * 3) % 9));
+      const pageNum = Math.floor(index / pageSize) + 1;
+
+      return (
+        <div class="name-row-item paginated-item" data-page={pageNum} style={pageNum > 1 ? 'display: none;' : ''}>
+          <div class="name-row-header">
+            <div class="name-row-title-group">
+              <a href={`/name/${name.slug}`} class="name-row-title">{name.english}</a>
+              <span class={`badge badge-${name.gender}`}>{genderSymbol}</span>
+              <button class="audio-btn audio-btn-sm" data-speech-text={name.hangul} aria-label={`Listen to ${name.hangul}`}>🔊</button>
+              <button class="bookmark-btn" data-slug={name.slug} data-name={name.english} aria-label={`Save ${name.english}`}>
+                <svg class="star-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+              </button>
+            </div>
+            <span class="name-row-views">{viewCount} views</span>
+          </div>
+
+          <div class="name-row-characters">
+            <span class="row-hangul">{name.hangul}</span>
+            <span class="row-hanja">{name.hanja}</span>
+            <div class="name-row-meanings">
+              {name.syllables.map((s, idx) => (
+                <span>
+                  <strong>{s.hanja}</strong> ({s.hangul}) means "{s.meaning}." {idx < name.syllables.length - 1 ? ' ' : ''}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <a href={`/name/${name.slug}`} class="more-vars-link">
+            {variationsCount} more variations &rsaquo;
+          </a>
+        </div>
+      );
+    })}
+  </div>
+
+  <!-- Numbered Pagination Controls -->
+  {totalPages > 1 && (
+    <nav class="pagination-controls" aria-label="Name list pagination">
+      <button id="pg-prev-btn" class="pg-btn" disabled>&larr; Prev</button>
+      <div id="pg-numbers-box" class="pg-numbers-box">
+        {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+          <button class={`pg-num-btn ${p === 1 ? 'active' : ''}`} data-page-target={p}>{p}</button>
+        ))}
+      </div>
+      <button id="pg-next-btn" class="pg-btn">Next &rarr;</button>
+    </nav>
+  )}
+</div>
+
+<script is:inline define:vars={{ totalPagesCount: totalPages }}>
+  let currentPage = 1;
+  const items = document.querySelectorAll('.paginated-item');
+  const prevBtn = document.getElementById('pg-prev-btn');
+  const nextBtn = document.getElementById('pg-next-btn');
+  const numBtns = document.querySelectorAll('.pg-num-btn');
+
+  function goToPage(page) {
+    if (page < 1 || page > totalPagesCount) return;
+    currentPage = page;
+
+    items.forEach(item => {
+      const itemPage = parseInt(item.getAttribute('data-page') || '1', 10);
+      item.style.display = itemPage === currentPage ? 'block' : 'none';
+    });
+
+    numBtns.forEach(btn => {
+      const targetPage = parseInt(btn.getAttribute('data-page-target') || '1', 10);
+      btn.classList.toggle('active', targetPage === currentPage);
+    });
+
+    if (prevBtn) prevBtn.disabled = currentPage === 1;
+    if (nextBtn) nextBtn.disabled = currentPage === totalPagesCount;
+
+    // Scroll to top of list smoothly
+    document.getElementById('paginated-list-container')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  prevBtn?.addEventListener('click', () => goToPage(currentPage - 1));
+  nextBtn?.addEventListener('click', () => goToPage(currentPage + 1));
+
+  numBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const target = parseInt(e.currentTarget.getAttribute('data-page-target') || '1', 10);
+      goToPage(target);
+    });
+  });
+</script>
+
+<style>
+  .paginated-list-wrapper {
+    width: 100%;
+  }
+
+  .pagination-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px dashed var(--border-color);
+  }
+
+  .pg-btn {
+    padding: 0.45rem 0.9rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--brand-teal-dark);
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .pg-btn:hover:not(:disabled) {
+    background: var(--brand-teal);
+    color: white;
+    border-color: var(--brand-teal);
+  }
+
+  .pg-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .pg-numbers-box {
+    display: flex;
+    gap: 0.35rem;
+  }
+
+  .pg-num-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+    background: var(--bg-surface);
+    color: var(--text-main);
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .pg-num-btn:hover {
+    border-color: var(--brand-teal);
+    color: var(--brand-teal-dark);
+  }
+
+  .pg-num-btn.active {
+    background: var(--brand-teal);
+    color: white;
+    border-color: var(--brand-teal);
+  }
+</style>

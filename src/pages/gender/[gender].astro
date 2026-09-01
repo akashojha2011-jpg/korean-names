@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import InfiniteNameList from '../../components/InfiniteNameList.astro';
+import PaginatedNameList from '../../components/PaginatedNameList.astro';
 import Sidebar from '../../components/Sidebar.astro';
 import FAQSection from '../../components/FAQSection.astro';
 import { KOREAN_NAMES } from '../../data/names';
@@ -32,7 +32,7 @@ const genderFaqs = [
 ---
 
 <BaseLayout
-  title={`${genderName} - Meaning, Hanja & Infinite Directory (${filteredNames.length} names)`}
+  title={`${genderName} - Meaning, Hanja & Directory (${filteredNames.length} names)`}
   description={desc}
 >
   <div class="container page-wrapper">
@@ -68,8 +68,8 @@ const genderFaqs = [
           <span class="sort-pill">Random</span>
         </div>
 
-        <!-- Infinite Scroll Name Listing -->
-        <InfiniteNameList names={filteredNames} />
+        <!-- Paginated Name Listing -->
+        <PaginatedNameList names={filteredNames} />
 
         <FAQSection faqs={genderFaqs} title={`FAQ for ${genderName}`} />
       </main>
