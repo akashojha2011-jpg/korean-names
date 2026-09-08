@@ -1,106 +1,43 @@
 ---
-const basicArticles = [
-  { slug: "introduction-to-korean-names", title: "What's in a Korean name? Introduction to how Korean names work", icon: "📖" },
-  { slug: "mixed-nationality-korean-names", title: "The popular names for children of mixed nationality couples", icon: "👨‍👩‍👧" },
-  { slug: "comparing-korean-names-1912-vs-modern", title: "Comparing Korean Names in 1912 with Modern Names", icon: "📜" }
-];
-
-const girlArticles = [
-  { slug: "how-korean-girl-names-work", title: "How Korean Girl Names Work: Hanja, Hangul & Sound Explained", icon: "🌸" },
-  { slug: "most-popular-korean-girl-names-2026", title: "Most Popular Korean Girl Names in 2026: Meanings, Hanja & Trends", icon: "🎀" }
-];
-
-const boyArticles = [
-  { slug: "how-korean-boy-names-work", title: "How Korean Boy Names Work: Hanja, Tradition & Modern Trends", icon: "👦" },
-  { slug: "most-popular-korean-boy-names-2026", title: "Most Popular Korean Boy Names in 2026: Meanings & Trends", icon: "🏆" }
-];
-
-const lastNameArticles = [
-  { slug: "korean-last-names-101", title: "Korean Last Names 101: Meaning, Clan (Bon-gwan) & How They Work", icon: "👑" },
-  { slug: "most-common-korean-last-names", title: "Most Common Korean Last Names and Their Meanings", icon: "🏛️" }
-];
-
-const newArticles = [
-  { slug: "korean-names-born-in-august", title: "A Naming Guide for Babies Born in August: The Height of Summer", tag: "8月" },
-  { slug: "korean-given-names-that-are-also-surnames", title: "Korean Given Names That Are Also Surnames — A Cultural Guide", tag: "Name Duality" },
-  { slug: "korean-names-born-in-july", title: "A Naming Guide for Babies Born in July: Star Festival & Summer", tag: "7月" },
-  { slug: "new-hanja-for-korean-baby-names", title: "A New Hanja for Korean Baby Names: Registry Updates", tag: "Registry Update" }
-];
 ---
 
 <aside class="sidebar-container">
-  <!-- Basics Section -->
+  <!-- Quick Tools Section -->
   <div class="sidebar-box">
-    <div class="sidebar-header-teal">The Basics of Korean Names</div>
+    <div class="sidebar-header-teal">⚡ Quick Tools</div>
     <div class="sidebar-content">
-      <span class="start-here-tag">START HERE</span>
-      <div class="article-mini-list">
-        {basicArticles.map((art) => (
-          <a href={`/articles/${art.slug}`} class="sidebar-article-item">
-            <div class="article-icon-box">{art.icon}</div>
-            <span class="article-title">{art.title}</span>
-          </a>
-        ))}
+      <div class="quick-links-list">
+        <a href="/tools/name-generator" class="sidebar-tool-item">
+          <span class="tool-icon">✨</span>
+          <div class="tool-text">
+            <strong class="tool-title">Name Generator</strong>
+            <span class="tool-desc">Generate authentic Korean names</span>
+          </div>
+        </a>
+        <a href="/tools/favorite-names" class="sidebar-tool-item">
+          <span class="tool-icon">❤️</span>
+          <div class="tool-text">
+            <strong class="tool-title">My Favorites</strong>
+            <span class="tool-desc">Saved favorite names</span>
+          </div>
+        </a>
       </div>
     </div>
   </div>
 
-  <!-- Girl Name Section -->
+  <!-- Popular Categories -->
   <div class="sidebar-box">
-    <div class="sidebar-header-light">Girl Name Guides</div>
+    <div class="sidebar-header-light">🏷️ Browse Categories</div>
     <div class="sidebar-content">
-      <div class="article-mini-list">
-        {girlArticles.map((art) => (
-          <a href={`/articles/${art.slug}`} class="sidebar-article-item">
-            <div class="article-icon-box">{art.icon}</div>
-            <span class="article-title">{art.title}</span>
-          </a>
-        ))}
-      </div>
-    </div>
-  </div>
-
-  <!-- Boy Name Section -->
-  <div class="sidebar-box">
-    <div class="sidebar-header-light">Boy Name Guides</div>
-    <div class="sidebar-content">
-      <div class="article-mini-list">
-        {boyArticles.map((art) => (
-          <a href={`/articles/${art.slug}`} class="sidebar-article-item">
-            <div class="article-icon-box">{art.icon}</div>
-            <span class="article-title">{art.title}</span>
-          </a>
-        ))}
-      </div>
-    </div>
-  </div>
-
-  <!-- Last Name Section -->
-  <div class="sidebar-box">
-    <div class="sidebar-header-light">Last Name Guides</div>
-    <div class="sidebar-content">
-      <div class="article-mini-list">
-        {lastNameArticles.map((art) => (
-          <a href={`/articles/${art.slug}`} class="sidebar-article-item">
-            <div class="article-icon-box">{art.icon}</div>
-            <span class="article-title">{art.title}</span>
-          </a>
-        ))}
-      </div>
-    </div>
-  </div>
-
-  <!-- New Articles Section -->
-  <div class="sidebar-box">
-    <div class="sidebar-header-teal">New Articles</div>
-    <div class="sidebar-content">
-      <div class="article-mini-list">
-        {newArticles.map((art) => (
-          <a href={`/articles/${art.slug}`} class="sidebar-article-item">
-            <div class="article-tag-box">{art.tag}</div>
-            <span class="article-title">{art.title}</span>
-          </a>
-        ))}
+      <div class="cat-links-grid">
+        <a href="/gender/girl" class="cat-chip chip-girl">🌸 Girl Names</a>
+        <a href="/gender/boy" class="cat-chip chip-boy">👦 Boy Names</a>
+        <a href="/gender/unisex" class="cat-chip chip-unisex">✳️ Unisex Names</a>
+        <a href="/surname" class="cat-chip chip-surname">👑 Last Names</a>
+        <a href="/hanja" class="cat-chip chip-hanja">🈩 Hanja Directory</a>
+        <a href="/theme/royal" class="cat-chip chip-theme">👑 Royal Names</a>
+        <a href="/theme/modern" class="cat-chip chip-theme">✨ Modern Names</a>
+        <a href="/theme/k-pop" class="cat-chip chip-theme">🎵 K-Pop Names</a>
       </div>
     </div>
   </div>
@@ -154,62 +91,69 @@ const newArticles = [
     padding: 0.75rem;
   }
 
-  .start-here-tag {
-    display: inline-block;
-    font-size: 0.725rem;
-    font-weight: 800;
-    color: var(--brand-teal-dark);
-    text-transform: uppercase;
-    margin-bottom: 0.5rem;
-  }
-
-  .article-mini-list {
+  .quick-links-list {
     display: flex;
     flex-direction: column;
     gap: 0.6rem;
   }
 
-  .sidebar-article-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.6rem;
-    font-size: 0.775rem;
-    color: var(--text-main);
-    line-height: 1.35;
-  }
-
-  .sidebar-article-item:hover .article-title {
-    color: var(--brand-teal-dark);
-    text-decoration: underline;
-  }
-
-  .article-icon-box {
-    width: 36px;
-    height: 36px;
-    background: #F0FAF9;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
+  .sidebar-tool-item {
     display: flex;
     align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    font-size: 1rem;
+    gap: 0.6rem;
+    padding: 0.5rem;
+    background: var(--bg-main);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    text-decoration: none;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+  }
+
+  .sidebar-tool-item:hover {
+    transform: translateY(-1px);
+    border-color: var(--brand-teal);
+  }
+
+  .tool-icon {
+    font-size: 1.2rem;
+  }
+
+  .tool-text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .tool-title {
+    font-size: 0.825rem;
     color: var(--text-main);
   }
 
-  :global([data-theme="dark"]) .article-icon-box,
-  :global(body.dark-mode) .article-icon-box {
-    background: #1E293B;
-    border-color: #334155;
+  .tool-desc {
+    font-size: 0.725rem;
+    color: var(--text-muted);
   }
 
-  .article-tag-box {
-    padding: 0.2rem 0.4rem;
+  .cat-links-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .cat-chip {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 999px;
+    text-decoration: none;
+    background: var(--bg-main);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    transition: all 0.15s ease;
+  }
+
+  .cat-chip:hover {
     background: var(--brand-teal);
     color: white;
-    font-weight: 700;
-    font-size: 0.7rem;
-    border-radius: 3px;
-    flex-shrink: 0;
+    border-color: var(--brand-teal);
   }
 </style>
