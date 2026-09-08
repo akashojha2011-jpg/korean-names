@@ -156,7 +156,7 @@ import { KOREAN_NAMES } from '../data/names';
 
   .generator-form {
     display: grid;
-    grid-template-columns: repeat(3, 1fr) auto;
+    grid-template-columns: repeat(3, 1fr);
     gap: 1.25rem;
     align-items: end;
     margin-bottom: 2rem;
@@ -166,6 +166,7 @@ import { KOREAN_NAMES } from '../data/names';
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    min-width: 0;
   }
 
   .form-group label {
@@ -175,6 +176,8 @@ import { KOREAN_NAMES } from '../data/names';
   }
 
   .form-select {
+    width: 100%;
+    min-width: 0;
     padding: 0.75rem 1rem;
     border-radius: var(--radius-sm);
     border: 1px solid var(--border-color);
@@ -182,16 +185,21 @@ import { KOREAN_NAMES } from '../data/names';
     color: var(--text-main);
     font-size: 0.925rem;
     font-weight: 500;
+    text-overflow: ellipsis;
   }
 
   .gen-submit-btn {
+    grid-column: 1 / -1;
+    width: 100%;
     background: var(--brand-teal);
     color: white;
     font-weight: 700;
-    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    padding: 0.85rem 1.5rem;
     border-radius: var(--radius-sm);
     box-shadow: var(--shadow-md);
     transition: transform 0.2s ease, background 0.2s ease;
+    cursor: pointer;
   }
 
   .gen-submit-btn:hover {
