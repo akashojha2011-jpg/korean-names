@@ -54,8 +54,8 @@ const schema = {
           
           <div class="hanja-grid">
             {HANJA_ENTRIES.map((h) => (
-              <a href={`/hanja/${encodeURIComponent(h.character)}`} class="hanja-card">
-                <div class="hanja-character">{h.character}</div>
+              <a href={`/hanja/${encodeURIComponent(h.hangul)}`} class="hanja-card">
+                <div class="hanja-character">{h.hanja}</div>
                 <div class="hanja-hangul">{h.hangul}</div>
                 <div class="hanja-meaning">{h.meaning}</div>
                 <div class="hanja-strokes">{h.strokeCount} strokes</div>
