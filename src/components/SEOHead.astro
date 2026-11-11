@@ -11,14 +11,19 @@ export interface Props {
 const {
   title,
   description,
-  canonicalUrl = Astro.url.href,
+  canonicalUrl,
   ogImage = '/logo.jpg',
   type = 'website',
   jsonLd
 } = Astro.props;
 
-const siteName = 'KoreanNames.info - Korean Names Directory & Meaning';
-const fullTitle = title.includes('KoreanNames') || title.startsWith('Korean Names:') ? title : `${title} | KoreanNames.info`;
+const siteUrl = 'https://www.korean-names.info';
+const cleanPathname = Astro.url.pathname === '/' ? '' : Astro.url.pathname.replace(/\/$/, '');
+const computedCanonical = canonicalUrl || `${siteUrl}${cleanPathname}`;
+const fullOgImage = ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage.startsWith('/') ? '' : '/'}${ogImage}`;
+
+const siteName = 'Korean Names Dictionary & Cultural Resource';
+const fullTitle = title.includes('Korean Names') || title.includes('KoreanNames') ? title : `${title} | Korean Names Dictionary`;
 ---
 
 <!-- Global Metadata -->
@@ -26,7 +31,7 @@ const fullTitle = title.includes('KoreanNames') || title.startsWith('Korean Name
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>{fullTitle}</title>
 <meta name="description" content={description} />
-<link rel="canonical" href={canonicalUrl} />
+<link rel="canonical" href={computedCanonical} />
 <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
 <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
 <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png" />
@@ -42,19 +47,19 @@ const fullTitle = title.includes('KoreanNames') || title.startsWith('Korean Name
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content={type} />
-<meta property="og:url" content={canonicalUrl} />
+<meta property="og:url" content={computedCanonical} />
 <meta property="og:title" content={fullTitle} />
 <meta property="og:description" content={description} />
-<meta property="og:image" content={ogImage} />
+<meta property="og:image" content={fullOgImage} />
 <meta property="og:site_name" content={siteName} />
 <meta property="og:locale" content="en_US" />
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:url" content={canonicalUrl} />
+<meta name="twitter:url" content={computedCanonical} />
 <meta name="twitter:title" content={fullTitle} />
 <meta name="twitter:description" content={description} />
-<meta name="twitter:image" content={ogImage} />
+<meta name="twitter:image" content={fullOgImage} />
 
 <!-- Robots & SEO Crawling -->
 <meta name="robots" content="index, follow" />
