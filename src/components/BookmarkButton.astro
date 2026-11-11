@@ -2,38 +2,46 @@
 export interface Props {
   slug: string;
   nameEnglish: string;
+  size?: 'sm' | 'md';
 }
 
-const { slug, nameEnglish } = Astro.props;
+const { slug, nameEnglish, size = 'md' } = Astro.props;
 ---
 
 <button
-  class="bookmark-btn"
+  type="button"
+  class={`bookmark-star-btn bookmark-${size}`}
   data-slug={slug}
   data-name={nameEnglish}
-  aria-label={`Bookmark ${nameEnglish}`}
+  aria-label={`Save ${nameEnglish} to your favorites`}
   title="Save to favorites"
 >
-  <svg class="star-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+  <svg class="star-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
   </svg>
 </button>
 
 <script>
-  function updateBookmarkStates() {
-    const saved = JSON.parse(localStorage.getItem('hanname-saved-names') || '[]');
-    document.querySelectorAll('.bookmark-btn').forEach((btn) => {
-      const slug = (btn as HTMLElement).dataset.slug;
-      if (slug && saved.includes(slug)) {
-        btn.classList.add('saved');
-      } else {
-        btn.classList.remove('saved');
-      }
-    });
+  function syncBookmarkVisuals() {
+    try {
+      const saved = JSON.parse(localStorage.getItem('hanname-saved-names') || '[]');
+      document.querySelectorAll('.bookmark-star-btn').forEach((btn) => {
+        const slug = (btn as HTMLElement).dataset.slug;
+        if (slug && saved.includes(slug)) {
+          btn.classList.add('bookmarked');
+          btn.setAttribute('title', 'Remove from favorites');
+        } else {
+          btn.classList.remove('bookmarked');
+          btn.setAttribute('title', 'Save to favorites');
+        }
+      });
+    } catch (e) {
+      // Storage unavailable
+    }
   }
 
   document.addEventListener('click', (e) => {
-    const btn = (e.target as HTMLElement)?.closest('.bookmark-btn') as HTMLElement;
+    const btn = (e.target as HTMLElement)?.closest('.bookmark-star-btn') as HTMLElement;
     if (!btn) return;
 
     e.preventDefault();
@@ -42,47 +50,75 @@ const { slug, nameEnglish } = Astro.props;
     const slug = btn.dataset.slug;
     if (!slug) return;
 
-    let saved = JSON.parse(localStorage.getItem('hanname-saved-names') || '[]');
-    if (saved.includes(slug)) {
-      saved = saved.filter((s: string) => s !== slug);
-      btn.classList.remove('saved');
-    } else {
-      saved.push(slug);
-      btn.classList.add('saved');
+    try {
+      let saved = JSON.parse(localStorage.getItem('hanname-saved-names') || '[]');
+      if (saved.includes(slug)) {
+        saved = saved.filter((s: string) => s !== slug);
+        btn.classList.remove('bookmarked');
+        btn.setAttribute('title', 'Save to favorites');
+      } else {
+        saved.push(slug);
+        btn.classList.add('bookmarked');
+        btn.setAttribute('title', 'Remove from favorites');
+      }
+      localStorage.setItem('hanname-saved-names', JSON.stringify(saved));
+      
+      // Update nav count if present
+      const countPill = document.getElementById('nav-fav-count');
+      if (countPill) {
+        if (saved.length > 0) {
+          countPill.textContent = String(saved.length);
+          countPill.style.display = 'inline-flex';
+        } else {
+          countPill.style.display = 'none';
+        }
+      }
+    } catch (err) {
+      console.warn('LocalStorage error', err);
     }
-    localStorage.setItem('hanname-saved-names', JSON.stringify(saved));
   });
 
-  // Initialize on page render
-  updateBookmarkStates();
+  // Sync on initial load
+  syncBookmarkVisuals();
 </script>
 
 <style>
-  .bookmark-btn {
+  .bookmark-star-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     border-radius: var(--radius-full);
-    background: var(--bg-secondary);
+    background: var(--bg-surface);
     border: 1px solid var(--border-color);
     color: var(--text-muted);
-    transition: all 0.2s ease;
+    transition: all 0.15s ease;
   }
 
-  .bookmark-btn:hover {
+  .bookmark-sm {
+    width: 26px;
+    height: 26px;
+  }
+
+  .bookmark-sm .star-icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .bookmark-star-btn:hover {
     color: var(--accent-gold);
     border-color: var(--accent-gold);
+    transform: scale(1.08);
   }
 
-  .bookmark-btn.saved {
+  .bookmark-star-btn.bookmarked {
     background: var(--accent-gold-light);
     color: var(--accent-gold);
     border-color: var(--accent-gold);
   }
 
-  .bookmark-btn.saved .star-icon {
+  .bookmark-star-btn.bookmarked .star-icon {
     fill: currentColor;
   }
 </style>

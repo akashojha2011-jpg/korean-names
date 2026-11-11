@@ -1,159 +1,213 @@
 ---
 ---
 
-<aside class="sidebar-container">
-  <!-- Quick Tools Section -->
-  <div class="sidebar-box">
-    <div class="sidebar-header-teal">⚡ Quick Tools</div>
-    <div class="sidebar-content">
-      <div class="quick-links-list">
-        <a href="/tools/name-generator" class="sidebar-tool-item">
-          <span class="tool-icon">✨</span>
-          <div class="tool-text">
-            <strong class="tool-title">Name Generator</strong>
-            <span class="tool-desc">Generate authentic Korean names</span>
+<aside class="editorial-sidebar" aria-label="Quick directory links">
+  <!-- Quick Tools Card -->
+  <div class="sidebar-card">
+    <div class="sidebar-header">
+      <span class="header-icon" aria-hidden="true">✨</span>
+      <h3 class="header-title">Naming Tools</h3>
+    </div>
+    <div class="sidebar-body">
+      <div class="tools-list">
+        <a href="/tools/name-generator" class="tool-link-item">
+          <div class="tool-icon-circle">🎲</div>
+          <div class="tool-meta">
+            <strong class="tool-name">Name Generator</strong>
+            <span class="tool-desc">Find matching Korean first names</span>
           </div>
         </a>
-        <a href="/tools/favorite-names" class="sidebar-tool-item">
-          <span class="tool-icon">❤️</span>
-          <div class="tool-text">
-            <strong class="tool-title">My Favorites</strong>
-            <span class="tool-desc">Saved favorite names</span>
+        <a href="/tools/favorite-names" class="tool-link-item">
+          <div class="tool-icon-circle">⭐</div>
+          <div class="tool-meta">
+            <strong class="tool-name">Saved Favorites</strong>
+            <span class="tool-desc">Review your bookmarked list</span>
           </div>
         </a>
       </div>
     </div>
   </div>
 
-  <!-- Popular Categories -->
-  <div class="sidebar-box">
-    <div class="sidebar-header-light">🏷️ Browse Categories</div>
-    <div class="sidebar-content">
-      <div class="cat-links-grid">
-        <a href="/gender/girl" class="cat-chip chip-girl">🌸 Girl Names</a>
-        <a href="/gender/boy" class="cat-chip chip-boy">👦 Boy Names</a>
-        <a href="/gender/unisex" class="cat-chip chip-unisex">✳️ Unisex Names</a>
-        <a href="/surname" class="cat-chip chip-surname">👑 Last Names</a>
-        <a href="/hanja" class="cat-chip chip-hanja">🈩 Hanja Directory</a>
-        <a href="/theme/royal" class="cat-chip chip-theme">👑 Royal Names</a>
-        <a href="/theme/modern" class="cat-chip chip-theme">✨ Modern Names</a>
-        <a href="/theme/k-pop" class="cat-chip chip-theme">🎵 K-Pop Names</a>
+  <!-- Browse by Gender & Category -->
+  <div class="sidebar-card">
+    <div class="sidebar-header">
+      <span class="header-icon" aria-hidden="true">🏷️</span>
+      <h3 class="header-title">Explore by Category</h3>
+    </div>
+    <div class="sidebar-body">
+      <div class="category-chips-grid">
+        <a href="/gender/girl" class="cat-pill pill-girl">🌸 Girl Names</a>
+        <a href="/gender/boy" class="cat-pill pill-boy">👦 Boy Names</a>
+        <a href="/gender/unisex" class="cat-pill pill-unisex">✳️ Unisex Names</a>
+        <a href="/surname" class="cat-pill pill-surname">👑 Korean Surnames</a>
+        <a href="/hanja" class="cat-pill pill-hanja">📜 Hanja Dictionary</a>
+        <a href="/theme/wisdom" class="cat-pill pill-theme">💡 Wisdom Names</a>
+        <a href="/theme/nature" class="cat-pill pill-theme">🌱 Nature Names</a>
+        <a href="/theme/grace" class="cat-pill pill-theme">✨ Grace Names</a>
       </div>
     </div>
+  </div>
+
+  <!-- Cultural Note Card -->
+  <div class="sidebar-card cultural-card">
+    <div class="cultural-badge">Korean Culture Note</div>
+    <p class="cultural-text">
+      In Korean naming tradition, given names usually feature two Sino-Korean syllables chosen to balance harmonious virtues and familial generation characters (Dollimja).
+    </p>
+    <a href="/acknowledgments" class="cultural-link">Learn about naming rules &rarr;</a>
   </div>
 </aside>
 
 <style>
-  .sidebar-container {
+  .editorial-sidebar {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: 1.5rem;
   }
 
-  .sidebar-box {
+  .sidebar-card {
     background: var(--bg-surface);
     border: 1px solid var(--border-color);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-xs);
     overflow: hidden;
   }
 
-  .sidebar-header-teal {
-    background: #AEEAEA;
-    color: #1F5A58;
-    font-weight: 700;
-    font-size: 0.875rem;
-    padding: 0.5rem 0.85rem;
-  }
-
-  :global([data-theme="dark"]) .sidebar-header-teal,
-  :global(body.dark-mode) .sidebar-header-teal {
-    background: #134E4A;
-    color: #5EEAD4;
-  }
-
-  .sidebar-header-light {
-    background: #E8F7F7;
-    color: var(--brand-teal-dark);
-    font-weight: 700;
-    font-size: 0.85rem;
-    padding: 0.4rem 0.85rem;
-    border-bottom: 1px solid var(--border-color);
-  }
-
-  :global([data-theme="dark"]) .sidebar-header-light,
-  :global(body.dark-mode) .sidebar-header-light {
-    background: rgba(45, 212, 191, 0.12);
-    color: #2DD4BF;
-    border-bottom-color: var(--border-color);
-  }
-
-  .sidebar-content {
-    padding: 0.75rem;
-  }
-
-  .quick-links-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-  }
-
-  .sidebar-tool-item {
+  .sidebar-header {
     display: flex;
     align-items: center;
-    gap: 0.6rem;
-    padding: 0.5rem;
-    background: var(--bg-main);
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: var(--brand-teal-light);
+    border-bottom: 1px solid var(--brand-teal-border);
+  }
+
+  .header-icon {
+    font-size: 1rem;
+  }
+
+  .header-title {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--brand-teal-deep);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin: 0;
+  }
+
+  .sidebar-body {
+    padding: 1rem;
+  }
+
+  .tools-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .tool-link-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0.6rem;
+    border-radius: var(--radius-sm);
+    transition: background-color 0.15s ease;
+  }
+
+  .tool-link-item:hover {
+    background-color: var(--brand-teal-surface);
+  }
+
+  .tool-icon-circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    background: var(--bg-secondary);
     border: 1px solid var(--border-color);
-    border-radius: 6px;
-    text-decoration: none;
-    transition: transform 0.15s ease, border-color 0.15s ease;
+    border-radius: var(--radius-full);
+    font-size: 1rem;
+    flex-shrink: 0;
   }
 
-  .sidebar-tool-item:hover {
-    transform: translateY(-1px);
-    border-color: var(--brand-teal);
-  }
-
-  .tool-icon {
-    font-size: 1.2rem;
-  }
-
-  .tool-text {
+  .tool-meta {
     display: flex;
     flex-direction: column;
   }
 
-  .tool-title {
-    font-size: 0.825rem;
-    color: var(--text-main);
+  .tool-name {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--brand-teal-deep);
   }
 
   .tool-desc {
-    font-size: 0.725rem;
+    font-size: 0.75rem;
     color: var(--text-muted);
   }
 
-  .cat-links-grid {
+  .category-chips-grid {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.4rem;
+    gap: 0.45rem;
   }
 
-  .cat-chip {
+  .cat-pill {
+    display: inline-flex;
+    align-items: center;
     padding: 0.35rem 0.65rem;
-    font-size: 0.75rem;
+    border-radius: var(--radius-full);
+    font-size: 0.775rem;
     font-weight: 600;
-    border-radius: 999px;
-    text-decoration: none;
-    background: var(--bg-main);
     border: 1px solid var(--border-color);
-    color: var(--text-main);
+    background: var(--bg-surface);
+    color: var(--text-body);
     transition: all 0.15s ease;
   }
 
-  .cat-chip:hover {
-    background: var(--brand-teal);
-    color: white;
+  .cat-pill:hover {
     border-color: var(--brand-teal);
+    background: var(--brand-teal-surface);
+    color: var(--brand-teal-deep);
+  }
+
+  .pill-girl:hover { border-color: var(--gender-girl); color: var(--gender-girl); }
+  .pill-boy:hover { border-color: var(--gender-boy); color: var(--gender-boy); }
+  .pill-unisex:hover { border-color: var(--gender-unisex); color: var(--gender-unisex); }
+
+  .cultural-card {
+    padding: 1.25rem;
+    background: linear-gradient(180deg, var(--bg-surface) 0%, var(--brand-teal-surface) 100%);
+  }
+
+  .cultural-badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--brand-teal-deep);
+    background: var(--brand-teal-light);
+    border: 1px solid var(--brand-teal-border);
+    padding: 0.15rem 0.5rem;
+    border-radius: var(--radius-full);
+    margin-bottom: 0.65rem;
+  }
+
+  .cultural-text {
+    font-size: 0.8125rem;
+    color: var(--text-body);
+    line-height: 1.5;
+    margin-bottom: 0.75rem;
+  }
+
+  .cultural-link {
+    font-size: 0.775rem;
+    font-weight: 700;
+    color: var(--brand-teal-deep);
+  }
+
+  .cultural-link:hover {
+    text-decoration: underline;
   }
 </style>

@@ -9,113 +9,168 @@ export interface Props {
 
 const { name } = Astro.props;
 
+const genderBadgeClass = name.gender === 'boy' ? 'badge-boy' : name.gender === 'girl' ? 'badge-girl' : 'badge-unisex';
 const genderSymbol = name.gender === 'boy' ? '♂' : name.gender === 'girl' ? '♀' : '⚥';
-// Views strictly kept between 10 and 200 for all names as requested
-const viewCount = 10 + (Math.abs((name.popularityRank * 37 + 19) % 191));
-// Realistic variations count (e.g. 10 to 20 variations)
-const variationsCount = Math.floor(8 + (name.alternateHanjaList.length * 2) + ((name.popularityRank * 3) % 9));
 ---
 
 <div class="name-row-item">
-  <!-- Top Row: English Title + Icons + View Count -->
+  <!-- Top Meta & Title Bar -->
   <div class="name-row-header">
     <div class="name-row-title-group">
       <a href={`/name/${name.slug}`} class="name-row-title">{name.english}</a>
-      <span class={`badge badge-${name.gender}`}>{genderSymbol}</span>
+      <span class={`badge ${genderBadgeClass}`}>{genderSymbol}</span>
       <AudioPlayer text={name.hangul} size="sm" />
-      <BookmarkButton slug={name.slug} nameEnglish={name.english} />
+      <BookmarkButton slug={name.slug} nameEnglish={name.english} size="sm" />
     </div>
-    <span class="name-row-views">{viewCount} views</span>
+
+    {name.isTrending && name.popularityRank && name.popularityRank <= 50 && (
+      <span class="rank-tag">Rank #{name.popularityRank}</span>
+    )}
   </div>
 
-  <!-- Main Characters Display & Inline Syllable Meaning Breakdown -->
-  <div class="name-row-characters">
-    <span class="row-hangul">{name.hangul}</span>
-    <span class="row-hanja">{name.hanja}</span>
-    <div class="name-row-meanings">
-      {name.syllables.map((s, idx) => (
-        <span>
-          <strong>{s.hanja}</strong> ({s.hangul}) means "{s.meaning}." {idx < name.syllables.length - 1 ? ' ' : ''}
+  <!-- Korean Characters & Syllable Meaning Breakdown -->
+  <div class="name-row-body">
+    <div class="char-pair">
+      <span class="row-hangul">{name.hangul}</span>
+      {name.hanja && <span class="row-hanja">({name.hanja})</span>}
+    </div>
+
+    <div class="row-syllable-meanings">
+      {name.syllables && name.syllables.map((s, idx) => (
+        <span class="syllable-def-span">
+          <strong class="def-hanja">{s.hanja}</strong> ({s.hangul}) means <em>"{s.meaning}"</em>{idx < name.syllables.length - 1 ? ' · ' : ''}
         </span>
       ))}
     </div>
   </div>
 
-  <!-- Bottom Link -->
-  <a href={`/name/${name.slug}`} class="more-vars-link">
-    {variationsCount} more variations &rarr;
-  </a>
+  <!-- Overall Meaning & Link -->
+  <div class="name-row-footer">
+    <p class="row-overall-meaning">{name.overallMeaning}</p>
+    <a href={`/name/${name.slug}`} class="row-more-link" aria-label={`View full profile for ${name.english}`}>
+      Full Name Profile &rsaquo;
+    </a>
+  </div>
 </div>
 
 <style>
   .name-row-item {
-    padding: 0.9rem 0;
-    border-bottom: 1px dashed var(--border-color);
+    padding: 1.1rem 0;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    transition: background-color 0.15s ease;
+  }
+
+  .name-row-item:hover {
+    background-color: var(--brand-teal-surface);
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    border-radius: var(--radius-sm);
   }
 
   .name-row-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 0.35rem;
+    gap: 0.5rem;
   }
 
   .name-row-title-group {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    flex-wrap: wrap;
   }
 
   .name-row-title {
-    font-size: 1.15rem;
+    font-size: 1.05rem;
     font-weight: 700;
-    color: var(--brand-teal-dark);
+    color: var(--brand-teal-deep);
+    transition: color 0.15s ease;
   }
 
   .name-row-title:hover {
+    color: var(--brand-teal);
     text-decoration: underline;
   }
 
-  .name-row-views {
-    font-size: 0.75rem;
-    color: var(--text-light);
+  .rank-tag {
+    font-size: 0.725rem;
+    font-weight: 700;
+    color: var(--accent-gold);
+    background: var(--accent-gold-light);
+    padding: 0.15rem 0.5rem;
+    border-radius: var(--radius-full);
   }
 
-  .name-row-characters {
+  .name-row-body {
     display: flex;
     align-items: baseline;
-    gap: 0.6rem;
+    gap: 0.85rem;
     flex-wrap: wrap;
+  }
+
+  .char-pair {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.35rem;
   }
 
   .row-hangul {
     font-family: var(--font-korean);
-    font-size: 1.4rem;
+    font-size: 1.35rem;
     font-weight: 900;
     color: var(--text-main);
   }
 
   .row-hanja {
-    font-size: 1.25rem;
-    color: #4A5568;
-    font-weight: 600;
+    font-family: var(--font-korean);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--accent-indigo);
   }
 
-  .name-row-meanings {
+  .row-syllable-meanings {
     font-size: 0.825rem;
+    color: var(--text-body);
+  }
+
+  .syllable-def-span em {
+    font-style: normal;
     color: var(--text-muted);
-    line-height: 1.4;
   }
 
-  .more-vars-link {
-    display: inline-block;
-    font-size: 0.75rem;
-    color: var(--brand-teal-dark);
+  .def-hanja {
+    color: var(--text-main);
+  }
+
+  .name-row-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    font-size: 0.8rem;
+  }
+
+  .row-overall-meaning {
+    color: var(--text-muted);
+    margin: 0;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .row-more-link {
     font-weight: 600;
-    margin-top: 0.25rem;
+    color: var(--brand-teal-deep);
+    white-space: nowrap;
   }
 
-  .more-vars-link:hover {
+  .row-more-link:hover {
+    color: var(--brand-teal);
     text-decoration: underline;
   }
 </style>

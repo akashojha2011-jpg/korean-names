@@ -1,100 +1,180 @@
 ---
-import { KOREAN_NAMES } from '../data/names';
-
 export interface Props {
   placeholder?: string;
   large?: boolean;
+  autofocus?: boolean;
 }
 
-const { placeholder = 'Search Korean names by Hangul (민준), English (Min-jun), Hanja (敏俊), or meaning (wisdom)...', large = false } = Astro.props;
+const {
+  placeholder = 'Search Korean names by Hangul (민준), English (Min-jun), or meaning (wisdom)...',
+  large = false,
+  autofocus = false,
+} = Astro.props;
 ---
 
-<div class={`search-wrapper ${large ? 'search-large' : ''}`}>
+<div class={`search-component-wrapper ${large ? 'search-large' : ''}`} data-search-container>
   <div class="search-input-box">
-    <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <circle cx="11" cy="11" r="8"></circle>
       <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
     </svg>
     <input
-      type="text"
-      id="main-search-input"
+      type="search"
       class="search-input"
       placeholder={placeholder}
       autocomplete="off"
+      spellcheck="false"
+      autofocus={autofocus}
+      aria-label="Search Korean names"
+      aria-expanded="false"
+      aria-autocomplete="list"
+      data-search-input
     />
-    <button id="search-clear-btn" class="clear-btn" aria-label="Clear Search">&times;</button>
+    <button type="button" class="clear-search-btn" aria-label="Clear Search Input" data-clear-btn>&times;</button>
   </div>
 
-  <!-- Search Results Dropdown -->
-  <div id="search-results-overlay" class="results-overlay">
-    <div id="results-container" class="results-container"></div>
+  <!-- Realtime Results Dropdown -->
+  <div class="search-dropdown-menu" data-results-dropdown role="listbox" aria-label="Search suggestions">
+    <div class="results-inner" data-results-container></div>
   </div>
 </div>
 
-<script is:inline define:vars={{ namesList: KOREAN_NAMES }}>
-  const input = document.getElementById('main-search-input');
-  const clearBtn = document.getElementById('search-clear-btn');
-  const overlay = document.getElementById('search-results-overlay');
-  const container = document.getElementById('results-container');
-
-  function renderResults(query) {
-    const q = query.trim().toLowerCase();
-    if (!q) {
-      overlay.classList.remove('active');
-      return;
-    }
-
-    const matches = namesList.filter(item => 
-      item.english.toLowerCase().includes(q) ||
-      item.hangul.includes(q) ||
-      item.hanja.includes(q) ||
-      item.overallMeaning.toLowerCase().includes(q) ||
-      item.slug.includes(q)
-    ).slice(0, 8);
-
-    if (matches.length === 0) {
-      container.innerHTML = `<div class="no-results">No Korean names found matching "${query}". Try searching by gender, theme, or letter!</div>`;
-    } else {
-      container.innerHTML = matches.map(name => `
-        <a href="/name/${name.slug}" class="result-item">
-          <div class="result-left">
-            <span class="result-hangul">${name.hangul}</span>
-            <span class="result-hanja">(${name.hanja})</span>
-            <span class="result-english">${name.english}</span>
-          </div>
-          <div class="result-right">
-            <span class="badge badge-${name.gender}">${name.gender}</span>
-          </div>
-        </a>
-      `).join('');
-    }
-
-    overlay.classList.add('active');
+<script>
+  interface SearchEntry {
+    s: string; // slug
+    e: string; // english
+    h: string; // hangul
+    j: string; // hanja
+    g: string; // gender
+    m: string; // meaning
   }
 
-  input?.addEventListener('input', (e) => renderResults(e.target.value));
+  let cachedIndex: SearchEntry[] | null = null;
+  let isFetching = false;
 
-  clearBtn?.addEventListener('click', () => {
-    if (input) {
+  async function loadSearchIndex(): Promise<SearchEntry[]> {
+    if (cachedIndex) return cachedIndex;
+    if (isFetching) return [];
+
+    isFetching = true;
+    try {
+      const res = await fetch('/search-index.json');
+      if (res.ok) {
+        cachedIndex = await res.json();
+      }
+    } catch (e) {
+      console.warn('Could not load search index', e);
+    } finally {
+      isFetching = false;
+    }
+    return cachedIndex || [];
+  }
+
+  // Initialize search widgets on page
+  document.querySelectorAll('[data-search-container]').forEach((container) => {
+    const input = container.querySelector<HTMLInputElement>('[data-search-input]');
+    const clearBtn = container.querySelector<HTMLButtonElement>('[data-clear-btn]');
+    const dropdown = container.querySelector<HTMLElement>('[data-results-dropdown]');
+    const resultsContainer = container.querySelector<HTMLElement>('[data-results-container]');
+
+    if (!input || !dropdown || !resultsContainer) return;
+
+    // Preload index on user focus
+    input.addEventListener('focus', () => {
+      loadSearchIndex();
+    });
+
+    async function executeSearch(query: string) {
+      const q = query.trim().toLowerCase();
+      if (!q) {
+        dropdown.classList.remove('open');
+        input.setAttribute('aria-expanded', 'false');
+        return;
+      }
+
+      const index = await loadSearchIndex();
+      const matches = index
+        .filter((item) =>
+          item.e.toLowerCase().includes(q) ||
+          item.h.includes(q) ||
+          item.j.includes(q) ||
+          item.m.toLowerCase().includes(q) ||
+          item.s.includes(q)
+        )
+        .slice(0, 8);
+
+      if (matches.length === 0) {
+        resultsContainer.innerHTML = `
+          <div class="no-matches-box">
+            <p>No Korean names found for "<strong>${escapeHtml(query)}</strong>".</p>
+            <span class="search-hint">Try searching by English sound (e.g. "Jun"), Hangul (e.g. "하은"), or meaning (e.g. "Grace").</span>
+          </div>
+        `;
+      } else {
+        resultsContainer.innerHTML = matches
+          .map(
+            (item) => `
+          <a href="/name/${item.s}" class="search-result-row" role="option">
+            <div class="result-char-block">
+              <span class="result-hangul">${item.h}</span>
+              ${item.j ? `<span class="result-hanja">(${item.j})</span>` : ''}
+            </div>
+            <div class="result-detail-block">
+              <div class="result-title-line">
+                <strong class="result-english">${item.e}</strong>
+                <span class="badge badge-${item.g}">${item.g}</span>
+              </div>
+              <p class="result-meaning">${escapeHtml(item.m)}</p>
+            </div>
+          </a>
+        `
+          )
+          .join('');
+      }
+
+      dropdown.classList.add('open');
+      input.setAttribute('aria-expanded', 'true');
+    }
+
+    function escapeHtml(str: string): string {
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    input.addEventListener('input', (e) => {
+      const target = e.target as HTMLInputElement;
+      executeSearch(target.value);
+    });
+
+    clearBtn?.addEventListener('click', () => {
       input.value = '';
-      overlay?.classList.remove('active');
+      dropdown.classList.remove('open');
+      input.setAttribute('aria-expanded', 'false');
       input.focus();
-    }
-  });
+    });
 
-  // Close overlay on click outside
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('.search-wrapper')) {
-      overlay?.classList.remove('active');
-    }
+    // Close on outside click
+    document.addEventListener('click', (e) => {
+      if (!container.contains(e.target as Node)) {
+        dropdown.classList.remove('open');
+        input.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    // Keyboard navigation
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        dropdown.classList.remove('open');
+        input.setAttribute('aria-expanded', 'false');
+      }
+    });
   });
 </script>
 
 <style>
-  .search-wrapper {
+  .search-component-wrapper {
     position: relative;
     width: 100%;
-    max-width: 680px;
+    max-width: 640px;
     margin: 0 auto;
   }
 
@@ -102,19 +182,21 @@ const { placeholder = 'Search Korean names by Hangul (민준), English (Min-jun)
     position: relative;
     display: flex;
     align-items: center;
+    width: 100%;
   }
 
   .search-icon {
     position: absolute;
-    left: 1.25rem;
+    left: 1.15rem;
     color: var(--text-muted);
     pointer-events: none;
   }
 
   .search-input {
     width: 100%;
-    padding: 0.9rem 3rem 0.9rem 3.25rem;
+    padding: 0.85rem 2.85rem 0.85rem 3.15rem;
     font-size: 0.95rem;
+    font-family: inherit;
     border-radius: var(--radius-full);
     border: 2px solid var(--border-color);
     background: var(--bg-surface);
@@ -123,31 +205,41 @@ const { placeholder = 'Search Korean names by Hangul (민준), English (Min-jun)
     transition: all 0.2s ease;
   }
 
-  .search-large .search-input {
-    padding: 1.15rem 3.25rem 1.15rem 3.5rem;
-    font-size: 1.05rem;
-    box-shadow: var(--shadow-md);
+  .search-input::-webkit-search-cancel-button {
+    display: none;
   }
 
   .search-input:focus {
     outline: none;
-    border-color: var(--accent-crimson);
+    border-color: var(--brand-teal);
     box-shadow: var(--shadow-glow);
   }
 
-  .clear-btn {
-    position: absolute;
-    right: 1.25rem;
-    font-size: 1.5rem;
-    color: var(--text-muted);
-    display: none;
+  .search-large .search-input {
+    padding: 1.1rem 3.25rem 1.1rem 3.5rem;
+    font-size: 1.05rem;
+    box-shadow: var(--shadow-md);
   }
 
-  .search-input:not(:placeholder-shown) ~ .clear-btn {
+  .clear-search-btn {
+    position: absolute;
+    right: 1rem;
+    font-size: 1.4rem;
+    color: var(--text-light);
+    line-height: 1;
+    display: none;
+    padding: 0.2rem;
+  }
+
+  .search-input:not(:placeholder-shown) ~ .clear-search-btn {
     display: block;
   }
 
-  .results-overlay {
+  .clear-search-btn:hover {
+    color: var(--text-main);
+  }
+
+  .search-dropdown-menu {
     display: none;
     position: absolute;
     top: calc(100% + 8px);
@@ -158,35 +250,42 @@ const { placeholder = 'Search Korean names by Hangul (민준), English (Min-jun)
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-lg);
-    max-height: 380px;
+    max-height: 420px;
     overflow-y: auto;
   }
 
-  .results-overlay.active {
+  .search-dropdown-menu.open {
     display: block;
   }
 
-  .results-container {
+  .results-inner {
     padding: 0.5rem;
   }
 
-  :global(.result-item) {
+  :global(.search-result-row) {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 0.75rem 1rem;
+    gap: 1rem;
+    padding: 0.75rem 0.85rem;
     border-radius: var(--radius-sm);
-    transition: background 0.15s ease;
+    text-decoration: none;
+    transition: background-color 0.15s ease;
+    border-bottom: 1px solid var(--border-subtle);
   }
 
-  :global(.result-item:hover) {
-    background: var(--bg-secondary);
+  :global(.search-result-row:last-child) {
+    border-bottom: none;
   }
 
-  :global(.result-left) {
+  :global(.search-result-row:hover) {
+    background-color: var(--brand-teal-surface);
+  }
+
+  :global(.result-char-block) {
     display: flex;
     align-items: baseline;
-    gap: 0.6rem;
+    gap: 0.35rem;
+    min-width: 85px;
   }
 
   :global(.result-hangul) {
@@ -197,20 +296,49 @@ const { placeholder = 'Search Korean names by Hangul (민준), English (Min-jun)
   }
 
   :global(.result-hanja) {
+    font-family: var(--font-korean);
     font-size: 0.9rem;
+    font-weight: 700;
     color: var(--accent-indigo);
   }
 
-  :global(.result-english) {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--text-muted);
+  :global(.result-detail-block) {
+    flex: 1;
+    min-width: 0;
   }
 
-  :global(.no-results) {
-    padding: 1.25rem;
-    text-align: center;
-    font-size: 0.9rem;
+  :global(.result-title-line) {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.2rem;
+  }
+
+  :global(.result-english) {
+    font-size: 0.925rem;
+    color: var(--brand-teal-deep);
+  }
+
+  :global(.result-meaning) {
+    font-size: 0.775rem;
     color: var(--text-muted);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  :global(.no-matches-box) {
+    padding: 1.75rem 1rem;
+    text-align: center;
+    color: var(--text-body);
+    font-size: 0.9rem;
+  }
+
+  :global(.search-hint) {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 0.35rem;
   }
 </style>
