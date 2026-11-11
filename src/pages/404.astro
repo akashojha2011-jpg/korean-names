@@ -3,27 +3,114 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
 <BaseLayout
-  title="404 - Page Not Found"
-  description="The requested Korean name page could not be found."
+  title="404 - Page Not Found | KoreanNames.info"
+  description="The requested Korean name or dictionary page could not be found."
 >
   <div class="container page-wrapper text-center">
-    <div class="card error-box">
-      <div class="error-code">404</div>
-      <h1 class="error-title">Page Not Found (페이지를 찾을 수 없습니다)</h1>
-      <p class="error-desc">We couldn't find the Korean name page you were looking for.</p>
+    <div class="error-box">
+      <span class="error-badge">404 Error</span>
+      <h1 class="error-title">Page Not Found</h1>
+      <p class="error-hangul">페이지를 찾을 수 없습니다</p>
+      <p class="error-desc">
+        The Korean name, Hanja character, or directory category you requested could not be located or may have moved.
+      </p>
       <div class="error-actions">
-        <a href="/" class="highlight-link">Return to Homepage &rarr;</a>
-        <a href="/tools/name-generator" class="secondary-action-btn">Use Name Finder Tool</a>
+        <a href="/" class="primary-action-btn">Return to Homepage &rarr;</a>
+        <a href="/tools/name-generator" class="secondary-action-btn">Use Name Generator</a>
       </div>
     </div>
   </div>
 </BaseLayout>
 
 <style>
-  .page-wrapper { padding: 5rem 0; text-align: center; }
-  .error-box { max-width: 600px; margin: 0 auto; padding: 4rem 2rem; }
-  .error-code { font-size: 5rem; font-weight: 900; color: var(--accent-crimson); line-height: 1; margin-bottom: 0.5rem; }
-  .error-title { font-size: 1.6rem; margin-bottom: 1rem; }
-  .error-desc { color: var(--text-muted); margin-bottom: 2rem; }
-  .error-actions { display: flex; justify-content: center; gap: 1rem; }
+  .page-wrapper {
+    padding: 5rem 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .error-box {
+    max-width: 580px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 3.5rem 2rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .error-badge {
+    display: inline-block;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: var(--accent-crimson);
+    background: var(--accent-crimson-light);
+    padding: 0.25rem 0.85rem;
+    border-radius: var(--radius-full);
+    margin-bottom: 1rem;
+  }
+
+  .error-title {
+    font-size: 2.25rem;
+    font-weight: 800;
+    color: var(--text-main);
+    letter-spacing: -0.02em;
+    margin-bottom: 0.25rem;
+  }
+
+  .error-hangul {
+    font-family: var(--font-hangul);
+    font-size: 1.1rem;
+    color: var(--brand-teal-deep);
+    font-weight: 700;
+    margin-bottom: 1.25rem;
+  }
+
+  .error-desc {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 2rem;
+  }
+
+  .error-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .primary-action-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.75rem 1.4rem;
+    background: var(--brand-teal);
+    color: white;
+    font-weight: 700;
+    font-size: 0.9rem;
+    border-radius: var(--radius-sm);
+    transition: background 0.15s ease;
+  }
+
+  .primary-action-btn:hover {
+    background: var(--brand-teal-dark);
+  }
+
+  .secondary-action-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.75rem 1.25rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    font-weight: 600;
+    font-size: 0.9rem;
+    border-radius: var(--radius-sm);
+    transition: border-color 0.15s ease;
+  }
+
+  .secondary-action-btn:hover {
+    border-color: var(--brand-teal);
+    color: var(--brand-teal-deep);
+  }
 </style>

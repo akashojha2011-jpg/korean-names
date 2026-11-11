@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PaginatedNameList from '../../components/PaginatedNameList.astro';
 import Sidebar from '../../components/Sidebar.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
 import FAQSection from '../../components/FAQSection.astro';
 import { THEME_CATEGORIES } from '../../data/categories';
 import { KOREAN_NAMES } from '../../data/names';
@@ -19,52 +20,167 @@ export interface Props {
 }
 
 const { category } = Astro.props;
-const namesInTheme = KOREAN_NAMES.filter(n => n.themes.some(t => t.toLowerCase() === category.slug.toLowerCase()));
+const namesInTheme = KOREAN_NAMES.filter(n =>
+  n.themes && n.themes.some(t => t.toLowerCase() === category.slug.toLowerCase())
+);
 
 const themeFaqs = [
   {
-    question: `What makes a Korean name fit the "${category.name}" theme?`,
-    answer: `Names in this category feature Hanja characters or native Korean words representing ${category.description.toLowerCase()}`
+    question: `What makes a Korean name belong to the "${category.name}" theme?`,
+    answer: `Names in this collection feature Sino-Korean Hanja characters or native Korean words representing ${category.description.toLowerCase()}.`
+  },
+  {
+    question: `Are names in this theme suitable for both boys and girls?`,
+    answer: `Many thematic virtues in Korean culture (such as wisdom, nature, and brightness) are gender-neutral and can be given to either boys or girls depending on the specific character pairing.`
   }
 ];
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Themes' },
+  { label: `${category.name}` }
+];
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  'name': `Korean Names Meaning ${category.name}`,
+  'description': category.seoDescription,
+  'url': `https://www.korean-names.info/theme/${category.slug}`
+};
 ---
 
 <BaseLayout
   title={`Korean Names Meaning "${category.name}" (${category.koreanName}) - Directory`}
   description={category.seoDescription}
+  jsonLd={schema}
 >
   <div class="container page-wrapper">
-    <nav class="comp-breadcrumbs">
-      <a href="/">Home</a> &rsaquo;
-      <span>Themes</span> &rsaquo;
-      <span class="current">{category.name}</span>
-    </nav>
+    <Breadcrumb items={breadcrumbs} />
 
     <div class="content-layout">
+      <!-- Main Content Column -->
       <main class="main-column">
-        <header class="group-header">
-          <h1 class="group-title">
-            {category.icon} {category.name} Names <span class="count-badge">({namesInTheme.length.toLocaleString()})</span>
+        <header class="theme-header-card">
+          <span class="theme-korean-pill">{category.koreanName}</span>
+          <h1 class="theme-main-title">
+            <span class="theme-icon" aria-hidden="true">{category.icon}</span> {category.name} Korean Names
           </h1>
-          <p class="category-sub">{category.seoDescription}</p>
+          <p class="theme-desc">{category.seoDescription}</p>
         </header>
 
-        <!-- Paginated Name List -->
-        <PaginatedNameList names={namesInTheme} />
+        <!-- Results Header -->
+        <div class="directory-results-bar">
+          <span class="results-count-text">
+            Showing <strong>{namesInTheme.length}</strong> Korean names representing {category.name.toLowerCase()}
+          </span>
+        </div>
 
-        <FAQSection faqs={themeFaqs} title={`FAQ for ${category.name} Korean Names`} />
+        <!-- Name List -->
+        {namesInTheme.length === 0 ? (
+          <div class="empty-state-box">
+            <h3>No names currently listed under "{category.name}"</h3>
+            <p>Explore our <a href="/gender/boy">Boy Names</a> or <a href="/gender/girl">Girl Names</a> directories.</p>
+          </div>
+        ) : (
+          <PaginatedNameList names={namesInTheme} />
+        )}
+
+        <!-- FAQ Section -->
+        <FAQSection faqs={themeFaqs} title={`FAQ: ${category.name} Korean Names`} />
       </main>
 
-      <Sidebar />
+      <!-- Sidebar -->
+      <aside class="sidebar-container">
+        <Sidebar />
+      </aside>
     </div>
   </div>
 </BaseLayout>
 
 <style>
-  .page-wrapper { padding-top: 1rem; padding-bottom: 4rem; }
-  .comp-breadcrumbs { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.25rem; display: flex; gap: 0.4rem; }
-  .group-header { margin-bottom: 1.25rem; }
-  .group-title { font-size: 1.8rem; color: var(--text-main); }
-  .category-sub { font-size: 0.95rem; color: var(--text-muted); margin-top: 0.25rem; }
-  .count-badge { font-size: 1.1rem; color: var(--text-muted); font-weight: 400; }
+  .page-wrapper {
+    padding-top: 1rem;
+    padding-bottom: 4rem;
+  }
+
+  .theme-header-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 2.25rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow-xs);
+  }
+
+  .theme-korean-pill {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--brand-teal-deep);
+    background: var(--brand-teal-light);
+    border: 1px solid var(--brand-teal-border);
+    padding: 0.2rem 0.65rem;
+    border-radius: var(--radius-full);
+    margin-bottom: 0.65rem;
+  }
+
+  .theme-main-title {
+    font-size: 2.25rem;
+    font-weight: 800;
+    color: var(--text-main);
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+  }
+
+  .theme-icon {
+    font-size: 2rem;
+  }
+
+  .theme-desc {
+    font-size: 1rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .directory-results-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--brand-teal);
+    margin-bottom: 1.25rem;
+  }
+
+  .results-count-text {
+    font-size: 0.9rem;
+    color: var(--text-body);
+  }
+
+  .results-count-text strong {
+    color: var(--brand-teal-deep);
+  }
+
+  .empty-state-box {
+    padding: 3rem;
+    text-align: center;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-muted);
+  }
+
+  .empty-state-box a {
+    color: var(--brand-teal-deep);
+    font-weight: 700;
+  }
+
+  @media (max-width: 768px) {
+    .theme-header-card { padding: 1.5rem; }
+    .theme-main-title { font-size: 1.75rem; }
+  }
 </style>

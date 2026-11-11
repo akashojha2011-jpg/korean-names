@@ -2,17 +2,22 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SearchBar from '../../components/SearchBar.astro';
 import Sidebar from '../../components/Sidebar.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
 import FAQSection from '../../components/FAQSection.astro';
 import { HANJA_ENTRIES } from '../../data/hanja';
 
 const hanjaFaqs = [
   {
     question: 'Why are Hanja characters important in Korean baby names?',
-    answer: 'While everyday Korean is written in the Hangul alphabet (한글), birth certificates in South Korea register exact Hanja logograms (漢字) to bestow auspicious meanings like wisdom, beauty, strength, and integrity.'
+    answer: 'While modern everyday Korean is written phonetically in the Hangul alphabet (한글), birth records in South Korea register exact Hanja logograms (漢字) chosen to bestow specific auspicious virtues like wisdom (智), grace (恩), beauty (美), and noble character (俊).'
   },
   {
-    question: 'How many Hanja characters are approved for human names?',
-    answer: 'The Supreme Court of South Korea maintains the official "Registry of Approved Hanja for Human Names" (인명용 한자표), which currently includes over 8,000 logograms.'
+    question: 'How many Hanja characters are approved for human names in South Korea?',
+    answer: 'The Supreme Court of South Korea maintains the official "Registry of Approved Hanja for Human Names" (대법원 인명용 한자표). Parents must register characters from this approved legal registry to ensure proper civil record-keeping.'
+  },
+  {
+    question: 'Can a Korean name have no Hanja characters?',
+    answer: 'Yes. Pure Korean names (순우리말 이름) such as Haneul (Sky), Bada (Ocean), Areum (Beauty), and Bora (Purple) are written only in Hangul with no corresponding Chinese characters.'
   }
 ];
 
@@ -20,151 +25,203 @@ const schema = {
   '@context': 'https://schema.org',
   '@type': 'CollectionPage',
   'name': 'Sino-Korean Hanja Directory - Meanings, Stroke Counts & Name Combinations',
-  'url': 'https://korean-names.info/hanja'
+  'url': 'https://www.korean-names.info/hanja'
 };
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Hanja Dictionary' }
+];
 ---
 
 <BaseLayout
-  title="Sino-Korean Hanja Directory - Meanings, Stroke Counts & Name Combinations"
-  description="Explore the complete Sino-Korean Hanja dictionary for baby names. Search Hanja logograms, stroke counts, Korean readings, and positive name meanings."
+  title="Sino-Korean Hanja Directory - Meanings, Stroke Counts & Registry"
+  description="Explore approved Sino-Korean Hanja characters for baby names. Search Hanja logograms, stroke counts, Korean Hangul readings, and positive naming virtues."
   jsonLd={schema}
 >
-  <div class="container margin-top-lg">
-    <!-- Header Section -->
-    <header class="page-header">
-      <div class="breadcrumb">
-        <a href="/">Home</a> &rsaquo; <span>Hanja Directory</span>
-      </div>
+  <div class="container page-wrapper">
+    <Breadcrumb items={breadcrumbs} />
+
+    <!-- Page Header -->
+    <header class="page-header-box">
+      <span class="category-badge">인명용 한자 · Supreme Court Approved</span>
       <h1 class="page-title">Sino-Korean Hanja (漢字) Directory</h1>
       <p class="page-description">
-        Search Sino-Korean logograms used in birth registration, complete with Hangul readings, stroke counts, radical origins, and auspicious name meanings.
+        Explore official logograms approved by the Supreme Court of South Korea for civil birth registration. Inspect Korean readings, stroke counts, radical origins, and virtue meanings.
       </p>
 
       <div class="search-box-wrapper">
-        <SearchBar placeholder="Search Hanja logograms by character (敏), Hangul (민), or meaning (clever)..." />
+        <SearchBar placeholder="Search Hanja by character (敏), Hangul (민), or meaning (clever)..." />
       </div>
     </header>
 
     <!-- Main Content Layout -->
     <div class="content-layout">
       <main class="main-column">
-        <!-- Hanja Grid -->
-        <section class="section-group">
-          <h2 class="section-heading">📜 Approved Sino-Korean Hanja Entries</h2>
-          
+        <!-- Hanja Grid Section -->
+        <section class="hanja-grid-section">
+          <div class="grid-header">
+            <h2 class="section-heading">Featured Naming Hanja Logograms</h2>
+            <span class="count-tag">{HANJA_ENTRIES.length} entries</span>
+          </div>
+
           <div class="hanja-grid">
             {HANJA_ENTRIES.map((h) => (
-              <a href={`/hanja/${encodeURIComponent(h.hangul)}`} class="hanja-card">
-                <div class="hanja-character">{h.hanja}</div>
-                <div class="hanja-hangul">{h.hangul}</div>
-                <div class="hanja-meaning">{h.meaning}</div>
-                <div class="hanja-strokes">{h.strokeCount} strokes</div>
+              <a href={`/hanja/${encodeURIComponent(h.hangul)}`} class="hanja-entry-card" aria-label={`${h.hangul} ${h.hanja} - ${h.meaning}`}>
+                <span class="hanja-char-lead">{h.hanja}</span>
+                <span class="hangul-reading-label">{h.hangul}</span>
+                <span class="hanja-meaning-text">{h.meaning}</span>
+                <span class="hanja-stroke-badge">{h.strokeCount} strokes · {h.radical}</span>
               </a>
             ))}
           </div>
         </section>
 
         <!-- FAQ Section -->
-        <FAQSection faqs={hanjaFaqs} />
+        <FAQSection faqs={hanjaFaqs} title="Hanja & Korean Naming FAQ" renderSchema={true} />
       </main>
 
       <!-- Sidebar -->
-      <Sidebar />
+      <aside class="sidebar-container">
+        <Sidebar />
+      </aside>
     </div>
   </div>
 </BaseLayout>
 
 <style>
-  .margin-top-lg { margin-top: 2rem; }
+  .page-wrapper {
+    padding-top: 1rem;
+    padding-bottom: 4rem;
+  }
 
-  .page-header {
-    background: #FFF;
-    padding: 2rem;
+  .page-header-box {
+    background: var(--bg-surface);
+    padding: 2.5rem;
     border: 1px solid var(--border-color);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-xs);
     margin-bottom: 2rem;
   }
 
-  .breadcrumb {
-    font-size: 0.85rem;
-    color: var(--text-muted);
+  .category-badge {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--brand-teal-deep);
+    background: var(--brand-teal-light);
+    border: 1px solid var(--brand-teal-border);
+    padding: 0.2rem 0.65rem;
+    border-radius: var(--radius-full);
     margin-bottom: 0.75rem;
   }
 
   .page-title {
-    font-size: 2.2rem;
-    color: var(--brand-teal-dark);
+    font-size: 2.25rem;
+    font-weight: 800;
+    color: var(--text-main);
+    letter-spacing: -0.02em;
     margin-bottom: 0.5rem;
   }
 
   .page-description {
-    font-size: 1rem;
+    font-size: 1.05rem;
     color: var(--text-muted);
     line-height: 1.6;
-    margin-bottom: 1.5rem;
+    max-width: 720px;
+    margin-bottom: 1.75rem;
   }
 
   .search-box-wrapper {
-    max-width: 550px;
+    max-width: 580px;
+  }
+
+  .grid-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
   }
 
   .section-heading {
     font-size: 1.4rem;
     color: var(--text-main);
-    margin-bottom: 1.25rem;
+    margin: 0;
+  }
+
+  .count-tag {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--brand-teal-deep);
+    background: var(--brand-teal-light);
+    padding: 0.2rem 0.65rem;
+    border-radius: var(--radius-full);
   }
 
   .hanja-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 1rem;
   }
 
-  .hanja-card {
-    background: #FFF;
+  .hanja-entry-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: var(--bg-surface);
     border: 1px solid var(--border-color);
-    border-radius: var(--radius-sm);
-    padding: 1.25rem 0.85rem;
+    border-radius: var(--radius-md);
+    padding: 1.5rem 1rem;
     text-align: center;
-    transition: all 0.2s ease;
-
-    &:hover {
-      border-color: var(--brand-teal);
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-sm);
-      background: #F0FAF9;
-    }
+    box-shadow: var(--shadow-xs);
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
   }
 
-  .hanja-character {
-    font-size: 2.6rem;
-    font-weight: 700;
-    color: var(--brand-teal-dark);
-    line-height: 1;
-    margin-bottom: 0.25rem;
+  .hanja-entry-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--brand-teal);
+    background: var(--brand-teal-surface);
+    box-shadow: var(--shadow-sm);
   }
 
-  .hanja-hangul {
+  .hanja-char-lead {
     font-family: var(--font-korean);
-    font-size: 1.1rem;
+    font-size: 2.85rem;
+    font-weight: 900;
+    color: var(--accent-indigo);
+    line-height: 1;
+    margin-bottom: 0.35rem;
+  }
+
+  .hangul-reading-label {
+    font-family: var(--font-hangul);
+    font-size: 1.15rem;
     font-weight: 800;
     color: var(--text-main);
+    margin-bottom: 0.35rem;
   }
 
-  .hanja-meaning {
+  .hanja-meaning-text {
     font-size: 0.775rem;
     color: var(--text-muted);
-    margin: 0.35rem 0;
-    line-height: 1.3;
+    line-height: 1.35;
+    margin-bottom: 0.75rem;
+    flex: 1 0 auto;
   }
 
-  .hanja-strokes {
+  .hanja-stroke-badge {
     font-size: 0.7rem;
-    color: var(--brand-teal-dark);
-    font-weight: 700;
-    background: #E0F7F7;
-    padding: 0.15rem 0.4rem;
-    border-radius: 4px;
-    display: inline-block;
+    font-weight: 600;
+    color: var(--brand-teal-deep);
+    background: var(--brand-teal-light);
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--radius-xs);
+    white-space: nowrap;
+  }
+
+  @media (max-width: 768px) {
+    .page-header-box { padding: 1.5rem; }
+    .page-title { font-size: 1.85rem; }
+    .hanja-grid { grid-template-columns: repeat(2, 1fr); }
   }
 </style>

@@ -1,5 +1,6 @@
 ---
 import type { KoreanName } from '../types/name';
+import NameRowItem from './NameRowItem.astro';
 
 export interface Props {
   names: KoreanName[];
@@ -14,42 +15,10 @@ const totalPages = Math.ceil(names.length / pageSize);
   <!-- Name Rows Container -->
   <div id="paginated-list-container" class="name-rows-container">
     {names.map((name, index) => {
-      const genderSymbol = name.gender === 'boy' ? '♂' : name.gender === 'girl' ? '♀' : '⚥';
-      const viewCount = 10 + (Math.abs((name.popularityRank * 37 + 19) % 191));
-      const variationsCount = Math.floor(8 + (name.alternateHanjaList.length * 2) + ((name.popularityRank * 3) % 9));
       const pageNum = Math.floor(index / pageSize) + 1;
-
       return (
-        <div class="name-row-item paginated-item" data-page={pageNum} style={pageNum > 1 ? 'display: none;' : ''}>
-          <div class="name-row-header">
-            <div class="name-row-title-group">
-              <a href={`/name/${name.slug}`} class="name-row-title">{name.english}</a>
-              <span class={`badge badge-${name.gender}`}>{genderSymbol}</span>
-              <button class="audio-btn audio-btn-sm" data-speech-text={name.hangul} aria-label={`Listen to ${name.hangul}`}>🔊</button>
-              <button class="bookmark-btn" data-slug={name.slug} data-name={name.english} aria-label={`Save ${name.english}`}>
-                <svg class="star-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                </svg>
-              </button>
-            </div>
-            <span class="name-row-views">{viewCount} views</span>
-          </div>
-
-          <div class="name-row-characters">
-            <span class="row-hangul">{name.hangul}</span>
-            <span class="row-hanja">{name.hanja}</span>
-            <div class="name-row-meanings">
-              {name.syllables.map((s, idx) => (
-                <span>
-                  <strong>{s.hanja}</strong> ({s.hangul}) means "{s.meaning}." {idx < name.syllables.length - 1 ? ' ' : ''}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          <a href={`/name/${name.slug}`} class="more-vars-link">
-            {variationsCount} more variations &rsaquo;
-          </a>
+        <div class="paginated-item" data-page={pageNum} style={pageNum > 1 ? 'display: none;' : ''}>
+          <NameRowItem name={name} />
         </div>
       );
     })}
@@ -57,14 +26,17 @@ const totalPages = Math.ceil(names.length / pageSize);
 
   <!-- Numbered Pagination Controls -->
   {totalPages > 1 && (
-    <nav class="pagination-controls" aria-label="Name list pagination">
-      <button id="pg-prev-btn" class="pg-btn" disabled>&larr; Prev</button>
+    <nav class="pagination-controls" aria-label="Directory pagination">
+      <button id="pg-prev-btn" class="pg-btn" disabled aria-label="Previous Page">&larr; Previous</button>
       <div id="pg-numbers-box" class="pg-numbers-box">
-        {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-          <button class={`pg-num-btn ${p === 1 ? 'active' : ''}`} data-page-target={p}>{p}</button>
+        {Array.from({ length: Math.min(totalPages, 8) }, (_, i) => i + 1).map((p) => (
+          <button class={`pg-num-btn ${p === 1 ? 'active' : ''}`} data-page-target={p} aria-label={`Go to page ${p}`}>
+            {p}
+          </button>
         ))}
+        {totalPages > 8 && <span class="pg-ellipsis" aria-hidden="true">&hellip;</span>}
       </div>
-      <button id="pg-next-btn" class="pg-btn">Next &rarr;</button>
+      <button id="pg-next-btn" class="pg-btn" aria-label="Next Page">Next &rarr;</button>
     </nav>
   )}
 </div>
@@ -93,7 +65,6 @@ const totalPages = Math.ceil(names.length / pageSize);
     if (prevBtn) prevBtn.disabled = currentPage === 1;
     if (nextBtn) nextBtn.disabled = currentPage === totalPagesCount;
 
-    // Scroll to top of list smoothly
     document.getElementById('paginated-list-container')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
@@ -113,6 +84,11 @@ const totalPages = Math.ceil(names.length / pageSize);
     width: 100%;
   }
 
+  .name-rows-container {
+    display: flex;
+    flex-direction: column;
+  }
+
   .pagination-controls {
     display: flex;
     align-items: center;
@@ -124,11 +100,11 @@ const totalPages = Math.ceil(names.length / pageSize);
   }
 
   .pg-btn {
-    padding: 0.45rem 0.9rem;
+    padding: 0.45rem 0.95rem;
     background: var(--bg-surface);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-sm);
-    color: var(--brand-teal-dark);
+    color: var(--brand-teal-deep);
     font-weight: 700;
     font-size: 0.85rem;
     cursor: pointer;
@@ -148,30 +124,40 @@ const totalPages = Math.ceil(names.length / pageSize);
 
   .pg-numbers-box {
     display: flex;
+    align-items: center;
     gap: 0.35rem;
   }
 
   .pg-num-btn {
-    width: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 34px;
     height: 34px;
     border-radius: var(--radius-sm);
     border: 1px solid var(--border-color);
     background: var(--bg-surface);
-    color: var(--text-main);
+    color: var(--text-body);
     font-weight: 700;
     font-size: 0.85rem;
     cursor: pointer;
     transition: all 0.15s ease;
   }
 
-  .pg-num-btn:hover {
+  .pg-num-btn:hover:not(.active) {
     border-color: var(--brand-teal);
-    color: var(--brand-teal-dark);
+    color: var(--brand-teal-deep);
   }
 
   .pg-num-btn.active {
     background: var(--brand-teal);
     color: white;
     border-color: var(--brand-teal);
+  }
+
+  .pg-ellipsis {
+    color: var(--text-muted);
+    font-weight: 700;
+    padding: 0 0.25rem;
   }
 </style>

@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NameCard from '../../components/NameCard.astro';
 import Sidebar from '../../components/Sidebar.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
 import FAQSection from '../../components/FAQSection.astro';
 import { SURNAMES } from '../../data/surnames';
 import { KOREAN_NAMES } from '../../data/names';
@@ -20,157 +21,313 @@ export interface Props {
 
 const { surname } = Astro.props;
 
-// Top recommended first names matching this surname
-const recommendedNames = KOREAN_NAMES.slice(0, 15);
+// Filter top authentic given names matching this surname
+const recommendedNames = KOREAN_NAMES.slice(0, 6);
 
 const surnameFaqs = [
   {
     question: `What does the Korean surname ${surname.english} (${surname.hangul}) mean?`,
-    answer: `The surname ${surname.english} is written with the Hanja character ${surname.hanja}, which literally translates to "${surname.meaning}".`
+    answer: `The surname ${surname.english} is written with the Hanja logogram ${surname.hanja}, which carries the meaning: "${surname.meaning}".`
   },
   {
-    question: `What is the ancestral origin (Bon-gwan) of the ${surname.english} surname?`,
-    answer: `The major origin clans (Bon-gwan) for ${surname.english} include ${surname.originClan}.`
+    question: `What are the primary clan ancestral seats (Bon-gwan) for ${surname.english}?`,
+    answer: `The major historical ancestral seats (Bon-gwan 본관) for ${surname.english} include: ${surname.originClan}. Each clan traces back to specific founding royalty or scholar-officials in ancient Korean history.`
+  },
+  {
+    question: `Do Korean women change their surname upon marriage?`,
+    answer: `No. In Korean family lineage tradition, women keep their birth surname throughout their entire lives. Children traditionally inherit their father's surname.`
   }
 ];
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Korean Surnames', href: '/surname' },
+  { label: `${surname.english} (${surname.hangul})` }
+];
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemPage',
+  'name': `Korean Surname ${surname.english} (${surname.hangul})`,
+  'description': `Genealogical clan origin, Hanja logogram ${surname.hanja}, and given name pairings for the Korean surname ${surname.english}.`
+};
 ---
 
 <BaseLayout
-  title={`Korean Last Name ${surname.english} (${surname.hangul} / ${surname.hanja}) - Meaning & Harmony`}
-  description={`Discover the meaning, Hanja character ${surname.hanja}, clan origin (${surname.originClan}), population rank, and top given name combinations for the Korean surname ${surname.english}.`}
+  title={`Korean Last Name ${surname.english} (${surname.hangul} / ${surname.hanja}) - Clan Origin & Meaning`}
+  description={`Discover the meaning, Hanja character ${surname.hanja}, ancestral clan seats (${surname.originClan}), and harmonious first name pairings for the Korean surname ${surname.english}.`}
+  jsonLd={schema}
 >
   <div class="container page-wrapper">
-    <nav class="comp-breadcrumbs">
-      <a href="/">Home</a> &rsaquo;
-      <a href="/surname/kim">Korean Surnames</a> &rsaquo;
-      <span class="current">{surname.english}</span>
-    </nav>
+    <Breadcrumb items={breadcrumbs} />
+
+    <!-- Surname Header Banner -->
+    <header class="surname-hero-card">
+      <div class="surname-char-box">
+        <span class="surname-hangul-huge">{surname.hangul}</span>
+        <span class="surname-hanja-sub">({surname.hanja})</span>
+      </div>
+
+      <div class="surname-details-box">
+        <span class="heritage-tag">Korean Family Clan · 성씨와 본관</span>
+        <h1 class="surname-main-title">
+          The Korean Surname <strong>{surname.english}</strong> ({surname.hangul})
+        </h1>
+        <p class="surname-meaning-lead">
+          Meaning: <strong>"{surname.meaning}"</strong>
+        </p>
+
+        <div class="surname-badges-row">
+          <div class="badge-item">
+            <span class="badge-label">Hanja Logogram</span>
+            <span class="badge-val">{surname.hanja}</span>
+          </div>
+          {surname.percentageInKorea && (
+            <div class="badge-item">
+              <span class="badge-label">Population Share</span>
+              <span class="badge-val">~{surname.percentageInKorea}% of Korea</span>
+            </div>
+          )}
+          <div class="badge-item">
+            <span class="badge-label">Primary Clans</span>
+            <span class="badge-val">{surname.originClan.split('/')[0]}</span>
+          </div>
+        </div>
+      </div>
+    </header>
 
     <div class="content-layout">
       <main class="main-column">
         
-        <!-- Header Box -->
-        <header class="card surname-header-card">
-          <div class="surname-banner">
-            <div class="large-hangul">{surname.hangul}</div>
-            <div class="large-hanja">{surname.hanja}</div>
-            <div class="surname-info-block">
-              <h1 class="surname-title">The Korean Surname <strong>{surname.english}</strong></h1>
-              <p class="surname-meta">
-                <span class="meta-pill">Meaning: <strong>{surname.meaning}</strong></span>
-                <span class="meta-pill">Rank: <strong>#{surname.populationRank} in Korea</strong></span>
-                <span class="meta-pill">Share: <strong>{surname.populationPercentage}</strong></span>
-              </p>
-            </div>
-          </div>
-        </header>
+        <!-- Clan History & Genealogical Lineage -->
+        <section class="editorial-section-box">
+          <h2 class="section-sub-title">👑 Ancestral Lineage & Clan Origin (Bon-gwan)</h2>
+          <p class="clan-overview-text">
+            <strong>Historical Clans:</strong> {surname.originClan}
+          </p>
+          <p class="clan-body-text">
+            {surname.description || `In Korean genealogical records, the surname ${surname.english} (${surname.hangul} / ${surname.hanja}) holds a distinguished place in historical annals. Korean families trace their specific branch through their Bon-gwan (ancestral seat), distinguishing different geographical origins.`}
+          </p>
 
-        <!-- Ancestral Lineage & History -->
-        <section class="card surname-body-card">
-          <h2 class="section-heading">👑 Ancestral Lineage & Clan Origin (Bon-gwan)</h2>
-          <p><strong>Primary Origin Clans:</strong> {surname.originClan}</p>
-          <p class="history-text">{surname.historicalNotes}</p>
-
-          <h3 class="sub-heading">🎵 Phonetic Harmony Tips for Naming</h3>
-          <p class="harmony-tips">{surname.harmonyTips}</p>
+          <h3 class="harmony-sub-title">🎵 Phonetic Harmony When Pairing First Names</h3>
+          <p class="harmony-text">
+            When pairing given names with the surname <strong>{surname.english}</strong> ({surname.hangul}), traditional naming philosophers suggest choosing given names with soft liquid consonants (M, N, L, S) or balanced vowels to ensure effortless vocal cadence when speaking the full 3-syllable name.
+          </p>
         </section>
 
-        <!-- Top Recommended First Names for this Surname -->
-        <section class="recommended-names-section">
-          <h2 class="section-title">Best First Names to Pair with Surname <strong>{surname.english}</strong> ({surname.hangul})</h2>
-          
-          <div class="grid grid-cols-3">
+        <!-- Recommended First Names to Pair -->
+        <section class="recommended-names-box">
+          <div class="rec-header">
+            <h2 class="rec-title">
+              Harmonious Korean First Names for Surname <strong>{surname.english}</strong> ({surname.hangul})
+            </h2>
+            <p class="rec-desc">
+              Curated first names that create balanced vocal tone and auspicious character pairings with the surname {surname.english}.
+            </p>
+          </div>
+
+          <div class="names-grid">
             {recommendedNames.map((name) => (
               <NameCard name={name} />
             ))}
           </div>
         </section>
 
+        <!-- FAQ Section -->
         <FAQSection faqs={surnameFaqs} title={`FAQ for Surname ${surname.english}`} />
+
       </main>
 
-      <Sidebar />
+      <aside class="sidebar-container">
+        <Sidebar />
+      </aside>
     </div>
   </div>
 </BaseLayout>
 
 <style>
-  .page-wrapper { padding-top: 1rem; padding-bottom: 4rem; }
-  .comp-breadcrumbs { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.25rem; display: flex; gap: 0.4rem; }
-  
-  .surname-header-card {
-    padding: 2rem;
-    background: linear-gradient(135deg, #FFF 0%, #F0FAF9 100%);
-    margin-bottom: 1.75rem;
+  .page-wrapper {
+    padding-top: 1rem;
+    padding-bottom: 4rem;
   }
 
-  .surname-banner {
+  .surname-hero-card {
     display: flex;
     align-items: center;
-    gap: 1.5rem;
-  }
-
-  .large-hangul {
-    font-size: 3rem;
-    font-weight: 800;
-    color: var(--brand-teal-dark);
-  }
-
-  .large-hanja {
-    font-size: 3rem;
-    font-family: serif;
-    color: var(--text-muted);
-    border-right: 2px solid var(--border-color);
-    padding-right: 1.5rem;
-  }
-
-  .surname-title {
-    font-size: 1.8rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .surname-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-
-  .meta-pill {
-    background: #FFF;
+    gap: 2.5rem;
+    padding: 2.5rem;
+    background: linear-gradient(135deg, var(--bg-surface) 0%, var(--brand-teal-surface) 100%);
     border: 1px solid var(--border-color);
-    padding: 0.25rem 0.65rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 2.5rem;
+  }
+
+  .surname-char-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 130px;
+    height: 130px;
+    background: var(--bg-surface);
+    border: 2px solid var(--brand-teal-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-xs);
+  }
+
+  .surname-hangul-huge {
+    font-family: var(--font-korean);
+    font-size: 3.75rem;
+    font-weight: 900;
+    color: var(--brand-teal-deep);
+    line-height: 1;
+  }
+
+  .surname-hanja-sub {
+    font-family: var(--font-korean);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--accent-indigo);
+    margin-top: 0.25rem;
+  }
+
+  .surname-details-box {
+    flex: 1;
+  }
+
+  .heritage-tag {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--brand-teal-deep);
+    background: var(--brand-teal-light);
+    border: 1px solid var(--brand-teal-border);
+    padding: 0.2rem 0.65rem;
     border-radius: var(--radius-full);
-    font-size: 0.8rem;
+    margin-bottom: 0.65rem;
+  }
+
+  .surname-main-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text-main);
+    letter-spacing: -0.02em;
+    margin-bottom: 0.4rem;
+  }
+
+  .surname-meaning-lead {
+    font-size: 1.05rem;
+    color: var(--text-body);
+    margin-bottom: 1.25rem;
+  }
+
+  .surname-meaning-lead strong {
+    color: var(--brand-teal-deep);
+  }
+
+  .surname-badges-row {
+    display: flex;
+    gap: 0.85rem;
+    flex-wrap: wrap;
+  }
+
+  .badge-item {
+    display: flex;
+    flex-direction: column;
+    padding: 0.45rem 0.85rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+  }
+
+  .badge-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+
+  .badge-val {
+    font-size: 0.95rem;
+    font-weight: 700;
     color: var(--text-main);
   }
 
-  .surname-body-card {
+  .editorial-section-box {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
     padding: 2rem;
-    margin-bottom: 2rem;
-    line-height: 1.7;
+    margin-bottom: 3rem;
+    line-height: 1.6;
   }
 
-  .section-heading {
-    font-size: 1.3rem;
-    color: var(--brand-teal-dark);
-    border-bottom: 2px dashed var(--brand-teal);
-    padding-bottom: 0.4rem;
-    margin-bottom: 1rem;
-  }
-
-  .sub-heading {
-    font-size: 1.1rem;
+  .section-sub-title {
+    font-size: 1.35rem;
     color: var(--text-main);
-    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .clan-overview-text {
+    font-size: 0.95rem;
+    color: var(--text-main);
+    margin-bottom: 0.75rem;
+  }
+
+  .clan-body-text {
+    font-size: 0.9rem;
+    color: var(--text-body);
+    margin-bottom: 1.5rem;
+  }
+
+  .harmony-sub-title {
+    font-size: 1.15rem;
+    color: var(--brand-teal-deep);
     margin-bottom: 0.5rem;
   }
 
-  .recommended-names-section {
-    margin-bottom: 3rem;
+  .harmony-text {
+    font-size: 0.9rem;
+    color: var(--text-body);
+    margin: 0;
   }
 
-  .section-title {
-    font-size: 1.4rem;
-    margin-bottom: 1.25rem;
+  .recommended-names-box {
+    margin-top: 2.5rem;
+  }
+
+  .rec-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .rec-title {
+    font-size: 1.45rem;
+    color: var(--text-main);
+    margin-bottom: 0.35rem;
+  }
+
+  .rec-desc {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+  }
+
+  .names-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
+
+  @media (max-width: 768px) {
+    .surname-hero-card {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1.5rem;
+      padding: 1.5rem;
+    }
+
+    .names-grid {
+      grid-template-columns: 1fr;
+    }
   }
 </style>

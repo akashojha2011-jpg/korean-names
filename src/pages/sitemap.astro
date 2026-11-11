@@ -1,100 +1,215 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
 import { KOREAN_NAMES } from '../data/names';
 import { THEME_CATEGORIES } from '../data/categories';
 import { SURNAMES } from '../data/surnames';
 import { HANJA_ENTRIES } from '../data/hanja';
 
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'HTML Sitemap' }
+];
+
 const letters = 'abcdefghijklmnopqrstuvwxyz'.split('');
 ---
 
 <BaseLayout
-  title="HTML Sitemap - HanName Korean Names Directory"
-  description="Complete index of all programmatic Korean name pages, themes, surnames, Hanja dictionary entries, and letter indexes."
+  title="HTML Sitemap & Directory Index - KoreanNames.info"
+  description="Comprehensive index of Korean given names, family surnames, Hanja dictionary entries, thematic categories, and naming tools."
 >
   <div class="container page-wrapper">
-    <nav class="breadcrumbs">
-      <a href="/">Home</a> &rsaquo;
-      <span class="current">HTML Sitemap</span>
-    </nav>
+    <Breadcrumb items={breadcrumbs} />
 
-    <header class="card sitemap-hero">
-      <h1 class="sitemap-title">Site Index & Directory Map</h1>
-      <p class="sitemap-desc">Comprehensive list of all indexed URLs across HanName.</p>
+    <header class="page-header-box">
+      <h1 class="page-title">Directory Sitemap & Site Index</h1>
+      <p class="page-desc">Complete alphabetical and category navigation index across KoreanNames.info.</p>
     </header>
 
     <div class="sitemap-grid">
-      <!-- Section 1: Main Pages & Genders -->
-      <section class="card sitemap-section">
-        <h2>Main Pages & Gender Directories</h2>
-        <ul class="sitemap-list">
+      <!-- Main Sections -->
+      <section class="sitemap-section-card">
+        <h2 class="sitemap-section-title">Directory Sections</h2>
+        <ul class="sitemap-links-list">
           <li><a href="/">Homepage</a></li>
-          <li><a href="/gender/boy">Korean Boy Names</a></li>
-          <li><a href="/gender/girl">Korean Girl Names</a></li>
-          <li><a href="/gender/unisex">Unisex Korean Names</a></li>
-          <li><a href="/tools/name-generator">Baby Name Finder Tool</a></li>
-          <li><a href="/tools/favorite-names">Saved Favorites</a></li>
+          <li><a href="/gender/girl">Korean Girl Names (여성 이름)</a></li>
+          <li><a href="/gender/boy">Korean Boy Names (남성 이름)</a></li>
+          <li><a href="/gender/unisex">Unisex Korean Names (중성 이름)</a></li>
+          <li><a href="/surname">Korean Surnames Directory (성씨)</a></li>
+          <li><a href="/hanja">Sino-Korean Hanja Directory (漢字)</a></li>
+          <li><a href="/tools/name-generator">Baby Name Generator & Harmony Tool</a></li>
+          <li><a href="/tools/favorite-names">Saved Bookmarked Names</a></li>
         </ul>
       </section>
 
-      <!-- Section 2: Themes -->
-      <section class="card sitemap-section">
-        <h2>Themes & Categories</h2>
-        <ul class="sitemap-list">
+      <!-- Thematic Categories -->
+      <section class="sitemap-section-card">
+        <h2 class="sitemap-section-title">Theme Collections</h2>
+        <ul class="sitemap-links-list">
           {THEME_CATEGORIES.map(c => (
-            <li><a href={`/theme/${c.slug}`}>{c.name} ({c.koreanName})</a></li>
+            <li><a href={`/theme/${c.slug}`}>{c.icon} {c.name} ({c.koreanName})</a></li>
           ))}
         </ul>
       </section>
 
-      <!-- Section 3: Surnames -->
-      <section class="card sitemap-section">
-        <h2>Korean Family Surnames</h2>
-        <ul class="sitemap-list">
-          {SURNAMES.map(s => (
-            <li><a href={`/surname/${s.slug}`}>{s.english} ({s.hangul} {s.hanja})</a></li>
+      <!-- Major Korean Surnames -->
+      <section class="sitemap-section-card">
+        <h2 class="sitemap-section-title">Korean Surnames (성씨)</h2>
+        <ul class="sitemap-links-list">
+          {SURNAMES.slice(0, 15).map(s => (
+            <li><a href={`/surname/${s.slug}`}>{s.english} ({s.hangul} {s.hanja}) - "{s.meaning}"</a></li>
           ))}
+          <li><a href="/surname" class="more-link">View all {SURNAMES.length} surnames &rarr;</a></li>
         </ul>
       </section>
 
-      <!-- Section 4: Hanja Dictionary -->
-      <section class="card sitemap-section">
-        <h2>Hanja Syllables</h2>
-        <ul class="sitemap-list">
+      <!-- Hanja Directory Syllables -->
+      <section class="sitemap-section-card">
+        <h2 class="sitemap-section-title">Naming Hanja Logograms</h2>
+        <ul class="sitemap-links-list">
           {HANJA_ENTRIES.map(h => (
-            <li><a href={`/hanja/${h.hangul}`}>{h.hangul} ({h.hanja} - {h.meaning})</a></li>
+            <li><a href={`/hanja/${encodeURIComponent(h.hangul)}`}>{h.hanja} ({h.hangul}) - {h.meaning}</a></li>
           ))}
         </ul>
       </section>
 
-      <!-- Section 5: All Name Detail Pages -->
-      <section class="card sitemap-section full-width">
-        <h2>All Indexed Korean Names ({KOREAN_NAMES.length})</h2>
-        <div class="names-link-columns">
-          {KOREAN_NAMES.map(n => (
-            <a href={`/name/${n.slug}`} class="name-sitemap-link">
-              <strong>{n.hangul}</strong> ({n.hanja}) - {n.english}
-            </a>
+      <!-- A-Z Letter Directories -->
+      <section class="sitemap-section-card full-width">
+        <h2 class="sitemap-section-title">Alphabetical A–Z Index</h2>
+        <div class="az-grid-links">
+          {letters.map(l => (
+            <a href={`/letter/${l}`} class="az-link-pill">Names starting with "{l.toUpperCase()}"</a>
           ))}
         </div>
+      </section>
+
+      <!-- Editorial & Policies -->
+      <section class="sitemap-section-card full-width">
+        <h2 class="sitemap-section-title">Editorial, Methodology & Legal</h2>
+        <ul class="sitemap-links-list horizontal-links">
+          <li><a href="/author">Editorial Standards</a></li>
+          <li><a href="/acknowledgments">Data Sources & Citations</a></li>
+          <li><a href="/contact">Contact Editorial Team</a></li>
+          <li><a href="/privacy">Privacy Policy</a></li>
+          <li><a href="/terms">Terms of Service</a></li>
+          <li><a href="/sitemap.xml" target="_blank" rel="noopener">XML Sitemap (for Crawlers)</a></li>
+        </ul>
       </section>
     </div>
   </div>
 </BaseLayout>
 
 <style>
-  .page-wrapper { padding-top: 2rem; padding-bottom: 4rem; }
-  .breadcrumbs { font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1.5rem; display: flex; gap: 0.5rem; }
-  .sitemap-hero { padding: 2.5rem; margin-bottom: 3rem; }
-  .sitemap-title { font-size: 2.2rem; }
-  .sitemap-desc { color: var(--text-muted); }
-  .sitemap-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; }
-  .full-width { grid-column: 1 / -1; }
-  .sitemap-section h2 { font-size: 1.25rem; margin-bottom: 1rem; color: var(--accent-crimson); }
-  .sitemap-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
-  .sitemap-list a { color: var(--text-main); font-weight: 600; font-size: 0.95rem; }
-  .sitemap-list a:hover { color: var(--accent-crimson); }
-  .names-link-columns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
-  .name-sitemap-link { font-size: 0.9rem; color: var(--text-main); }
-  .name-sitemap-link:hover { color: var(--accent-crimson); }
+  .page-wrapper {
+    padding-top: 1rem;
+    padding-bottom: 4rem;
+  }
+
+  .page-header-box {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 2.25rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-xs);
+  }
+
+  .page-title {
+    font-size: 2.25rem;
+    font-weight: 800;
+    color: var(--text-main);
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+  }
+
+  .page-desc {
+    font-size: 1rem;
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  .sitemap-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+
+  .full-width {
+    grid-column: 1 / -1;
+  }
+
+  .sitemap-section-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.75rem;
+    box-shadow: var(--shadow-xs);
+  }
+
+  .sitemap-section-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--brand-teal-deep);
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .sitemap-links-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    font-size: 0.9rem;
+  }
+
+  .sitemap-links-list a {
+    color: var(--text-body);
+    transition: color 0.15s ease;
+  }
+
+  .sitemap-links-list a:hover {
+    color: var(--brand-teal);
+    text-decoration: underline;
+  }
+
+  .more-link {
+    font-weight: 700;
+    color: var(--brand-teal-deep) !important;
+  }
+
+  .az-grid-links {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .az-link-pill {
+    padding: 0.5rem 0.75rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-body);
+    transition: all 0.15s ease;
+  }
+
+  .az-link-pill:hover {
+    border-color: var(--brand-teal);
+    background: var(--brand-teal-surface);
+    color: var(--brand-teal-deep);
+  }
+
+  .horizontal-links {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+  }
+
+  @media (max-width: 768px) {
+    .sitemap-grid { grid-template-columns: 1fr; }
+    .page-header-box { padding: 1.5rem; }
+    .page-title { font-size: 1.75rem; }
+  }
 </style>

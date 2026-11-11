@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PaginatedNameList from '../../components/PaginatedNameList.astro';
 import Sidebar from '../../components/Sidebar.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
 import { KOREAN_NAMES } from '../../data/names';
 
 export async function getStaticPaths() {
@@ -15,56 +16,211 @@ export async function getStaticPaths() {
 const { letter } = Astro.params;
 const { letterUpper } = Astro.props;
 
-const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 const namesInLetter = KOREAN_NAMES.filter((n) => n.firstLetter.toLowerCase() === letter.toLowerCase());
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Alphabetical Directory' },
+  { label: `Letter ${letterUpper}` }
+];
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  'name': `Korean Names Starting With Letter ${letterUpper}`,
+  'description': `Directory of authentic Korean baby names starting with the letter ${letterUpper}.`,
+  'url': `https://www.korean-names.info/letter/${letter}`
+};
 ---
 
 <BaseLayout
-  title={`Korean Names Starting with Letter ${letterUpper} - Directory`}
-  description={`Browse all Korean baby names starting with the letter ${letterUpper}. View Hanja meanings, romanizations, and popularity rankings.`}
+  title={`Korean Names Starting with Letter "${letterUpper}" - Meaning & Hanja Directory`}
+  description={`Browse authentic Korean given names starting with the letter ${letterUpper}. Review Hangul characters, Hanja logograms, meanings, and pronunciation.`}
+  jsonLd={schema}
 >
   <div class="container page-wrapper">
-    <nav class="comp-breadcrumbs">
-      <a href="/">Home</a> &rsaquo;
-      <span>A-Z Directory</span> &rsaquo;
-      <span class="current">Letter {letterUpper}</span>
-    </nav>
+    <Breadcrumb items={breadcrumbs} />
 
     <div class="content-layout">
+      <!-- Main Content Column -->
       <main class="main-column">
-        <header class="group-header">
-          <h1 class="group-title">
-            Korean Names Starting with "{letterUpper}" <span class="count-badge">({namesInLetter.length.toLocaleString()})</span>
+        <header class="letter-header-card">
+          <span class="alphabet-badge">A–Z Alphabetical Index</span>
+          <h1 class="letter-main-title">
+            Korean Names Starting with "<strong>{letterUpper}</strong>"
           </h1>
+          <p class="letter-desc">
+            Browse romanized Korean names beginning with the letter {letterUpper}. Each entry includes authentic Hangul script, Sino-Korean Hanja characters, and cultural meanings.
+          </p>
         </header>
 
-        <!-- A-Z Letter Box -->
-        <div class="az-box">
-          {letters.map((l) => (
-            <a href={`/letter/${l.toLowerCase()}`} class={`az-btn ${l === letterUpper ? 'active' : ''}`}>{l}</a>
-          ))}
+        <!-- A-Z Letter Navigation Box -->
+        <div class="az-filter-card">
+          <span class="az-filter-label">Jump to Letter:</span>
+          <div class="az-pills-row">
+            {alphabet.map((l) => (
+              <a
+                href={`/letter/${l.toLowerCase()}`}
+                class={`az-filter-pill ${l === letterUpper ? 'active' : ''}`}
+                aria-label={`Names starting with ${l}`}
+              >
+                {l}
+              </a>
+            ))}
+          </div>
         </div>
 
-        <!-- Paginated Name List -->
+        <!-- Results Header -->
+        <div class="directory-results-bar">
+          <span class="results-count-text">
+            Found <strong>{namesInLetter.length}</strong> Korean names starting with "{letterUpper}"
+          </span>
+        </div>
+
+        <!-- Name List -->
         {namesInLetter.length === 0 ? (
-          <div class="card empty-box">
-            <p>No Korean names currently listed under letter "{letterUpper}". Try exploring our <a href="/gender/boy">Boys Directory</a> or <a href="/gender/girl">Girls Directory</a>!</p>
+          <div class="empty-state-box">
+            <h3>No names currently listed under "{letterUpper}"</h3>
+            <p>Try exploring our <a href="/gender/boy">Boy Names Directory</a> or <a href="/gender/girl">Girl Names Directory</a>.</p>
           </div>
         ) : (
           <PaginatedNameList names={namesInLetter} />
         )}
       </main>
 
-      <Sidebar />
+      <!-- Sidebar -->
+      <aside class="sidebar-container">
+        <Sidebar />
+      </aside>
     </div>
   </div>
 </BaseLayout>
 
 <style>
-  .page-wrapper { padding-top: 1rem; padding-bottom: 4rem; }
-  .comp-breadcrumbs { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.25rem; display: flex; gap: 0.4rem; }
-  .group-header { margin-bottom: 0.75rem; }
-  .group-title { font-size: 1.8rem; color: var(--text-main); }
-  .count-badge { font-size: 1.1rem; color: var(--text-muted); font-weight: 400; }
-  .empty-box { padding: 3rem; text-align: center; color: var(--text-muted); }
+  .page-wrapper {
+    padding-top: 1rem;
+    padding-bottom: 4rem;
+  }
+
+  .letter-header-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 2.25rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow-xs);
+  }
+
+  .alphabet-badge {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--brand-teal-deep);
+    background: var(--brand-teal-light);
+    border: 1px solid var(--brand-teal-border);
+    padding: 0.2rem 0.65rem;
+    border-radius: var(--radius-full);
+    margin-bottom: 0.65rem;
+  }
+
+  .letter-main-title {
+    font-size: 2.25rem;
+    font-weight: 800;
+    color: var(--text-main);
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+  }
+
+  .letter-desc {
+    font-size: 1rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .az-filter-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .az-filter-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  .az-pills-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .az-filter-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xs);
+    font-size: 0.825rem;
+    font-weight: 700;
+    color: var(--brand-teal-deep);
+    transition: all 0.15s ease;
+  }
+
+  .az-filter-pill:hover, .az-filter-pill.active {
+    background: var(--brand-teal);
+    color: white;
+    border-color: var(--brand-teal);
+  }
+
+  .directory-results-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--brand-teal);
+    margin-bottom: 1.25rem;
+  }
+
+  .results-count-text {
+    font-size: 0.9rem;
+    color: var(--text-body);
+  }
+
+  .results-count-text strong {
+    color: var(--brand-teal-deep);
+  }
+
+  .empty-state-box {
+    padding: 3rem;
+    text-align: center;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-muted);
+  }
+
+  .empty-state-box a {
+    color: var(--brand-teal-deep);
+    font-weight: 700;
+  }
+
+  @media (max-width: 768px) {
+    .letter-header-card { padding: 1.5rem; }
+    .letter-main-title { font-size: 1.75rem; }
+  }
 </style>

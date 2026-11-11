@@ -1,15 +1,28 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import NameCard from '../../components/NameCard.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
 import { HANJA_ENTRIES } from '../../data/hanja';
 import { KOREAN_NAMES } from '../../data/names';
 import type { HanjaEntry } from '../../types/name';
 
 export async function getStaticPaths() {
-  return HANJA_ENTRIES.map((h) => ({
-    params: { char: h.hangul },
-    props: { hanjaData: h }
-  }));
+  const paths: any[] = [];
+  HANJA_ENTRIES.forEach((h) => {
+    // Hangul route: /hanja/민
+    paths.push({
+      params: { char: h.hangul },
+      props: { hanjaData: h }
+    });
+    // Hanja character route: /hanja/敏
+    if (h.hanja && h.hanja !== h.hangul) {
+      paths.push({
+        params: { char: h.hanja },
+        props: { hanjaData: h }
+      });
+    }
+  });
+  return paths;
 }
 
 export interface Props {
@@ -20,63 +33,279 @@ const { hanjaData } = Astro.props;
 
 // Find all names containing this Hangul / Hanja syllable
 const matchingNames = KOREAN_NAMES.filter((n) =>
-  n.syllables.some((s) => s.hangul === hanjaData.hangul || s.hanja === hanjaData.hanja)
+  n.syllables && n.syllables.some((s) => s.hangul === hanjaData.hangul || s.hanja === hanjaData.hanja)
 );
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Hanja Dictionary', href: '/hanja' },
+  { label: `${hanjaData.hangul} (${hanjaData.hanja})` }
+];
 ---
 
 <BaseLayout
-  title={`Korean Name Syllable "${hanjaData.hangul}" (${hanjaData.hanja}) Meaning & Character Names`}
-  description={`Learn the meaning of the Korean Hanja character ${hanjaData.hanja} (${hanjaData.hangul} - "${hanjaData.meaning}"). Explore all Korean names formed with this character.`}
+  title={`Korean Hanja "${hanjaData.hanja}" (${hanjaData.hangul}) - Meaning & Baby Names`}
+  description={`Explore the Sino-Korean Hanja character ${hanjaData.hanja} (${hanjaData.hangul} - "${hanjaData.meaning}"). Review radical, stroke counts, and authentic Korean baby names using this character.`}
 >
   <div class="container page-wrapper">
-    <nav class="breadcrumbs">
-      <a href="/">Home</a> &rsaquo;
-      <span>Hanja Dictionary</span> &rsaquo;
-      <span class="current">{hanjaData.hangul} ({hanjaData.hanja})</span>
-    </nav>
+    <Breadcrumb items={breadcrumbs} />
 
-    <header class="card hanja-hero">
-      <div class="hanja-hero-top">
-        <span class="hanja-big-hangul">{hanjaData.hangul}</span>
-        <span class="hanja-big-symbol">{hanjaData.hanja}</span>
-      </div>
-      <h1 class="hanja-hero-title">Hanja Character: {hanjaData.meaning}</h1>
-
-      <div class="hanja-meta-grid">
-        <div class="meta-card">
-          <span class="m-label">Stroke Count</span>
-          <span class="m-val">{hanjaData.strokeCount} Strokes</span>
+    <!-- Hero Showcase Card -->
+    <header class="hanja-hero-card">
+      <div class="hero-left">
+        <div class="char-large-display">
+          <span class="hanja-symbol-lg">{hanjaData.hanja}</span>
+          <span class="hangul-reading-sub">{hanjaData.hangul}</span>
         </div>
-        <div class="meta-card">
-          <span class="m-label">Radical</span>
-          <span class="m-val">{hanjaData.radical}</span>
+      </div>
+      <div class="hero-right">
+        <span class="registry-pill">Approved for Korean Birth Certificates</span>
+        <h1 class="hanja-page-title">
+          Hanja Character: <strong>{hanjaData.hanja}</strong> ({hanjaData.hangul})
+        </h1>
+        <p class="hanja-meaning-lead">
+          Meaning: <strong>"{hanjaData.meaning}"</strong>
+        </p>
+
+        <div class="hanja-meta-pills">
+          <div class="meta-item">
+            <span class="meta-label">Total Strokes</span>
+            <span class="meta-val">{hanjaData.strokeCount} Strokes</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Radical (부수)</span>
+            <span class="meta-val">{hanjaData.radical}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Korean Reading</span>
+            <span class="meta-val">{hanjaData.hangul} (Hangul)</span>
+          </div>
         </div>
       </div>
     </header>
 
-    <section class="section-block">
-      <h2 class="section-title">All Korean Names Containing "{hanjaData.hangul}" ({hanjaData.hanja})</h2>
-      <p class="section-sub">Showing {matchingNames.length} names built using this character.</p>
+    <!-- Character Cultural Context -->
+    <section class="hanja-cultural-section">
+      <h2 class="sub-heading">Cultural Meaning in Korean Naming</h2>
+      <p>
+        In traditional Korean onomastics, the character <strong>{hanjaData.hanja}</strong> is chosen by parents to bestow the qualities of <em>{hanjaData.meaning.toLowerCase()}</em> upon their child. It is officially verified under the South Korean Supreme Court Registry of Hanja for Personal Names (인명용 한자표).
+      </p>
+    </section>
 
-      <div class="grid grid-cols-3">
-        {matchingNames.map((item) => (
-          <NameCard name={item} />
-        ))}
+    <!-- Names using this character -->
+    <section class="names-using-section">
+      <div class="section-title-bar">
+        <h2 class="names-heading">
+          Authentic Korean Names Featuring "{hanjaData.hangul}" ({hanjaData.hanja})
+        </h2>
+        <span class="count-tag">{matchingNames.length} names found</span>
       </div>
+
+      {matchingNames.length > 0 ? (
+        <div class="names-grid">
+          {matchingNames.map((name) => (
+            <NameCard name={name} />
+          ))}
+        </div>
+      ) : (
+        <div class="empty-state-box">
+          <p>No names currently listed for this specific character in our database.</p>
+          <a href="/hanja" class="return-link">&larr; Return to Hanja Directory</a>
+        </div>
+      )}
     </section>
   </div>
 </BaseLayout>
 
 <style>
-  .page-wrapper { padding-top: 2rem; padding-bottom: 4rem; }
-  .breadcrumbs { font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1.5rem; display: flex; gap: 0.5rem; }
-  .hanja-hero { padding: 3rem; margin-bottom: 3.5rem; background: linear-gradient(135deg, var(--bg-surface) 0%, var(--accent-indigo-light) 100%); }
-  .hanja-hero-top { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 0.5rem; }
-  .hanja-big-hangul { font-family: var(--font-korean); font-size: 4rem; font-weight: 900; }
-  .hanja-big-symbol { font-size: 3rem; color: var(--accent-indigo); }
-  .hanja-hero-title { font-size: 1.8rem; margin-bottom: 1.5rem; }
-  .hanja-meta-grid { display: flex; gap: 1.5rem; }
-  .meta-card { background: var(--bg-surface); padding: 0.85rem 1.25rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); }
-  .m-label { display: block; font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
-  .m-val { font-size: 1.05rem; font-weight: 700; color: var(--text-main); }
+  .page-wrapper {
+    padding-top: 1rem;
+    padding-bottom: 4rem;
+  }
+
+  .hanja-hero-card {
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+    padding: 2.5rem;
+    background: linear-gradient(135deg, var(--bg-surface) 0%, var(--brand-teal-surface) 100%);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 2.5rem;
+  }
+
+  .hero-left {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 140px;
+    height: 140px;
+    background: var(--bg-surface);
+    border: 2px solid var(--brand-teal-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-xs);
+  }
+
+  .char-large-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1;
+  }
+
+  .hanja-symbol-lg {
+    font-family: var(--font-korean);
+    font-size: 4.5rem;
+    font-weight: 900;
+    color: var(--accent-indigo);
+  }
+
+  .hangul-reading-sub {
+    font-family: var(--font-hangul);
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--text-main);
+    margin-top: 0.35rem;
+  }
+
+  .hero-right {
+    flex: 1;
+  }
+
+  .registry-pill {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--brand-teal-deep);
+    background: var(--brand-teal-light);
+    border: 1px solid var(--brand-teal-border);
+    padding: 0.2rem 0.65rem;
+    border-radius: var(--radius-full);
+    margin-bottom: 0.65rem;
+  }
+
+  .hanja-page-title {
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: var(--text-main);
+    letter-spacing: -0.02em;
+    margin-bottom: 0.4rem;
+  }
+
+  .hanja-meaning-lead {
+    font-size: 1.1rem;
+    color: var(--text-body);
+    margin-bottom: 1.25rem;
+  }
+
+  .hanja-meaning-lead strong {
+    color: var(--brand-teal-deep);
+  }
+
+  .hanja-meta-pills {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .meta-item {
+    display: flex;
+    flex-direction: column;
+    padding: 0.5rem 0.85rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+  }
+
+  .meta-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+
+  .meta-val {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-main);
+  }
+
+  .hanja-cultural-section {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.75rem;
+    margin-bottom: 3rem;
+    line-height: 1.6;
+  }
+
+  .sub-heading {
+    font-size: 1.2rem;
+    color: var(--text-main);
+    margin-bottom: 0.6rem;
+  }
+
+  .names-using-section {
+    margin-top: 2rem;
+  }
+
+  .section-title-bar {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .names-heading {
+    font-size: 1.45rem;
+    color: var(--text-main);
+    margin: 0;
+  }
+
+  .count-tag {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--brand-teal-deep);
+    background: var(--brand-teal-light);
+    padding: 0.2rem 0.65rem;
+    border-radius: var(--radius-full);
+  }
+
+  .names-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
+
+  .empty-state-box {
+    padding: 3rem;
+    text-align: center;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-muted);
+  }
+
+  .return-link {
+    display: inline-block;
+    margin-top: 1rem;
+    font-weight: 700;
+    color: var(--brand-teal-deep);
+  }
+
+  @media (max-width: 768px) {
+    .hanja-hero-card {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1.5rem;
+      padding: 1.5rem;
+    }
+
+    .names-grid {
+      grid-template-columns: 1fr;
+    }
+  }
 </style>

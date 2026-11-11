@@ -28,7 +28,10 @@ export const GET: APIRoute = () => {
   const letterPages = 'abcdefghijklmnopqrstuvwxyz'.split('').map((l) => `/letter/${l}`);
   const themePages = THEME_CATEGORIES.map((c) => `/theme/${c.slug}`);
   const surnamePages = SURNAMES.map((s) => `/surname/${s.slug}`);
-  const hanjaPages = HANJA_ENTRIES.map((h) => `/hanja/${encodeURIComponent(h.hangul)}`);
+  const hanjaPages = HANJA_ENTRIES.flatMap((h) => [
+    `/hanja/${encodeURIComponent(h.hangul)}`,
+    ...(h.hanja && h.hanja !== h.hangul ? [`/hanja/${encodeURIComponent(h.hanja)}`] : [])
+  ]);
   const namePages = KOREAN_NAMES.map((n) => `/name/${n.slug}`);
 
   const allPaths = [
