@@ -1,299 +1,691 @@
 ---
 import { SURNAMES } from '../data/surnames';
 import { THEME_CATEGORIES } from '../data/categories';
-import { KOREAN_NAMES } from '../data/names';
+
+// Pick the top 30 most recognized Korean surnames for the primary selection
+const topSurnames = SURNAMES.slice(0, 30);
 ---
 
-<div id="generator-card" class="generator-box">
-  <div class="generator-header">
-    <div class="gen-icon">✨</div>
+<div id="generator-container" class="generator-wrapper card">
+  <div class="generator-banner">
+    <div class="gen-icon-wrap" aria-hidden="true">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+    </div>
     <div>
-      <h2 class="gen-title">Korean Name Finder & Combination Generator</h2>
-      <p class="gen-subtitle">Select surname, gender preference, and desired vibe to calculate matching Korean names with harmony scores.</p>
+      <h2 class="gen-main-heading">Korean Baby Name Generator & Surname Harmony Finder</h2>
+      <p class="gen-sub-heading">
+        Explore verified Korean given names paired with your family surname. Discover phonetic flow, Hanja balance, and authentic character meanings based on the Supreme Court of Korea's Hanja registry.
+      </p>
     </div>
   </div>
 
-  <div class="generator-form">
+  <form id="generator-form" class="generator-controls" onsubmit="return false;">
     <!-- Surname selection -->
-    <div class="form-group">
-      <label for="gen-surname">Korean Surname</label>
-      <select id="gen-surname" class="form-select">
-        {SURNAMES.map((s) => (
-          <option value={s.slug}>{s.english} ({s.hangul} {s.hanja}) - {s.originClan}</option>
+    <div class="control-group">
+      <label for="gen-surname-select">Family Surname (성씨)</label>
+      <select id="gen-surname-select" class="form-select">
+        {topSurnames.map((s) => (
+          <option value={s.slug} data-hangul={s.hangul} data-hanja={s.hanja} data-english={s.english} data-batchim={s.hangul === '김' || s.hangul === '박' || s.hangul === '정' || s.hangul === '강' || s.hangul === '장' || s.hangul === '임' || s.hangul === '한' || s.hangul === '신' || s.hangul === '권' || s.hangul === '황' || s.hangul === '안' || s.hangul === '송' || s.hangul === '홍' ? 'true' : 'false'}>
+            {s.english} ({s.hangul} {s.hanja}) - {s.originClan.split('/')[0].trim()}
+          </option>
         ))}
       </select>
     </div>
 
     <!-- Gender selection -->
-    <div class="form-group">
-      <label for="gen-gender">Preferred Gender</label>
-      <select id="gen-gender" class="form-select">
-        <option value="all">Any Gender (Boy / Girl / Unisex)</option>
-        <option value="boy">Boy (남성)</option>
-        <option value="girl">Girl (여성)</option>
-        <option value="unisex">Unisex (중성)</option>
+    <div class="control-group">
+      <label for="gen-gender-select">Gender Preference</label>
+      <select id="gen-gender-select" class="form-select">
+        <option value="all">Any Gender (Boy, Girl, Unisex)</option>
+        <option value="girl">Girl Names (여성)</option>
+        <option value="boy">Boy Names (남성)</option>
+        <option value="unisex">Unisex Names (중성)</option>
       </select>
     </div>
 
     <!-- Theme selection -->
-    <div class="form-group">
-      <label for="gen-theme">Theme / Vibe</label>
-      <select id="gen-theme" class="form-select">
-        <option value="all">All Themes</option>
+    <div class="control-group">
+      <label for="gen-theme-select">Desired Meaning / Theme</label>
+      <select id="gen-theme-select" class="form-select">
+        <option value="all">All Meanings & Themes</option>
         {THEME_CATEGORIES.map((cat) => (
-          <option value={cat.slug}>{cat.icon} {cat.name} ({cat.koreanName})</option>
+          <option value={cat.slug}>{cat.name} ({cat.koreanName})</option>
         ))}
       </select>
     </div>
 
-    <button id="run-generator-btn" class="gen-submit-btn">
-      <span>Generate Matching Names ✨</span>
-    </button>
-  </div>
+    <!-- Starting letter selection -->
+    <div class="control-group">
+      <label for="gen-letter-select">Starting Initial Letter</label>
+      <select id="gen-letter-select" class="form-select">
+        <option value="all">Any Initial Sound</option>
+        <option value="d">D (도, 다...)</option>
+        <option value="e">E / Eu (은, 예...)</option>
+        <option value="h">H (하, 현, 혜...)</option>
+        <option value="j">J (지, 준, 진...)</option>
+        <option value="m">M (민, 미...)</option>
+        <option value="s">S (서, 시, 수...)</option>
+        <option value="w">W / U (우, 원...)</option>
+        <option value="y">Y (유, 윤, 예...)</option>
+      </select>
+    </div>
 
-  <!-- Results output container -->
-  <div id="generator-results-box" class="gen-results-box">
-    <h3 class="results-heading">Recommended Combinations</h3>
-    <div id="generator-output" class="gen-output-grid"></div>
+    <div class="control-actions">
+      <button type="button" id="trigger-generate-btn" class="generate-submit-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <span>Discover Matching Names</span>
+      </button>
+      <button type="button" id="shuffle-random-btn" class="generate-secondary-btn" title="Show random combination">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line></svg>
+        <span>Shuffle Suggestions</span>
+      </button>
+    </div>
+  </form>
+
+  <!-- Results section -->
+  <div id="results-wrapper" class="results-wrapper">
+    <div class="results-header-bar">
+      <div>
+        <h3 id="results-headline" class="results-headline">Recommended Combinations</h3>
+        <p id="results-count-note" class="results-count-note">Showing matching names from verified dictionary entries</p>
+      </div>
+      <div class="results-filter-note">
+        <span class="verified-badge">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+          Supreme Court Hanja Registry
+        </span>
+      </div>
+    </div>
+
+    <div id="generator-output-grid" class="gen-cards-grid">
+      <div class="loading-state">
+        <div class="loading-spinner"></div>
+        <p>Calculating phonetic harmony and retrieving names...</p>
+      </div>
+    </div>
+
+    <!-- Educational harmony note -->
+    <aside class="harmony-education-callout">
+      <h4 class="callout-title">Understanding Korean Name Harmony (성명학 & 발음오행)</h4>
+      <p class="callout-text">
+        In traditional Korean culture, combining a family surname (성) with a given name (이름) emphasizes phonetic flow (발음 조화) and balanced Hanja character meanings. A well-balanced Korean name avoids harsh consonant clusters between the surname's final consonant (받침) and the given name's initial sound, ensuring the full name rolls naturally off the tongue.
+      </p>
+    </aside>
   </div>
 </div>
 
-<script is:inline define:vars={{ namesData: KOREAN_NAMES, surnamesData: SURNAMES }}>
-  const btn = document.getElementById('run-generator-btn');
-  const surnameSelect = document.getElementById('gen-surname');
-  const genderSelect = document.getElementById('gen-gender');
-  const themeSelect = document.getElementById('gen-theme');
-  const resultsBox = document.getElementById('generator-results-box');
-  const output = document.getElementById('generator-output');
+<script>
+  interface SearchEntry {
+    s: string; // slug
+    e: string; // english
+    h: string; // hangul
+    j: string; // hanja
+    g: string; // gender
+    m: string; // meaning
+    t?: string[]; // themes
+    c?: number; // syllables
+    l?: string; // first letter
+  }
 
-  function generateNames() {
-    const selectedSurnameSlug = surnameSelect?.value || 'kim';
-    const selectedGender = genderSelect?.value || 'all';
-    const selectedTheme = themeSelect?.value || 'all';
+  let indexCache: SearchEntry[] | null = null;
+  let isFetchingIndex = false;
 
-    const targetSurname = surnamesData.find(s => s.slug === selectedSurnameSlug) || surnamesData[0];
+  async function getIndex(): Promise<SearchEntry[]> {
+    if (indexCache) return indexCache;
+    if (isFetchingIndex) return [];
+    isFetchingIndex = true;
+    try {
+      const res = await fetch('/search-index.json');
+      if (res.ok) {
+        indexCache = await res.json();
+      }
+    } catch (e) {
+      console.warn('Failed to load search index for generator', e);
+    } finally {
+      isFetchingIndex = false;
+    }
+    return indexCache || [];
+  }
 
-    let filtered = namesData.filter(item => {
-      const matchGender = selectedGender === 'all' || item.gender === selectedGender;
-      const matchTheme = selectedTheme === 'all' || item.themes.includes(selectedTheme);
-      return matchGender && matchTheme;
-    });
+  // Phonetic harmony evaluator based on surname final consonant (받침) and initial given sound
+  function evaluatePhoneticHarmony(surnameHangul: string, nameHangul: string): string {
+    const hasBatchim = ['김', '박', '정', '강', '장', '임', '한', '신', '권', '황', '안', '송', '홍', '문', '백'].includes(surnameHangul);
+    const firstChar = nameHangul.charAt(0);
 
-    if (filtered.length === 0) {
-      filtered = namesData.slice(0, 4); // fallback if strict filters produce empty result
+    // Initial consonants in Hangul unicode
+    const code = firstChar.charCodeAt(0) - 0xAC00;
+    if (code < 0 || code > 11171) return 'Balanced phonetic flow and standard pronunciation harmony.';
+
+    const initialIndex = Math.floor(code / 588);
+    // 0: ㄱ, 1: ㄲ, 2: ㄴ, 3: ㄷ, 4: ㄸ, 5: ㄹ, 6: ㅁ, 7: ㅂ, 8: ㅃ, 9: ㅅ, 10: ㅆ, 11: ㅇ, 12: ㅈ, 13: ㅉ, 14: ㅊ, 15: ㅋ, 16: ㅌ, 17: ㅍ, 18: ㅎ
+
+    if (hasBatchim) {
+      if (initialIndex === 11) {
+        return `Natural liaison (연음) transition into open vowel '${firstChar}', creating a smooth, melodic cadence.`;
+      } else if ([2, 5, 6].includes(initialIndex)) {
+        return `Soft nasal/liquid transition with '${firstChar}', providing gentle vocal resonance without abrupt consonant friction.`;
+      } else {
+        return `Clear, rhythmic contrast between final consonant of '${surnameHangul}' and crisp initial sound of '${firstChar}'.`;
+      }
+    } else {
+      // Open vowel surname (이, 최, 조, 윤, 서, 오, 배, 노, etc.)
+      if (initialIndex === 11) {
+        return `Seamless open-vowel connection between '${surnameHangul}' and '${firstChar}', evoking modern airy elegance.`;
+      } else {
+        return `Strong, distinct articulation where the initial sound of '${firstChar}' carries clearly after open syllable '${surnameHangul}'.`;
+      }
+    }
+  }
+
+  const surnameSelect = document.getElementById('gen-surname-select') as HTMLSelectElement;
+  const genderSelect = document.getElementById('gen-gender-select') as HTMLSelectElement;
+  const themeSelect = document.getElementById('gen-theme-select') as HTMLSelectElement;
+  const letterSelect = document.getElementById('gen-letter-select') as HTMLSelectElement;
+  const triggerBtn = document.getElementById('trigger-generate-btn');
+  const shuffleBtn = document.getElementById('shuffle-random-btn');
+  const outputGrid = document.getElementById('generator-output-grid');
+  const countNote = document.getElementById('results-count-note');
+
+  async function generate(isShuffle = false) {
+    if (!outputGrid) return;
+    const allNames = await getIndex();
+    if (allNames.length === 0) {
+      outputGrid.innerHTML = `<div class="card error-box"><p>Loading name database...</p></div>`;
+      return;
     }
 
-    output.innerHTML = filtered.slice(0, 6).map(item => {
-      // Calculate surname harmony
-      const combo = item.surnameCombinations?.find(c => c.surnameSlug === targetSurname.slug);
-      const score = combo ? combo.harmonyScore : Math.floor(Math.random() * 8 + 90);
-      const fullHangul = `${targetSurname.hangul}${item.hangul}`;
-      const fullEnglish = `${targetSurname.english} ${item.english}`;
+    const selectedOption = surnameSelect.options[surnameSelect.selectedIndex];
+    const surnameSlug = surnameSelect.value;
+    const surnameHangul = selectedOption.getAttribute('data-hangul') || '김';
+    const surnameHanja = selectedOption.getAttribute('data-hanja') || '金';
+    const surnameEnglish = selectedOption.getAttribute('data-english') || 'Kim';
+
+    const selectedGender = genderSelect.value;
+    const selectedTheme = themeSelect.value;
+    const selectedLetter = letterSelect.value.toLowerCase();
+
+    let pool = allNames.filter((item) => {
+      // Gender check
+      if (selectedGender !== 'all' && item.g !== selectedGender) return false;
+      // Theme check
+      if (selectedTheme !== 'all' && item.t && !item.t.includes(selectedTheme)) return false;
+      // Letter check
+      if (selectedLetter !== 'all') {
+        const firstLetter = item.l || item.e.charAt(0).toLowerCase();
+        if (firstLetter !== selectedLetter) return false;
+      }
+      return true;
+    });
+
+    if (pool.length === 0) {
+      outputGrid.innerHTML = `
+        <div class="no-results-card card">
+          <p>No exact names found matching all selected criteria.</p>
+          <span class="subtext">Try broadening your gender or theme filters to see more Korean name suggestions.</span>
+        </div>
+      `;
+      if (countNote) countNote.textContent = '0 matching names found';
+      return;
+    }
+
+    // Shuffle pool if requested or pick diversified sample
+    if (isShuffle) {
+      pool = [...pool].sort(() => Math.random() - 0.5);
+    }
+
+    const displayItems = pool.slice(0, 9);
+    if (countNote) {
+      countNote.textContent = `Showing ${displayItems.length} curated combinations from a pool of ${pool.length} verified names`;
+    }
+
+    outputGrid.innerHTML = displayItems.map((item) => {
+      const fullHangul = `${surnameHangul}${item.h}`;
+      const fullEnglish = `${surnameEnglish} ${item.e}`;
+      const fullHanja = `${surnameHanja} ${item.j || ''}`;
+      const harmonyNote = evaluatePhoneticHarmony(surnameHangul, item.h);
 
       return `
-        <div class="gen-item-card">
-          <div class="gen-item-top">
+        <article class="gen-item-card card">
+          <div class="gen-card-top">
+            <span class="badge badge-${item.g}">${item.g.toUpperCase()}</span>
+            <span class="char-count-pill">${item.c || 2}-syllable</span>
+          </div>
+
+          <div class="gen-name-block">
             <div class="gen-full-hangul">${fullHangul}</div>
-            <div class="gen-score-badge">Harmony: ${score}%</div>
+            <div class="gen-full-english">${fullEnglish}</div>
+            ${item.j ? `<div class="gen-full-hanja">${fullHanja}</div>` : ''}
           </div>
-          <div class="gen-full-english">${fullEnglish}</div>
-          <div class="gen-hanja-line">${targetSurname.hanja} + ${item.hanja}</div>
-          <p class="gen-meaning">${item.overallMeaning}</p>
-          <div class="gen-actions">
-            <a href="/name/${item.slug}" class="gen-detail-link">View Full Meaning &rarr;</a>
+
+          <p class="gen-name-meaning">${escapeHtml(item.m)}</p>
+
+          <div class="gen-harmony-box">
+            <span class="harmony-label">Phonetic Harmony:</span>
+            <p class="harmony-text">${harmonyNote}</p>
           </div>
-        </div>
+
+          <div class="gen-card-actions">
+            <button class="gen-listen-btn" data-speak="${fullHangul}" aria-label="Listen to pronunciation of ${fullHangul}">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+              <span>Listen</span>
+            </button>
+            <a href="/name/${item.s}" class="gen-explore-link">
+              <span>Character Breakdown</span>
+              <span aria-hidden="true">&rarr;</span>
+            </a>
+          </div>
+        </article>
       `;
     }).join('');
 
-    resultsBox?.classList.add('active');
+    // Attach speech buttons
+    outputGrid.querySelectorAll<HTMLButtonElement>('[data-speak]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const text = btn.getAttribute('data-speak');
+        if (!text || !('speechSynthesis' in window)) return;
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'ko-KR';
+        utterance.rate = 0.85;
+        window.speechSynthesis.speak(utterance);
+      });
+    });
   }
 
-  btn?.addEventListener('click', generateNames);
-  // Run once on load
-  generateNames();
+  function escapeHtml(str: string): string {
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  triggerBtn?.addEventListener('click', () => generate(false));
+  shuffleBtn?.addEventListener('click', () => generate(true));
+  surnameSelect?.addEventListener('change', () => generate(false));
+  genderSelect?.addEventListener('change', () => generate(false));
+  themeSelect?.addEventListener('change', () => generate(false));
+  letterSelect?.addEventListener('change', () => generate(false));
+
+  // Initialize on load
+  generate(false);
 </script>
 
 <style>
-  .generator-box {
+  .generator-wrapper {
     background: var(--bg-surface);
-    border: 2px solid var(--border-color);
+    border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
     padding: 2.5rem;
-    box-shadow: var(--shadow-lg);
-    margin-bottom: 3rem;
+    box-shadow: var(--shadow-md);
+    margin-bottom: 3.5rem;
   }
 
-  .generator-header {
+  .generator-banner {
     display: flex;
     align-items: flex-start;
-    gap: 1.25rem;
-    margin-bottom: 2rem;
+    gap: 1.5rem;
+    margin-bottom: 2.25rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border-subtle);
   }
 
-  .gen-icon {
-    font-size: 2.5rem;
-    background: var(--brand-teal-light);
-    width: 60px;
-    height: 60px;
+  .gen-icon-wrap {
+    width: 58px;
+    height: 58px;
     border-radius: var(--radius-md);
+    background: var(--brand-teal-surface);
+    color: var(--brand-teal-deep);
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
   }
 
-  .gen-title {
-    font-size: 1.5rem;
+  .gen-main-heading {
+    font-size: 1.625rem;
+    font-weight: 800;
     color: var(--text-main);
-    margin-bottom: 0.25rem;
+    letter-spacing: -0.015em;
+    margin-bottom: 0.4rem;
   }
 
-  .gen-subtitle {
-    color: var(--text-muted);
+  .gen-sub-heading {
     font-size: 0.95rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    max-width: 780px;
   }
 
-  .generator-form {
+  .generator-controls {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 1.25rem;
     align-items: end;
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
   }
 
-  .form-group {
+  .control-group {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
     min-width: 0;
   }
 
-  .form-group label {
-    font-size: 0.875rem;
+  .control-group label {
+    font-size: 0.8125rem;
     font-weight: 700;
     color: var(--text-main);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
   }
 
   .form-select {
     width: 100%;
     min-width: 0;
-    padding: 0.75rem 1rem;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border-color);
-    background: var(--bg-primary);
-    color: var(--text-main);
-    font-size: 0.925rem;
+    padding: 0.75rem 0.95rem;
+    font-size: 0.9rem;
+    font-family: inherit;
     font-weight: 500;
+    color: var(--text-main);
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease;
     text-overflow: ellipsis;
   }
 
-  .gen-submit-btn {
+  .form-select:focus {
+    outline: none;
+    border-color: var(--brand-teal);
+    box-shadow: var(--shadow-glow);
+  }
+
+  .control-actions {
     grid-column: 1 / -1;
-    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+  }
+
+  .generate-submit-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
     background: var(--brand-teal);
     color: white;
     font-weight: 700;
-    font-size: 1rem;
-    padding: 0.85rem 1.5rem;
+    font-size: 0.95rem;
+    padding: 0.85rem 1.75rem;
     border-radius: var(--radius-sm);
-    box-shadow: var(--shadow-md);
-    transition: transform 0.2s ease, background 0.2s ease;
+    border: none;
     cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease;
   }
 
-  .gen-submit-btn:hover {
-    transform: translateY(-2px);
+  .generate-submit-btn:hover {
     background: var(--brand-teal-dark);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
   }
 
-  .gen-results-box {
-    display: none;
-    padding-top: 2rem;
-    border-top: 1px dashed var(--border-color);
-  }
-
-  .gen-results-box.active {
-    display: block;
-  }
-
-  .results-heading {
-    font-size: 1.2rem;
-    margin-bottom: 1.25rem;
-    color: var(--text-main);
-  }
-
-  .gen-output-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.25rem;
-  }
-
-  :global(.gen-item-card) {
-    background: var(--bg-primary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    padding: 1.25rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-
-  :global(.gen-item-top) {
-    display: flex;
+  .generate-secondary-btn {
+    display: inline-flex;
     align-items: center;
+    gap: 0.45rem;
+    background: var(--bg-primary);
+    color: var(--text-body);
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0.85rem 1.35rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .generate-secondary-btn:hover {
+    border-color: var(--brand-teal-light);
+    color: var(--brand-teal-deep);
+  }
+
+  /* Results layout */
+  .results-wrapper {
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .results-header-bar {
+    display: flex;
+    align-items: flex-start;
     justify-content: space-between;
-    margin-bottom: 0.35rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.75rem;
   }
 
-  :global(.gen-full-hangul) {
-    font-family: var(--font-korean);
-    font-size: 1.6rem;
-    font-weight: 900;
-    color: var(--text-main);
-  }
-
-  :global(.gen-score-badge) {
-    background: var(--gender-unisex-bg);
-    color: var(--gender-unisex);
-    font-size: 0.75rem;
+  .results-headline {
+    font-size: 1.35rem;
     font-weight: 800;
-    padding: 0.2rem 0.6rem;
-    border-radius: var(--radius-full);
-  }
-
-  :global(.gen-full-english) {
-    font-weight: 700;
-    color: var(--brand-teal-dark);
+    color: var(--text-main);
+    letter-spacing: -0.01em;
     margin-bottom: 0.2rem;
   }
 
-  :global(.gen-hanja-line) {
-    font-size: 0.85rem;
-    color: var(--accent-indigo);
-    font-weight: 600;
-    margin-bottom: 0.6rem;
-  }
-
-  :global(.gen-meaning) {
+  .results-count-note {
     font-size: 0.875rem;
     color: var(--text-muted);
-    line-height: 1.4;
+  }
+
+  .verified-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.775rem;
+    font-weight: 700;
+    color: var(--brand-teal-deep);
+    background: var(--brand-teal-surface);
+    padding: 0.35rem 0.75rem;
+    border-radius: var(--radius-full);
+  }
+
+  .gen-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .gen-item-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+
+  .gen-item-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--brand-teal-light);
+    box-shadow: var(--shadow-md);
+  }
+
+  .gen-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     margin-bottom: 1rem;
   }
 
-  :global(.gen-detail-link) {
-    font-size: 0.8125rem;
-    font-weight: 700;
-    color: var(--brand-teal-dark);
+  .char-count-pill {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-light);
+    background: var(--bg-surface);
+    padding: 0.2rem 0.55rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-subtle);
   }
 
-  @media (max-width: 900px) {
-    .generator-form {
-      grid-template-columns: 1fr;
+  .gen-name-block {
+    margin-bottom: 0.85rem;
+  }
+
+  .gen-full-hangul {
+    font-family: var(--font-korean);
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--text-main);
+    line-height: 1.1;
+  }
+
+  .gen-full-english {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--brand-teal-deep);
+    margin-top: 0.25rem;
+  }
+
+  .gen-full-hanja {
+    font-family: var(--font-korean);
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--accent-indigo);
+    margin-top: 0.15rem;
+  }
+
+  .gen-name-meaning {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 1rem;
+  }
+
+  .gen-harmony-box {
+    background: var(--bg-surface);
+    border-left: 3px solid var(--brand-teal);
+    padding: 0.75rem 0.85rem;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    margin-bottom: 1.25rem;
+  }
+
+  .harmony-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--brand-teal-deep);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin-bottom: 0.25rem;
+  }
+
+  .harmony-text {
+    font-size: 0.8125rem;
+    color: var(--text-body);
+    line-height: 1.45;
+    margin: 0;
+  }
+
+  .gen-card-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 0.85rem;
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .gen-listen-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: none;
+    border: none;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0.3rem 0.5rem;
+    border-radius: var(--radius-sm);
+    transition: color 0.15s ease, background 0.15s ease;
+  }
+
+  .gen-listen-btn:hover {
+    color: var(--brand-teal-deep);
+    background: var(--brand-teal-surface);
+  }
+
+  .gen-explore-link {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--brand-teal-deep);
+    text-decoration: none;
+  }
+
+  .gen-explore-link:hover {
+    text-decoration: underline;
+  }
+
+  .harmony-education-callout {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.75rem;
+    border-left: 4px solid var(--accent-indigo);
+  }
+
+  .callout-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--text-main);
+    margin-bottom: 0.45rem;
+  }
+
+  .callout-text {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .loading-state, .no-results-card {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3rem 1.5rem;
+    color: var(--text-muted);
+  }
+
+  .loading-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--border-color);
+    border-top-color: var(--brand-teal);
+    border-radius: 50%;
+    margin: 0 auto 1rem auto;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  @media (max-width: 1024px) {
+    .generator-controls {
+      grid-template-columns: repeat(2, 1fr);
     }
-    .gen-output-grid {
-      grid-template-columns: 1fr;
+    .gen-cards-grid {
+      grid-template-columns: repeat(2, 1fr);
     }
+  }
+
+  @media (max-width: 640px) {
+    .generator-wrapper { padding: 1.5rem; }
+    .generator-banner { flex-direction: column; gap: 1rem; }
+    .generator-controls { grid-template-columns: 1fr; }
+    .gen-cards-grid { grid-template-columns: 1fr; }
+    .control-actions { flex-direction: column; width: 100%; }
+    .generate-submit-btn, .generate-secondary-btn { width: 100%; justify-content: center; }
   }
 </style>

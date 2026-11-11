@@ -70,6 +70,42 @@ const {
     return cachedIndex || [];
   }
 
+  // Common Romanization variations in Korean names
+  function generateSearchVariants(text: string): string[] {
+    const raw = text.toLowerCase().trim();
+    const clean = raw.replace(/[-\s]/g, '');
+    const variants = new Set<string>([raw, clean]);
+
+    // Phonetic replacements
+    const rules: [RegExp, string][] = [
+      [/jeong/g, 'jung'],
+      [/jung/g, 'jeong'],
+      [/woo/g, 'u'],
+      [/oo/g, 'u'],
+      [/choi/g, 'choe'],
+      [/choe/g, 'choi'],
+      [/park/g, 'bak'],
+      [/bak/g, 'park'],
+      [/lee/g, 'yi'],
+      [/seo/g, 'suh'],
+      [/suh/g, 'seo'],
+      [/hyeon/g, 'hyun'],
+      [/hyun/g, 'hyeon'],
+      [/yeong/g, 'young'],
+      [/young/g, 'yeong'],
+      [/gyu/g, 'kyu'],
+      [/kyu/g, 'gyu'],
+    ];
+
+    for (const [pattern, replacement] of rules) {
+      if (pattern.test(clean)) {
+        variants.add(clean.replace(pattern, replacement));
+      }
+    }
+
+    return Array.from(variants);
+  }
+
   // Initialize search widgets on page
   document.querySelectorAll('[data-search-container]').forEach((container) => {
     const input = container.querySelector<HTMLInputElement>('[data-search-input]');
@@ -79,6 +115,8 @@ const {
 
     if (!input || !dropdown || !resultsContainer) return;
 
+    let selectedIndex = -1;
+
     // Preload index on user focus
     input.addEventListener('focus', () => {
       loadSearchIndex();
@@ -86,6 +124,8 @@ const {
 
     async function executeSearch(query: string) {
       const q = query.trim().toLowerCase();
+      selectedIndex = -1;
+
       if (!q) {
         dropdown.classList.remove('open');
         input.setAttribute('aria-expanded', 'false');
@@ -93,28 +133,43 @@ const {
       }
 
       const index = await loadSearchIndex();
+      const variants = generateSearchVariants(q);
+
       const matches = index
-        .filter((item) =>
-          item.e.toLowerCase().includes(q) ||
-          item.h.includes(q) ||
-          item.j.includes(q) ||
-          item.m.toLowerCase().includes(q) ||
-          item.s.includes(q)
-        )
+        .filter((item) => {
+          const itemEnglishClean = item.e.toLowerCase().replace(/[-\s]/g, '');
+          const itemSlugClean = item.s.replace(/[-\s]/g, '');
+          const meaningLower = item.m.toLowerCase();
+
+          // Direct Hangul / Hanja substring match
+          if (item.h.includes(q) || (item.j && item.j.includes(q))) return true;
+
+          // Meaning match
+          if (meaningLower.includes(q)) return true;
+
+          // English variant match
+          for (const v of variants) {
+            if (itemEnglishClean.includes(v) || itemSlugClean.includes(v)) {
+              return true;
+            }
+          }
+
+          return false;
+        })
         .slice(0, 8);
 
       if (matches.length === 0) {
         resultsContainer.innerHTML = `
           <div class="no-matches-box">
             <p>No Korean names found for "<strong>${escapeHtml(query)}</strong>".</p>
-            <span class="search-hint">Try searching by English sound (e.g. "Jun"), Hangul (e.g. "하은"), or meaning (e.g. "Grace").</span>
+            <span class="search-hint">Try searching by English sound (e.g. "Jun", "Minjun"), Hangul (e.g. "민준"), or meaning (e.g. "Grace", "Wisdom").</span>
           </div>
         `;
       } else {
         resultsContainer.innerHTML = matches
           .map(
-            (item) => `
-          <a href="/name/${item.s}" class="search-result-row" role="option">
+            (item, idx) => `
+          <a href="/name/${item.s}" class="search-result-row" role="option" data-result-index="${idx}">
             <div class="result-char-block">
               <span class="result-hangul">${item.h}</span>
               ${item.j ? `<span class="result-hanja">(${item.j})</span>` : ''}
@@ -140,6 +195,18 @@ const {
       return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
+    function updateHighlight() {
+      const rows = resultsContainer.querySelectorAll<HTMLAnchorElement>('.search-result-row');
+      rows.forEach((row, idx) => {
+        if (idx === selectedIndex) {
+          row.classList.add('focused');
+          row.scrollIntoView({ block: 'nearest' });
+        } else {
+          row.classList.remove('focused');
+        }
+      });
+    }
+
     input.addEventListener('input', (e) => {
       const target = e.target as HTMLInputElement;
       executeSearch(target.value);
@@ -160,9 +227,29 @@ const {
       }
     });
 
-    // Keyboard navigation
+    // Keyboard navigation (ArrowDown, ArrowUp, Enter, Escape)
     input.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
+      if (!dropdown.classList.contains('open')) return;
+      const rows = resultsContainer.querySelectorAll<HTMLAnchorElement>('.search-result-row');
+      if (rows.length === 0) return;
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        selectedIndex = (selectedIndex + 1) % rows.length;
+        updateHighlight();
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        selectedIndex = (selectedIndex - 1 + rows.length) % rows.length;
+        updateHighlight();
+      } else if (e.key === 'Enter') {
+        if (selectedIndex >= 0 && selectedIndex < rows.length) {
+          e.preventDefault();
+          rows[selectedIndex].click();
+        } else if (rows.length > 0) {
+          e.preventDefault();
+          rows[0].click();
+        }
+      } else if (e.key === 'Escape') {
         dropdown.classList.remove('open');
         input.setAttribute('aria-expanded', 'false');
       }
@@ -277,8 +364,10 @@ const {
     border-bottom: none;
   }
 
-  :global(.search-result-row:hover) {
+  :global(.search-result-row:hover),
+  :global(.search-result-row.focused) {
     background-color: var(--brand-teal-surface);
+    outline: none;
   }
 
   :global(.result-char-block) {

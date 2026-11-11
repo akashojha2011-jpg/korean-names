@@ -3,6 +3,7 @@ import { KOREAN_NAMES } from '../data/names';
 import { SURNAMES } from '../data/surnames';
 import { HANJA_ENTRIES } from '../data/hanja';
 import { THEME_CATEGORIES } from '../data/categories';
+import { EDUCATIONAL_GUIDES } from '../data/guides';
 
 export const GET: APIRoute = () => {
   const siteUrl = 'https://www.korean-names.info';
@@ -14,6 +15,7 @@ export const GET: APIRoute = () => {
     '/gender/unisex',
     '/surname',
     '/hanja',
+    '/guides',
     '/letter/a',
     '/tools/name-generator',
     '/tools/favorite-names',
@@ -27,6 +29,7 @@ export const GET: APIRoute = () => {
 
   const letterPages = 'abcdefghijklmnopqrstuvwxyz'.split('').map((l) => `/letter/${l}`);
   const themePages = THEME_CATEGORIES.map((c) => `/theme/${c.slug}`);
+  const guidePages = EDUCATIONAL_GUIDES.map((g) => `/guides/${g.slug}`);
   const surnamePages = SURNAMES.map((s) => `/surname/${s.slug}`);
   const hanjaPages = HANJA_ENTRIES.flatMap((h) => [
     `/hanja/${encodeURIComponent(h.hangul)}`,
@@ -38,6 +41,7 @@ export const GET: APIRoute = () => {
     ...staticPages,
     ...letterPages,
     ...themePages,
+    ...guidePages,
     ...surnamePages,
     ...hanjaPages,
     ...namePages,

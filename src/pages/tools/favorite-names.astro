@@ -1,85 +1,503 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { KOREAN_NAMES } from '../../data/names';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+
+const breadcrumbItems = [
+  { label: 'Home', href: '/' },
+  { label: 'Tools', href: '/tools/name-generator' },
+  { label: 'Saved Favorites' },
+];
 ---
 
 <BaseLayout
-  title="My Saved Favorites - HanName Korean Names"
-  description="View and manage your bookmarked list of favorite Korean baby names."
+  title="My Saved Favorite Korean Names | Korean Names Dictionary"
+  description="View, organize, and export your personal shortlist of bookmarked Korean baby names. Saved privately on your device."
 >
-  <div class="container page-wrapper">
-    <nav class="breadcrumbs">
-      <a href="/">Home</a> &rsaquo;
-      <span>Tools</span> &rsaquo;
-      <span class="current">Saved Favorites</span>
-    </nav>
+  <div class="fav-container">
+    <Breadcrumb items={breadcrumbItems} />
 
-    <header class="card fav-hero">
-      <h1 class="fav-title">⭐ Your Saved Favorite Names</h1>
-      <p class="fav-desc">Here are the Korean names you have star-bookmarked. They are saved locally on your device.</p>
+    <header class="fav-header">
+      <div class="header-badge">⭐ Personal Shortlist</div>
+      <h1 class="fav-title">Your Saved Favorite Names</h1>
+      <p class="fav-subtitle">
+        Curate your personal collection of Korean names as you browse. Your selections are saved privately on your device's browser and can be exported or printed for family discussion.
+      </p>
+
+      <div id="fav-actions-bar" class="fav-actions-bar" style="display: none;">
+        <span id="fav-count-text" class="fav-count-pill">0 names saved</span>
+        <div class="action-buttons-group">
+          <button id="copy-list-btn" class="fav-tool-btn" title="Copy names to clipboard">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            <span id="copy-btn-text">Copy List</span>
+          </button>
+          <button id="print-list-btn" class="fav-tool-btn" title="Print shortlist">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+            <span>Print List</span>
+          </button>
+          <button id="clear-all-btn" class="fav-tool-btn text-danger" title="Clear all saved names">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            <span>Clear All</span>
+          </button>
+        </div>
+      </div>
     </header>
 
-    <div id="favorites-container" class="grid grid-cols-3">
-      <div class="card loading-placeholder">Loading your saved names...</div>
+    <div id="favorites-grid" class="fav-grid">
+      <div class="loading-state card">
+        <div class="loading-spinner"></div>
+        <p>Loading your saved names...</p>
+      </div>
     </div>
   </div>
 </BaseLayout>
 
-<script is:inline define:vars={{ namesList: KOREAN_NAMES }}>
-  function renderSavedFavorites() {
-    const container = document.getElementById('favorites-container');
-    const savedSlugs = JSON.parse(localStorage.getItem('hanname-saved-names') || '[]');
+<script>
+  interface SearchEntry {
+    s: string; // slug
+    e: string; // english
+    h: string; // hangul
+    j: string; // hanja
+    g: string; // gender
+    m: string; // meaning
+  }
 
-    if (!container) return;
+  const STORAGE_KEY = 'korean_name_favorites';
+  const LEGACY_STORAGE_KEY = 'hanname-saved-names';
+
+  function getSavedSlugs(): string[] {
+    try {
+      const modern = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      if (modern && modern.length > 0) return modern;
+      // Fallback for legacy key
+      const legacy = JSON.parse(localStorage.getItem(LEGACY_STORAGE_KEY) || '[]');
+      return legacy;
+    } catch {
+      return [];
+    }
+  }
+
+  function saveSlugs(slugs: string[]) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(slugs));
+    localStorage.setItem(LEGACY_STORAGE_KEY, JSON.stringify(slugs));
+    // Dispatch event for Navbar counter
+    window.dispatchEvent(new CustomEvent('favoritesUpdated', { detail: { count: slugs.length } }));
+  }
+
+  async function renderFavorites() {
+    const grid = document.getElementById('favorites-grid');
+    const actionsBar = document.getElementById('fav-actions-bar');
+    const countText = document.getElementById('fav-count-text');
+    if (!grid) return;
+
+    const savedSlugs = getSavedSlugs();
 
     if (savedSlugs.length === 0) {
-      container.innerHTML = `
-        <div class="card empty-fav-box" style="grid-column: 1 / -1; text-align: center; padding: 4rem;">
-          <div style="font-size: 3rem; margin-bottom: 1rem;">⭐</div>
-          <h3>No saved names yet!</h3>
-          <p style="color: var(--text-muted); margin: 0.5rem 0 1.5rem 0;">Click the star button on any name card across the site to bookmark it here.</p>
-          <a href="/gender/boy" class="highlight-link" style="display: inline-block; padding: 0.6rem 1.5rem;">Explore Names Now &rarr;</a>
+      if (actionsBar) actionsBar.style.display = 'none';
+      grid.innerHTML = `
+        <div class="empty-state-card card">
+          <div class="empty-icon">⭐</div>
+          <h2 class="empty-title">Your shortlist is currently empty</h2>
+          <p class="empty-desc">
+            As you explore Korean names across our dictionary, click the star bookmark icon on any name card to save it here for comparison.
+          </p>
+          <div class="empty-nav-pills">
+            <a href="/gender/girl" class="empty-nav-pill">Browse Girl Names &rarr;</a>
+            <a href="/gender/boy" class="empty-nav-pill">Browse Boy Names &rarr;</a>
+            <a href="/gender/unisex" class="empty-nav-pill">Browse Unisex Names &rarr;</a>
+            <a href="/surname" class="empty-nav-pill">Explore Surnames &rarr;</a>
+          </div>
         </div>
       `;
       return;
     }
 
-    const matches = namesList.filter(n => savedSlugs.includes(n.slug));
+    if (actionsBar) actionsBar.style.display = 'flex';
+    if (countText) countText.textContent = `${savedSlugs.length} ${savedSlugs.length === 1 ? 'name' : 'names'} saved`;
 
-    container.innerHTML = matches.map(name => `
-      <div class="card name-card">
-        <div class="card-top" style="display:flex; justify-between; align-items:center; margin-bottom: 1rem;">
-          <span class="badge badge-${name.gender}">${name.gender}</span>
-          <button class="remove-fav-btn" data-slug="${name.slug}" style="font-size:0.8rem; color:var(--accent-crimson); font-weight:700;">&times; Remove</button>
-        </div>
-        <a href="/name/${name.slug}" class="name-main-link" style="display:block; margin-bottom: 0.75rem;">
-          <div style="font-family: var(--font-korean); font-size: 2rem; font-weight: 900;">${name.hangul} <span style="font-size:1.1rem; color:var(--text-muted);">(${name.hanja})</span></div>
-          <h3 style="font-size: 1.1rem; color: var(--accent-crimson);">${name.english}</h3>
-        </a>
-        <p style="font-size:0.875rem; color:var(--text-muted); margin-bottom:1rem;">${name.overallMeaning}</p>
-        <a href="/name/${name.slug}" style="font-size:0.8125rem; font-weight:700; color:var(--text-main);">View Details &rarr;</a>
-      </div>
-    `).join('');
+    try {
+      const res = await fetch('/search-index.json');
+      if (!res.ok) throw new Error('Failed to load name index');
+      const allNames: SearchEntry[] = await res.json();
+      const matched = allNames.filter(n => savedSlugs.includes(n.s));
 
-    // Attach click listener for remove buttons
-    container.querySelectorAll('.remove-fav-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const slug = btn.getAttribute('data-slug');
-        let current = JSON.parse(localStorage.getItem('hanname-saved-names') || '[]');
-        current = current.filter(s => s !== slug);
-        localStorage.setItem('hanname-saved-names', JSON.stringify(current));
-        renderSavedFavorites();
+      if (matched.length === 0) {
+        grid.innerHTML = `
+          <div class="empty-state-card card">
+            <p>Saved names could not be found in the current index.</p>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = matched.map((name) => `
+        <article class="fav-card card" data-slug="${name.s}">
+          <div class="fav-card-header">
+            <span class="badge badge-${name.g}">${name.g.toUpperCase()}</span>
+            <button class="remove-item-btn" data-remove-slug="${name.s}" aria-label="Remove ${name.e} from favorites">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              <span>Remove</span>
+            </button>
+          </div>
+
+          <div class="fav-card-body">
+            <a href="/name/${name.s}" class="fav-name-link">
+              <span class="fav-hangul">${name.h}</span>
+              ${name.j ? `<span class="fav-hanja">(${name.j})</span>` : ''}
+              <h2 class="fav-english">${name.e}</h2>
+            </a>
+            <p class="fav-meaning">${escapeHtml(name.m)}</p>
+          </div>
+
+          <div class="fav-card-footer">
+            <a href="/name/${name.s}" class="fav-explore-link">
+              <span>View Full Character Breakdown</span>
+              <span aria-hidden="true">&rarr;</span>
+            </a>
+          </div>
+        </article>
+      `).join('');
+
+      // Attach remove handlers
+      grid.querySelectorAll<HTMLButtonElement>('[data-remove-slug]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const slugToRemove = btn.getAttribute('data-remove-slug');
+          if (!slugToRemove) return;
+          const current = getSavedSlugs().filter(s => s !== slugToRemove);
+          saveSlugs(current);
+          renderFavorites();
+        });
       });
-    });
+
+      // Copy list handler
+      const copyBtn = document.getElementById('copy-list-btn');
+      const copyBtnText = document.getElementById('copy-btn-text');
+      copyBtn?.addEventListener('click', () => {
+        const text = matched.map((n, i) => `${i + 1}. ${n.h} (${n.e}${n.j ? `, ${n.j}` : ''}) - ${n.m}`).join('\n');
+        navigator.clipboard.writeText(text).then(() => {
+          if (copyBtnText) copyBtnText.textContent = 'Copied!';
+          setTimeout(() => {
+            if (copyBtnText) copyBtnText.textContent = 'Copy List';
+          }, 2000);
+        });
+      });
+
+      // Print handler
+      const printBtn = document.getElementById('print-list-btn');
+      printBtn?.addEventListener('click', () => {
+        window.print();
+      });
+
+      // Clear all handler
+      const clearBtn = document.getElementById('clear-all-btn');
+      clearBtn?.addEventListener('click', () => {
+        if (confirm('Are you sure you want to remove all saved names from your shortlist?')) {
+          saveSlugs([]);
+          renderFavorites();
+        }
+      });
+
+    } catch (e) {
+      grid.innerHTML = `<div class="card error-box"><p>Unable to load favorites. Please refresh the page.</p></div>`;
+    }
   }
 
-  renderSavedFavorites();
+  function escapeHtml(str: string): string {
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  // Render on page load
+  renderFavorites();
 </script>
 
 <style>
-  .page-wrapper { padding-top: 2rem; padding-bottom: 4rem; }
-  .breadcrumbs { font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1.5rem; display: flex; gap: 0.5rem; }
-  .fav-hero { padding: 2.5rem; margin-bottom: 3rem; }
-  .fav-title { font-size: 2.2rem; }
-  .fav-desc { color: var(--text-muted); font-size: 1rem; }
+  .fav-container {
+    max-width: var(--max-width-content);
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 5rem 1.5rem;
+  }
+
+  .fav-header {
+    margin-top: 1.5rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .header-badge {
+    display: inline-block;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--brand-teal-deep);
+    background: var(--brand-teal-surface);
+    padding: 0.35rem 0.85rem;
+    border-radius: var(--radius-full);
+    margin-bottom: 0.85rem;
+  }
+
+  .fav-title {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--text-main);
+    letter-spacing: -0.02em;
+    margin-bottom: 0.75rem;
+    line-height: 1.2;
+  }
+
+  .fav-subtitle {
+    font-size: 1.0625rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    max-width: 720px;
+  }
+
+  .fav-actions-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1.75rem;
+    padding: 1rem 1.25rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+  }
+
+  .fav-count-pill {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--text-main);
+  }
+
+  .action-buttons-group {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+  }
+
+  .fav-tool-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    padding: 0.5rem 0.85rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+    background: var(--bg-primary);
+    color: var(--text-body);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .fav-tool-btn:hover {
+    border-color: var(--brand-teal);
+    color: var(--brand-teal-deep);
+    background: var(--brand-teal-surface);
+  }
+
+  .fav-tool-btn.text-danger:hover {
+    border-color: var(--accent-crimson);
+    color: var(--accent-crimson);
+    background: #fdf2f2;
+  }
+
+  .fav-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .fav-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    background: var(--bg-surface);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .fav-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--brand-teal-light);
+  }
+
+  .fav-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+  }
+
+  .remove-item-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: none;
+    border: none;
+    font-size: 0.775rem;
+    font-weight: 600;
+    color: var(--text-light);
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-sm);
+    transition: color 0.15s ease, background 0.15s ease;
+  }
+
+  .remove-item-btn:hover {
+    color: var(--accent-crimson);
+    background: #fdf2f2;
+  }
+
+  .fav-name-link {
+    display: block;
+    text-decoration: none;
+    margin-bottom: 0.75rem;
+  }
+
+  .fav-hangul {
+    font-family: var(--font-korean);
+    font-size: 2.25rem;
+    font-weight: 900;
+    color: var(--text-main);
+    line-height: 1.1;
+    margin-right: 0.5rem;
+  }
+
+  .fav-hanja {
+    font-family: var(--font-korean);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--accent-indigo);
+  }
+
+  .fav-english {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--brand-teal-deep);
+    margin-top: 0.35rem;
+    letter-spacing: -0.01em;
+  }
+
+  .fav-meaning {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 1.25rem;
+  }
+
+  .fav-card-footer {
+    border-top: 1px solid var(--border-subtle);
+    padding-top: 1rem;
+  }
+
+  .fav-explore-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--brand-teal-deep);
+    text-decoration: none;
+  }
+
+  .fav-explore-link:hover {
+    text-decoration: underline;
+  }
+
+  /* Empty State */
+  .empty-state-card {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4.5rem 2rem;
+    background: var(--bg-surface);
+    border: 2px dashed var(--border-color);
+    border-radius: var(--radius-lg);
+  }
+
+  .empty-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: var(--accent-gold);
+  }
+
+  .empty-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-main);
+    margin-bottom: 0.5rem;
+  }
+
+  .empty-desc {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    max-width: 500px;
+    margin: 0 auto 2rem auto;
+    line-height: 1.6;
+  }
+
+  .empty-nav-pills {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .empty-nav-pill {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--brand-teal-deep);
+    background: var(--brand-teal-surface);
+    border: 1px solid var(--brand-teal-light);
+    padding: 0.65rem 1.25rem;
+    border-radius: var(--radius-full);
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .empty-nav-pill:hover {
+    background: var(--brand-teal);
+    color: white;
+  }
+
+  .loading-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-muted);
+  }
+
+  .loading-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--border-color);
+    border-top-color: var(--brand-teal);
+    border-radius: 50%;
+    margin: 0 auto 1rem auto;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  @media (max-width: 768px) {
+    .fav-header { margin-top: 1rem; }
+    .fav-title { font-size: 2rem; }
+    .fav-actions-bar { flex-direction: column; align-items: flex-start; }
+    .action-buttons-group { width: 100%; justify-content: space-between; }
+    .fav-grid { grid-template-columns: 1fr; }
+  }
+
+  @media print {
+    :global(nav), :global(footer), .breadcrumbs, .fav-actions-bar, .remove-item-btn, .fav-explore-link {
+      display: none !important;
+    }
+    .fav-card {
+      border: 1px solid #ccc;
+      page-break-inside: avoid;
+    }
+  }
 </style>

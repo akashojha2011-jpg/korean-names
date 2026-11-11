@@ -1,0 +1,260 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import { EDUCATIONAL_GUIDES } from '../../data/guides';
+
+const breadcrumbItems = [
+  { label: 'Home', href: '/' },
+  { label: 'Educational Guides' },
+];
+
+const categoryLabels: Record<string, string> = {
+  'naming-culture': 'Naming Culture & Traditions',
+  'linguistics': 'Hanja & Linguistic Science',
+  'history': 'Clan Heritage & History',
+  'practical-guide': 'Practical Naming Guides',
+};
+---
+
+<BaseLayout
+  title="Korean Naming Guides & Cultural Education | Korean Names Dictionary"
+  description="Authoritative, well-researched guides on Korean naming culture, Hanja characters, ancestral clans, pronunciation, and choosing an authentic Korean name."
+>
+  <div class="guides-hub-container">
+    <Breadcrumb items={breadcrumbItems} />
+
+    <header class="hub-header">
+      <div class="hub-badge">📚 Editorial & Research Library</div>
+      <h1 class="hub-title">Korean Naming Culture & Linguistic Guides</h1>
+      <p class="hub-subtitle">
+        Explore researched, culturally verified essays on Korean onomastics, the Supreme Court Hanja registry, ancestral clan seats (본관), and the art of choosing a meaningful name.
+      </p>
+
+      <!-- Editorial Standards Trust Banner -->
+      <div class="standards-banner card">
+        <div class="standards-icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        </div>
+        <div class="standards-content">
+          <strong>Linguistic Integrity & Verified Sources:</strong>
+          Our guides are compiled using official guidelines from the National Institute of Korean Language (국립국어원), civil registry statutes of the Supreme Court of Korea (대법원), and peer-reviewed Korean cultural history archives.
+        </div>
+      </div>
+    </header>
+
+    <!-- Articles Grid -->
+    <div class="articles-grid">
+      {EDUCATIONAL_GUIDES.map((guide, index) => (
+        <article class="article-card card">
+          <div class="card-meta-bar">
+            <span class="category-tag">{categoryLabels[guide.category] || guide.category}</span>
+            <span class="read-time-pill">{guide.readTime}</span>
+          </div>
+
+          <div class="card-body-block">
+            <span class="article-order-num">0{index + 1}</span>
+            <a href={`/guides/${guide.slug}`} class="article-title-link">
+              <h2 class="article-title">{guide.title}</h2>
+            </a>
+            <div class="article-korean-title">{guide.koreanTitle}</div>
+            <p class="article-excerpt">{guide.excerpt}</p>
+          </div>
+
+          <div class="card-footer-block">
+            <a href={`/guides/${guide.slug}`} class="read-article-btn">
+              <span>Read Full Guide</span>
+              <span class="btn-arrow" aria-hidden="true">&rarr;</span>
+            </a>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .guides-hub-container {
+    max-width: var(--max-width-content);
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 5rem 1.5rem;
+  }
+
+  .hub-header {
+    margin-top: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .hub-badge {
+    display: inline-block;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--brand-teal-deep);
+    background: var(--brand-teal-surface);
+    padding: 0.35rem 0.85rem;
+    border-radius: var(--radius-full);
+    margin-bottom: 0.85rem;
+  }
+
+  .hub-title {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--text-main);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    margin-bottom: 0.75rem;
+  }
+
+  .hub-subtitle {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    max-width: 760px;
+    margin-bottom: 1.75rem;
+  }
+
+  .standards-banner {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--brand-teal);
+    padding: 1.25rem 1.5rem;
+    border-radius: var(--radius-md);
+  }
+
+  .standards-icon {
+    color: var(--brand-teal-deep);
+    flex-shrink: 0;
+  }
+
+  .standards-content {
+    font-size: 0.875rem;
+    color: var(--text-body);
+    line-height: 1.55;
+  }
+
+  .standards-content strong {
+    color: var(--text-main);
+  }
+
+  .articles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 2rem;
+  }
+
+  .article-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+
+  .article-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--brand-teal-light);
+  }
+
+  .card-meta-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+  }
+
+  .category-tag {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--brand-teal-deep);
+    background: var(--brand-teal-surface);
+    padding: 0.25rem 0.65rem;
+    border-radius: var(--radius-sm);
+  }
+
+  .read-time-pill {
+    font-size: 0.775rem;
+    font-weight: 600;
+    color: var(--text-light);
+  }
+
+  .article-order-num {
+    font-family: var(--font-korean);
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: var(--brand-teal-light);
+    display: block;
+    margin-bottom: 0.35rem;
+  }
+
+  .article-title-link {
+    text-decoration: none;
+  }
+
+  .article-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--text-main);
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    margin-bottom: 0.35rem;
+    transition: color 0.15s ease;
+  }
+
+  .article-card:hover .article-title {
+    color: var(--brand-teal-deep);
+  }
+
+  .article-korean-title {
+    font-family: var(--font-korean);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--accent-indigo);
+    margin-bottom: 0.85rem;
+  }
+
+  .article-excerpt {
+    font-size: 0.925rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+
+  .card-footer-block {
+    border-top: 1px solid var(--border-subtle);
+    padding-top: 1.25rem;
+  }
+
+  .read-article-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--brand-teal-deep);
+    text-decoration: none;
+    transition: transform 0.15s ease;
+  }
+
+  .read-article-btn:hover .btn-arrow {
+    transform: translateX(4px);
+  }
+
+  .btn-arrow {
+    transition: transform 0.15s ease;
+  }
+
+  @media (max-width: 768px) {
+    .hub-title { font-size: 2rem; }
+    .articles-grid { grid-template-columns: 1fr; }
+    .standards-banner { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+  }
+</style>

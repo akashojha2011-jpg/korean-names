@@ -5,6 +5,7 @@ import { KOREAN_NAMES } from '../data/names';
 import { THEME_CATEGORIES } from '../data/categories';
 import { SURNAMES } from '../data/surnames';
 import { HANJA_ENTRIES } from '../data/hanja';
+import { EDUCATIONAL_GUIDES } from '../data/guides';
 
 const breadcrumbs = [
   { label: 'Home', href: '/' },
@@ -39,6 +40,17 @@ const letters = 'abcdefghijklmnopqrstuvwxyz'.split('');
           <li><a href="/hanja">Sino-Korean Hanja Directory (漢字)</a></li>
           <li><a href="/tools/name-generator">Baby Name Generator & Harmony Tool</a></li>
           <li><a href="/tools/favorite-names">Saved Bookmarked Names</a></li>
+        </ul>
+      </section>
+
+      <!-- Educational Guides -->
+      <section class="sitemap-section-card">
+        <h2 class="sitemap-section-title">Educational Guides (문화 및 작명 가이드)</h2>
+        <ul class="sitemap-links-list">
+          <li><a href="/guides">All Educational Guides Hub</a></li>
+          {EDUCATIONAL_GUIDES.map(g => (
+            <li><a href={`/guides/${g.slug}`}>{g.title} ({g.koreanTitle})</a></li>
+          ))}
         </ul>
       </section>
 

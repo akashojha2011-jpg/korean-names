@@ -9,6 +9,9 @@ export const GET: APIRoute = () => {
     j: n.hanja,
     g: n.gender,
     m: n.overallMeaning,
+    t: n.themes || [],
+    c: n.syllableCount || 2,
+    l: n.firstLetter || n.english.charAt(0).toLowerCase(),
   }));
 
   return new Response(JSON.stringify(compactIndex), {

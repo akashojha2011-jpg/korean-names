@@ -1,0 +1,551 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import { EDUCATIONAL_GUIDES, type GuideArticle } from '../../data/guides';
+
+export async function getStaticPaths() {
+  return EDUCATIONAL_GUIDES.map((guide) => ({
+    params: { slug: guide.slug },
+    props: { guide },
+  }));
+}
+
+interface Props {
+  guide: GuideArticle;
+}
+
+const { guide } = Astro.props;
+
+const breadcrumbItems = [
+  { label: 'Home', href: '/' },
+  { label: 'Guides', href: '/guides' },
+  { label: guide.title },
+];
+
+const relatedArticles = guide.relatedGuides
+  .map((relSlug) => EDUCATIONAL_GUIDES.find((g) => g.slug === relSlug))
+  .filter(Boolean) as GuideArticle[];
+
+// Article Schema.org structured data
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  'headline': guide.title,
+  'alternativeHeadline': guide.koreanTitle,
+  'description': guide.excerpt,
+  'inLanguage': 'en-US',
+  'datePublished': '2024-01-01',
+  'dateModified': '2026-01-01',
+  'author': {
+    '@type': 'Organization',
+    'name': 'Korean Names Dictionary Editorial Board',
+    'url': 'https://www.korean-names.info/author',
+  },
+  'publisher': {
+    '@type': 'Organization',
+    'name': 'Korean Names Dictionary',
+    'url': 'https://www.korean-names.info',
+    'logo': {
+      '@type': 'ImageObject',
+      'url': 'https://www.korean-names.info/logo.jpg',
+    },
+  },
+  'mainEntityOfPage': {
+    '@type': 'WebPage',
+    '@id': `https://www.korean-names.info/guides/${guide.slug}`,
+  },
+};
+---
+
+<BaseLayout
+  title={`${guide.title} | Korean Names Guide`}
+  description={guide.excerpt}
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
+
+  <article class="guide-article-container">
+    <Breadcrumb items={breadcrumbItems} />
+
+    <header class="article-header">
+      <div class="article-meta-badges">
+        <span class="meta-badge-cat">{guide.category.replace('-', ' ').toUpperCase()}</span>
+        <span class="meta-read-time">{guide.readTime}</span>
+        <span class="meta-date">{guide.publishedDate}</span>
+      </div>
+
+      <h1 class="article-main-title">{guide.title}</h1>
+      <div class="article-korean-subtitle">{guide.koreanTitle}</div>
+      <p class="article-deck">{guide.subtitle}</p>
+    </header>
+
+    <div class="article-layout-grid">
+      <!-- Main Content Column -->
+      <main class="article-content-col">
+        {guide.content.map((sec) => (
+          <section class="content-section">
+            <h2 class="section-title">{sec.sectionHeading}</h2>
+            {sec.paragraphs.map((p) => {
+              if (p.startsWith('•')) {
+                const listItems = p.split('\n').filter(Boolean);
+                return (
+                  <ul class="article-bullet-list">
+                    {listItems.map((li) => <li>{li.replace('• ', '')}</li>)}
+                  </ul>
+                );
+              }
+              return <p class="article-p">{p}</p>;
+            })}
+
+            {sec.callout && (
+              <aside class="article-callout-card">
+                <div class="callout-header">
+                  <span class="callout-icon" aria-hidden="true">💡</span>
+                  <strong class="callout-heading">{sec.callout.title}</strong>
+                </div>
+                <p class="callout-body">{sec.callout.body}</p>
+              </aside>
+            )}
+          </section>
+        ))}
+
+        <!-- References and Verified Sources Section -->
+        {guide.references && guide.references.length > 0 && (
+          <section class="references-section card">
+            <h3 class="references-heading">Verified Linguistic & Historical References</h3>
+            <p class="references-subtext">
+              Factual claims, civil registration guidelines, and phonetic analyses in this guide adhere to authoritative statutory and academic standards:
+            </p>
+            <ol class="references-list">
+              {guide.references.map((ref) => (
+                <li class="reference-item">
+                  <strong class="ref-title">{ref.title}</strong>
+                  <span class="ref-source">— {ref.source}</span>
+                </li>
+              ))}
+            </ol>
+          </section>
+        )}
+
+        <!-- Editorial Standards Callout -->
+        <footer class="author-review-box card">
+          <div class="author-icon" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          </div>
+          <div>
+            <h4 class="author-box-title">Editorial Review & Linguistic Compliance</h4>
+            <p class="author-box-desc">
+              All Korean naming guides are maintained and reviewed according to the official Hanja for Personal Names registry (*대법원 인명용 한자*) maintained by the Supreme Court of the Republic of Korea, and the Revised Romanization guidelines established by the National Institute of Korean Language (*국립국어원*).
+            </p>
+            <a href="/author" class="author-box-link">Learn more about our editorial standards &rarr;</a>
+          </div>
+        </footer>
+      </main>
+
+      <!-- Sidebar Column -->
+      <aside class="article-sidebar-col">
+        <!-- Table of contents -->
+        <div class="sidebar-widget toc-widget card">
+          <h3 class="widget-title">Table of Contents</h3>
+          <nav class="toc-nav">
+            <ol class="toc-list">
+              {guide.content.map((sec, idx) => (
+                <li>
+                  <a href={`#sec-${idx + 1}`} class="toc-link">{sec.sectionHeading}</a>
+                </li>
+              ))}
+            </ol>
+          </nav>
+        </div>
+
+        <!-- Related guides -->
+        {relatedArticles.length > 0 && (
+          <div class="sidebar-widget related-guides-widget card">
+            <h3 class="widget-title">Related Naming Guides</h3>
+            <div class="related-list">
+              {relatedArticles.map((rel) => (
+                <a href={`/guides/${rel.slug}`} class="related-guide-link">
+                  <span class="rel-read-time">{rel.readTime}</span>
+                  <h4 class="rel-title">{rel.title}</h4>
+                  <span class="rel-arrow" aria-hidden="true">&rarr;</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <!-- Quick tool CTA -->
+        <div class="sidebar-widget tool-cta-widget card">
+          <div class="cta-icon" aria-hidden="true">✨</div>
+          <h3 class="widget-title">Try the Name Generator</h3>
+          <p class="cta-desc">Pair your family surname with verified Korean given names to discover phonetic flow and character harmony.</p>
+          <a href="/tools/name-generator" class="sidebar-action-btn">Open Name Generator &rarr;</a>
+        </div>
+      </aside>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .guide-article-container {
+    max-width: var(--max-width-content);
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 5rem 1.5rem;
+  }
+
+  .article-header {
+    margin-top: 1.5rem;
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .article-meta-badges {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.25rem;
+  }
+
+  .meta-badge-cat {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--brand-teal-deep);
+    background: var(--brand-teal-surface);
+    padding: 0.3rem 0.75rem;
+    border-radius: var(--radius-sm);
+  }
+
+  .meta-read-time, .meta-date {
+    font-size: 0.8125rem;
+    color: var(--text-light);
+  }
+
+  .article-main-title {
+    font-size: 2.75rem;
+    font-weight: 900;
+    color: var(--text-main);
+    letter-spacing: -0.025em;
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+  }
+
+  .article-korean-subtitle {
+    font-family: var(--font-korean);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--accent-indigo);
+    margin-bottom: 1.25rem;
+  }
+
+  .article-deck {
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    max-width: 820px;
+  }
+
+  .article-layout-grid {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 3.5rem;
+    align-items: start;
+  }
+
+  .article-content-col {
+    min-width: 0;
+  }
+
+  .content-section {
+    margin-bottom: 3rem;
+  }
+
+  .section-title {
+    font-size: 1.625rem;
+    font-weight: 800;
+    color: var(--text-main);
+    letter-spacing: -0.015em;
+    margin-bottom: 1.25rem;
+    line-height: 1.3;
+  }
+
+  .article-p {
+    font-size: 1.0625rem;
+    color: var(--text-body);
+    line-height: 1.75;
+    margin-bottom: 1.35rem;
+  }
+
+  .article-bullet-list {
+    margin: 1rem 0 1.5rem 1.5rem;
+    list-style-type: disc;
+  }
+
+  .article-bullet-list li {
+    font-size: 1.025rem;
+    color: var(--text-body);
+    line-height: 1.65;
+    margin-bottom: 0.65rem;
+  }
+
+  .article-callout-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--brand-teal);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    margin: 1.75rem 0;
+  }
+
+  .callout-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .callout-heading {
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--brand-teal-deep);
+  }
+
+  .callout-body {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* References Section */
+  .references-section {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 2rem;
+    margin-top: 3.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .references-heading {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--text-main);
+    margin-bottom: 0.5rem;
+  }
+
+  .references-subtext {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin-bottom: 1.25rem;
+    line-height: 1.5;
+  }
+
+  .references-list {
+    padding-left: 1.25rem;
+    margin: 0;
+  }
+
+  .reference-item {
+    font-size: 0.875rem;
+    color: var(--text-body);
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+  }
+
+  .ref-title {
+    color: var(--text-main);
+  }
+
+  .ref-source {
+    color: var(--text-light);
+  }
+
+  /* Author Review Box */
+  .author-review-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.25rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.75rem;
+  }
+
+  .author-icon {
+    color: var(--brand-teal-deep);
+    flex-shrink: 0;
+    margin-top: 0.15rem;
+  }
+
+  .author-box-title {
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--text-main);
+    margin-bottom: 0.35rem;
+  }
+
+  .author-box-desc {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 0.75rem;
+  }
+
+  .author-box-link {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--brand-teal-deep);
+    text-decoration: none;
+  }
+
+  .author-box-link:hover {
+    text-decoration: underline;
+  }
+
+  /* Sidebar widgets */
+  .article-sidebar-col {
+    position: sticky;
+    top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+  }
+
+  .sidebar-widget {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+  }
+
+  .widget-title {
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--text-main);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .toc-list {
+    padding-left: 1.25rem;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .toc-link {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    line-height: 1.4;
+    transition: color 0.15s ease;
+  }
+
+  .toc-link:hover {
+    color: var(--brand-teal-deep);
+  }
+
+  .related-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .related-guide-link {
+    display: block;
+    text-decoration: none;
+    padding-bottom: 0.85rem;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .related-guide-link:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .rel-read-time {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    display: block;
+    margin-bottom: 0.2rem;
+  }
+
+  .rel-title {
+    font-size: 0.925rem;
+    font-weight: 700;
+    color: var(--text-main);
+    line-height: 1.35;
+    margin: 0;
+    transition: color 0.15s ease;
+  }
+
+  .related-guide-link:hover .rel-title {
+    color: var(--brand-teal-deep);
+  }
+
+  .rel-arrow {
+    display: inline-block;
+    font-size: 0.875rem;
+    color: var(--brand-teal);
+    margin-top: 0.25rem;
+    transition: transform 0.15s ease;
+  }
+
+  .related-guide-link:hover .rel-arrow {
+    transform: translateX(4px);
+  }
+
+  .tool-cta-widget {
+    background: var(--brand-teal-surface);
+    border-color: var(--brand-teal-light);
+    text-align: center;
+  }
+
+  .cta-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .cta-desc {
+    font-size: 0.875rem;
+    color: var(--text-body);
+    line-height: 1.5;
+    margin-bottom: 1.25rem;
+  }
+
+  .sidebar-action-btn {
+    display: inline-block;
+    width: 100%;
+    background: var(--brand-teal);
+    color: white;
+    font-weight: 700;
+    font-size: 0.875rem;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    transition: background 0.15s ease;
+  }
+
+  .sidebar-action-btn:hover {
+    background: var(--brand-teal-dark);
+  }
+
+  @media (max-width: 1024px) {
+    .article-layout-grid {
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+    }
+    .article-sidebar-col {
+      position: static;
+    }
+    .article-main-title { font-size: 2.25rem; }
+  }
+
+  @media (max-width: 640px) {
+    .article-main-title { font-size: 1.85rem; }
+  }
+</style>
