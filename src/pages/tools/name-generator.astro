@@ -27,11 +27,24 @@ const generatorFAQs = [
     answer: 'Most Korean given names are Sino-Korean, meaning each syllable is rooted in a specific Hanja (Chinese character). The same spoken Korean name (e.g., Min-jun) can have dozens of distinct character combinations, each imparting a unique parental wish or personal meaning.',
   },
 ];
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  'mainEntity': generatorFAQs.map((f) => ({
+    '@type': 'Question',
+    'name': f.question,
+    'acceptedAnswer': {
+      '@type': 'Answer',
+      'text': f.answer,
+    },
+  })),
+};
 ---
 
 <BaseLayout
   title="Korean Baby Name Generator & Surname Harmony Finder | HanName"
   description="Generate verified Korean baby names based on your family surname, preferred gender, and vibe. Discover phonetic flow, Hanja character harmony, and authentic meanings."
+  jsonLd={faqSchema}
 >
   <div class="tool-page-container">
     <Breadcrumb items={breadcrumbItems} />

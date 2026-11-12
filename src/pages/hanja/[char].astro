@@ -41,11 +41,20 @@ const breadcrumbs = [
   { label: 'Hanja Dictionary', href: '/hanja' },
   { label: `${hanjaData.hangul} (${hanjaData.hanja})` }
 ];
+const hanjaSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'DefinedTerm',
+  'name': `${hanjaData.hanja} (${hanjaData.hangul})`,
+  'description': hanjaData.meaning,
+  'inDefinedTermSet': 'https://www.korean-names.info/hanja',
+  'termCode': hanjaData.hanja,
+};
 ---
 
 <BaseLayout
   title={`Korean Hanja "${hanjaData.hanja}" (${hanjaData.hangul}) - Meaning & Baby Names`}
   description={`Explore the Sino-Korean Hanja character ${hanjaData.hanja} (${hanjaData.hangul} - "${hanjaData.meaning}"). Review radical, stroke counts, and authentic Korean baby names using this character.`}
+  jsonLd={hanjaSchema}
 >
   <div class="container page-wrapper">
     <Breadcrumb items={breadcrumbs} />

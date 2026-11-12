@@ -60,9 +60,8 @@ const articleSchema = {
 <BaseLayout
   title={`${guide.title} | Korean Names Guide`}
   description={guide.excerpt}
+  jsonLd={articleSchema}
 >
-  <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
-
   <article class="guide-article-container">
     <Breadcrumb items={breadcrumbItems} />
 
