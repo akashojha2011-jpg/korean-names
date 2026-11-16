@@ -1,4 +1,4 @@
-import type { Surname } from '../types/name';
+import type { Surname, SurnameClanSeat } from '../types/name';
 
 interface SurnameInfo {
   english: string;
@@ -7,14 +7,114 @@ interface SurnameInfo {
   meaning: string;
   clan: string;
   history: string;
+  clans?: SurnameClanSeat[];
 }
 
 const SURNAME_BASE_DICTIONARY: SurnameInfo[] = [
-  { english: 'Kim', hangul: '김', hanja: '金', meaning: 'Gold, metal, iron', clan: 'Gimhae Kim (김해 김씨) / Gyeongju Kim (경주 김씨)', history: 'Traced back to King Suro of Gaya and ancient Silla royalty; Kim is the #1 most common surname in Korea representing ~21.5% of the population.' },
-  { english: 'Lee', hangul: '이', hanja: '李', meaning: 'Plum tree', clan: 'Jeonju Lee (전주 이씨) / Gyeongju Lee (경주 이씨)', history: 'The royal dynastic surname of the Joseon Dynasty (founded by King Taejo Yi Seong-gye); accounts for ~14.7% of the Korean population.' },
-  { english: 'Park', hangul: '박', hanja: '朴', meaning: 'Simple, unadorned, sacred gourd', clan: 'Gyeongju Park (경주 박씨) / Miryang Park (밀양 박씨)', history: 'Descended from Bak Hyeokgeose, the legendary founder of the Silla Kingdom; represents ~8.4% of the population.' },
-  { english: 'Choi', hangul: '최', hanja: '崔', meaning: 'Towering mountain peak, high', clan: 'Gyeongju Choi (경주 최씨) / Haeju Choi (해주 최씨)', history: 'Ancient aristocratic clan originating from Silla noble scholar Choe Chi-won; represents ~4.7% of the population.' },
-  { english: 'Jung', hangul: '정', hanja: '鄭', meaning: 'Righteous state, governance', clan: 'Dongrae Jung (동래 정씨) / Gyeongju Jung (경주 정씨)', history: 'One of the six founding clans of ancient Silla; represents ~4.4% of the population.' },
+  {
+    english: 'Kim',
+    hangul: '김',
+    hanja: '金',
+    meaning: 'Gold, metal, iron',
+    clan: 'Gimhae Kim (김해 김씨) / Gyeongju Kim (경주 김씨)',
+    history: 'Traced back to King Suro of Gaya and ancient Silla royalty; Kim is the #1 most common surname in Korea representing ~21.5% of the population.',
+    clans: [
+      {
+        clanName: 'Gimhae Kim (김해 김씨)',
+        foundingAncestor: 'King Suro (수로왕) of Geumgwan Gaya',
+        ancestralSeat: 'Gimhae, South Gyeongsang Province',
+        historicalNotes: 'The largest single clan in Korea, counting over 4.4 million members descended from the legendary founder of Gaya.'
+      },
+      {
+        clanName: 'Gyeongju Kim (경주 김씨)',
+        foundingAncestor: 'Kim Al-ji (김알지), Silla Royal Patriarch',
+        ancestralSeat: 'Gyeongju, North Gyeongsang Province',
+        historicalNotes: 'Descended from ancient Silla royal rulers who governed the millennium-long kingdom.'
+      },
+      {
+        clanName: 'Andong Kim (안동 김씨)',
+        foundingAncestor: 'Kim Seon-pyeong (김선평)',
+        ancestralSeat: 'Andong, North Gyeongsang Province',
+        historicalNotes: 'Famed in late Joseon history as the powerful maternal clan holding dominant court power.'
+      }
+    ]
+  },
+  {
+    english: 'Lee',
+    hangul: '이',
+    hanja: '李',
+    meaning: 'Plum tree',
+    clan: 'Jeonju Lee (전주 이씨) / Gyeongju Lee (경주 이씨)',
+    history: 'The royal dynastic surname of the Joseon Dynasty (founded by King Taejo Yi Seong-gye); accounts for ~14.7% of the Korean population.',
+    clans: [
+      {
+        clanName: 'Jeonju Lee (전주 이씨)',
+        foundingAncestor: 'Yi Han (이한) / King Taejo (Yi Seong-gye)',
+        ancestralSeat: 'Jeonju, North Jeolla Province',
+        historicalNotes: 'The ruling royal house of the Joseon Dynasty and the Korean Empire from 1392 through 1910.'
+      },
+      {
+        clanName: 'Gyeongju Lee (경주 이씨)',
+        foundingAncestor: 'Al-pyeong (알평), Silla Village Chief',
+        ancestralSeat: 'Gyeongju, North Gyeongsang Province',
+        historicalNotes: 'Ancient foundational clan of Silla, renowned for scholars and military leaders.'
+      }
+    ]
+  },
+  {
+    english: 'Park',
+    hangul: '박',
+    hanja: '朴',
+    meaning: 'Simple, unadorned, sacred gourd',
+    clan: 'Gyeongju Park (경주 박씨) / Miryang Park (밀양 박씨)',
+    history: 'Descended from Bak Hyeokgeose, the legendary founder of the Silla Kingdom; represents ~8.4% of the population.',
+    clans: [
+      {
+        clanName: 'Miryang Park (밀양 박씨)',
+        foundingAncestor: 'Prince Bak Eon-chung (박언충)',
+        ancestralSeat: 'Miryang, South Gyeongsang Province',
+        historicalNotes: 'Comprises roughly 75-80% of all Parks in Korea today, tracing to King Gyeongmyeong of Silla.'
+      },
+      {
+        clanName: 'Gyeongju Park (경주 박씨)',
+        foundingAncestor: 'Bak Hyeokgeose (박혁거세)',
+        ancestralSeat: 'Gyeongju, North Gyeongsang Province',
+        historicalNotes: 'Direct patriarchal lineage of the mythical first King of Silla who hatched from a golden gourd.'
+      }
+    ]
+  },
+  {
+    english: 'Choi',
+    hangul: '최',
+    hanja: '崔',
+    meaning: 'Towering mountain peak, high',
+    clan: 'Gyeongju Choi (경주 최씨) / Haeju Choi (해주 최씨)',
+    history: 'Ancient aristocratic clan originating from Silla noble scholar Choe Chi-won; represents ~4.7% of the population.',
+    clans: [
+      {
+        clanName: 'Gyeongju Choi (경주 최씨)',
+        foundingAncestor: 'Choe Chi-won (최치원), Silla Philosopher',
+        ancestralSeat: 'Gyeongju, North Gyeongsang Province',
+        historicalNotes: 'Renowned for producing foundational literary scholars, poets, and the legendary philanthropic Gyeongju Choi clan.'
+      }
+    ]
+  },
+  {
+    english: 'Jung',
+    hangul: '정',
+    hanja: '鄭',
+    meaning: 'Righteous state, governance',
+    clan: 'Dongrae Jung (동래 정씨) / Gyeongju Jung (경주 정씨)',
+    history: 'One of the six founding clans of ancient Silla; represents ~4.4% of the population.',
+    clans: [
+      {
+        clanName: 'Dongrae Jung (동래 정씨)',
+        foundingAncestor: 'Jung Hoe-do (정회도)',
+        ancestralSeat: 'Busan (Dongrae), South Korea',
+        historicalNotes: 'Celebrated high Joseon scholar-official and prime minister lineage.'
+      }
+    ]
+  },
   { english: 'Kang', hangul: '강', hanja: '姜', meaning: 'Ginger, river, strong', clan: 'Jinju Kang (진주 강씨)', history: 'Historic military and scholarly clan tracing back to General Kang Gam-chan of the Goryeo Dynasty.' },
   { english: 'Cho', hangul: '조', hanja: '趙', meaning: 'Ancient state, high dignity', clan: 'Hanyang Cho (한양 조씨) / Pungyang Cho (풍양 조씨)', history: 'Prominent noble clan throughout Goryeo and Joseon eras.' },
   { english: 'Yoon', hangul: '윤', hanja: '尹', meaning: 'Governor, leader, prime minister', clan: 'Papyeong Yoon (파평 윤씨)', history: 'Noble clan boasting numerous prime ministers and royal consorts in Joseon.' },
@@ -46,10 +146,14 @@ export function generate500KoreanSurnames(): Surname[] {
       meaning: s.meaning,
       populationRank: idx + 1,
       populationPercentage: `${(21.5 / (idx + 1)).toFixed(1)}%`,
+      percentageInKorea: Number((21.5 / (idx + 1)).toFixed(1)),
       originClan: s.clan,
+      clans: s.clans,
+      description: s.history,
       historicalNotes: s.history,
       harmonyTips: `When paired with ${s.english}, choose given names starting with soft liquid consonants (M, N, L, S) for smooth vocalic transitions.`,
-      recommendedFirstNames: ['min-jun', 'seo-ah', 'ji-woo', 'ha-eun', 'seo-jun']
+      recommendedFirstNames: ['min-jun', 'seo-ah', 'ji-woo', 'ha-eun', 'seo-jun'],
+      recommendedGivenSlugs: ['min-jun', 'seo-ah', 'ji-woo']
     });
   });
 
@@ -124,10 +228,13 @@ export function generate500KoreanSurnames(): Surname[] {
         meaning: item.mean,
         populationRank: surnameCounter++,
         populationPercentage: `${(100 / surnameCounter).toFixed(2)}%`,
+        percentageInKorea: Number((100 / surnameCounter).toFixed(2)),
         originClan: `${item.eng} Clan (${item.han}씨 본관)`,
+        description: `${item.eng} (${item.hanja}) is an authentic Korean family surname tracing back to ancient dynastic clan origins in Goryeo and Joseon.`,
         historicalNotes: `${item.eng} (${item.hanja}) is an authentic Korean family surname tracing back to ancient dynastic clan origins in Goryeo and Joseon.`,
         harmonyTips: `Pairs harmoniously with given names that balance tone endings.`,
-        recommendedFirstNames: ['min-jun', 'seo-ah', 'ji-woo']
+        recommendedFirstNames: ['min-jun', 'seo-ah', 'ji-woo'],
+        recommendedGivenSlugs: ['min-jun', 'seo-ah', 'ji-woo']
       });
     });
   }

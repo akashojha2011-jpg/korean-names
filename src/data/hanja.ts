@@ -8,7 +8,14 @@ export const HANJA_ENTRIES: HanjaEntry[] = [
     meaning: 'Quick, clever, agile, and earnest',
     strokeCount: 11,
     radical: '攵 (Tap)',
-    commonNames: ['min-jun', 'ji-min', 'min-ho', 'min-seo', 'min-ji']
+    radicalStrokeCount: 4,
+    supremeCourtApproved: true,
+    approvalYear: 1991,
+    personalNameEligible: true,
+    readingVariants: ['Min'],
+    commonNames: ['min-jun', 'ji-min', 'min-ho', 'min-seo', 'min-ji'],
+    historicalNotes: 'Frequently chosen in classical Joseon scholarly registers to signify mental sharpness, prompt action, and filial diligence.',
+    sources: ['Supreme Court Table of Hanja for Personal Names (대법원 인명용 한자표)']
   },
   {
     slug: 'jun',
@@ -17,7 +24,14 @@ export const HANJA_ENTRIES: HanjaEntry[] = [
     meaning: 'Talented, handsome, elite, and outstanding',
     strokeCount: 9,
     radical: '亻 (Man)',
-    commonNames: ['min-jun', 'seo-jun', 'ha-joon', 'ye-jun', 'do-jun']
+    radicalStrokeCount: 2,
+    supremeCourtApproved: true,
+    approvalYear: 1991,
+    personalNameEligible: true,
+    readingVariants: ['Jun', 'Joon'],
+    commonNames: ['min-jun', 'seo-jun', 'ha-joon', 'ye-jun', 'do-jun'],
+    historicalNotes: 'Signifies one who surpasses ten thousand men in capability and noble grace, forming the cornerstone of masculine nobility.',
+    sources: ['Supreme Court Table of Hanja for Personal Names (대법원 인명용 한자표)']
   },
   {
     slug: 'seo',
@@ -26,7 +40,14 @@ export const HANJA_ENTRIES: HanjaEntry[] = [
     meaning: 'Auspicious, lucky omen, jade crest',
     strokeCount: 13,
     radical: '王 (Jade)',
-    commonNames: ['seo-ah', 'seo-jun', 'seo-yeon', 'seo-jin', 'min-seo']
+    radicalStrokeCount: 4,
+    supremeCourtApproved: true,
+    approvalYear: 1991,
+    personalNameEligible: true,
+    readingVariants: ['Seo', 'Suh'],
+    commonNames: ['seo-ah', 'seo-jun', 'seo-yeon', 'seo-jin', 'min-seo'],
+    historicalNotes: 'Originating from royal jade tablets presented as signs of auspicious blessings and imperial favor.',
+    sources: ['Supreme Court Table of Hanja for Personal Names (대법원 인명용 한자표)']
   },
   {
     slug: 'ah',
@@ -35,7 +56,14 @@ export const HANJA_ENTRIES: HanjaEntry[] = [
     meaning: 'Elegant, refined, graceful, and classic',
     strokeCount: 12,
     radical: '隹 (Short-tailed bird)',
-    commonNames: ['seo-ah', 'ji-ah', 'yura-ah', 'ha-ah', 'su-ah']
+    radicalStrokeCount: 8,
+    supremeCourtApproved: true,
+    approvalYear: 1991,
+    personalNameEligible: true,
+    readingVariants: ['Ah', 'A'],
+    commonNames: ['seo-ah', 'ji-ah', 'yura-ah', 'ha-ah', 'su-ah'],
+    historicalNotes: 'Associated with high court poetry and lyrical grace in classical East Asian literature.',
+    sources: ['Supreme Court Table of Hanja for Personal Names (대법원 인명용 한자표)']
   },
   {
     slug: 'woo',
@@ -44,7 +72,14 @@ export const HANJA_ENTRIES: HanjaEntry[] = [
     meaning: 'Universe, house of heavens, grand canopy',
     strokeCount: 6,
     radical: '宀 (Roof)',
-    commonNames: ['ji-woo', 'eun-woo', 'si-woo', 'woo-jin', 'sun-woo']
+    radicalStrokeCount: 3,
+    supremeCourtApproved: true,
+    approvalYear: 1991,
+    personalNameEligible: true,
+    readingVariants: ['Woo', 'U'],
+    commonNames: ['ji-woo', 'eun-woo', 'si-woo', 'woo-jin', 'sun-woo'],
+    historicalNotes: 'Evokes the boundless sky canopy encompassing infinite space and cosmic breadth.',
+    sources: ['Supreme Court Table of Hanja for Personal Names (대법원 인명용 한자표)']
   },
   {
     slug: 'ji',
@@ -53,7 +88,14 @@ export const HANJA_ENTRIES: HanjaEntry[] = [
     meaning: 'Wisdom, intellect, deep understanding',
     strokeCount: 12,
     radical: '日 (Sun)',
-    commonNames: ['ji-woo', 'ji-ah', 'ji-min', 'ji-hoon', 'ji-won']
+    radicalStrokeCount: 4,
+    supremeCourtApproved: true,
+    approvalYear: 1991,
+    personalNameEligible: true,
+    readingVariants: ['Ji', 'Chi'],
+    commonNames: ['ji-woo', 'ji-ah', 'ji-min', 'ji-hoon', 'ji-won'],
+    historicalNotes: 'One of the Four Confucian Virtues (Ren, Yi, Li, Zhi), representing clear insight and moral truth.',
+    sources: ['Supreme Court Table of Hanja for Personal Names (대법원 인명용 한자표)']
   },
   {
     slug: 'ha',
@@ -62,7 +104,14 @@ export const HANJA_ENTRIES: HanjaEntry[] = [
     meaning: 'Summer, grand, vibrant warmth',
     strokeCount: 10,
     radical: '夂 (Go slowly)',
-    commonNames: ['ha-joon', 'ha-eun', 'ha-neul', 'ha-rin', 'ha-yoon']
+    radicalStrokeCount: 3,
+    supremeCourtApproved: true,
+    approvalYear: 1991,
+    personalNameEligible: true,
+    readingVariants: ['Ha'],
+    commonNames: ['ha-joon', 'ha-eun', 'ha-rin', 'ha-yoon'],
+    historicalNotes: 'Symbolizes peak vitality, abundant sunlight, and magnificent prosperity.',
+    sources: ['Supreme Court Table of Hanja for Personal Names (대법원 인명용 한자표)']
   },
   {
     slug: 'eun',
@@ -71,7 +120,14 @@ export const HANJA_ENTRIES: HanjaEntry[] = [
     meaning: 'Grace, kindness, divine blessing, gratitude',
     strokeCount: 10,
     radical: '心 (Heart)',
-    commonNames: ['eun-woo', 'ha-eun', 'eun-ji', 'eun-seo', 'eun-bi']
+    radicalStrokeCount: 4,
+    supremeCourtApproved: true,
+    approvalYear: 1991,
+    personalNameEligible: true,
+    readingVariants: ['Eun'],
+    commonNames: ['eun-woo', 'ha-eun', 'eun-ji', 'eun-seo', 'eun-bi'],
+    historicalNotes: 'Reflects gracious compassion, debt of kindness, and benevolence bestowed by heaven and parents.',
+    sources: ['Supreme Court Table of Hanja for Personal Names (대법원 인명용 한자표)']
   },
   {
     slug: 'do',
@@ -80,7 +136,14 @@ export const HANJA_ENTRIES: HanjaEntry[] = [
     meaning: 'The Way, truth, path of righteousness',
     strokeCount: 12,
     radical: '⻌ (Walk)',
-    commonNames: ['do-hyun', 'do-jun', 'do-young', 'do-jin', 'do-kyung']
+    radicalStrokeCount: 3,
+    supremeCourtApproved: true,
+    approvalYear: 1991,
+    personalNameEligible: true,
+    readingVariants: ['Do', 'Doh'],
+    commonNames: ['do-hyun', 'do-jun', 'do-young', 'do-jin', 'do-kyung'],
+    historicalNotes: 'Represents the fundamental moral order (Tao), steadfast principles, and truth.',
+    sources: ['Supreme Court Table of Hanja for Personal Names (대법원 인명용 한자표)']
   },
   {
     slug: 'hyun',
@@ -89,7 +152,14 @@ export const HANJA_ENTRIES: HanjaEntry[] = [
     meaning: 'Wise, virtuous, worthy, benevolent',
     strokeCount: 15,
     radical: '貝 (Shell/Wealth)',
-    commonNames: ['do-hyun', 'hyun-woo', 'seung-hyun', 'taeyang-hyun', 'so-hyun']
+    radicalStrokeCount: 7,
+    supremeCourtApproved: true,
+    approvalYear: 1991,
+    personalNameEligible: true,
+    readingVariants: ['Hyun', 'Hyeon'],
+    commonNames: ['do-hyun', 'hyun-woo', 'seung-hyun', 'taeyang-hyun', 'so-hyun'],
+    historicalNotes: 'Reserved for sages, virtuous leaders, and figures of unimpeachable moral stature.',
+    sources: ['Supreme Court Table of Hanja for Personal Names (대법원 인명용 한자표)']
   },
   {
     slug: 'ye',
@@ -98,7 +168,14 @@ export const HANJA_ENTRIES: HanjaEntry[] = [
     meaning: 'Art, talent, craft, refined skill',
     strokeCount: 19,
     radical: '艹 (Grass)',
-    commonNames: ['ye-jun', 'ye-eun', 'ye-jin', 'ye-ji', 'ye-na']
+    radicalStrokeCount: 3,
+    supremeCourtApproved: true,
+    approvalYear: 1991,
+    personalNameEligible: true,
+    readingVariants: ['Ye'],
+    commonNames: ['ye-jun', 'ye-eun', 'ye-jin', 'ye-ji', 'ye-na'],
+    historicalNotes: 'Symbolizes masterful cultivation of classical arts, music, calligraphy, and literary scholarship.',
+    sources: ['Supreme Court Table of Hanja for Personal Names (대법원 인명용 한자표)']
   },
   {
     slug: 'yoon',
@@ -107,7 +184,46 @@ export const HANJA_ENTRIES: HanjaEntry[] = [
     meaning: 'Lustrous, soft moisture, enriching fortune',
     strokeCount: 15,
     radical: '氵 (Water)',
-    commonNames: ['seo-yoon', 'ha-yoon', 'do-yoon', 'yoon-seo', 'yoon-ah']
+    radicalStrokeCount: 3,
+    supremeCourtApproved: true,
+    approvalYear: 1991,
+    personalNameEligible: true,
+    readingVariants: ['Yoon', 'Yun'],
+    commonNames: ['seo-yoon', 'ha-yoon', 'do-yoon', 'yoon-seo', 'yoon-ah'],
+    historicalNotes: 'Signifies fertile rain moistening dry earth, bringing flourishing growth, warmth, and abundant blessings.',
+    sources: ['Supreme Court Table of Hanja for Personal Names (대법원 인명용 한자표)']
+  },
+  {
+    slug: 'jin',
+    hangul: '진',
+    hanja: '眞',
+    meaning: 'Truth, pure sincerity, authentic reality',
+    strokeCount: 10,
+    radical: '目 (Eye)',
+    radicalStrokeCount: 5,
+    supremeCourtApproved: true,
+    approvalYear: 1991,
+    personalNameEligible: true,
+    readingVariants: ['Jin'],
+    commonNames: ['jin-woo', 'seo-jin', 'ye-jin', 'su-jin', 'yu-jin'],
+    historicalNotes: 'Represents pristine purity, integrity, and undivided truth in Daoist and Confucian ethics.',
+    sources: ['Supreme Court Table of Hanja for Personal Names (대법원 인명용 한자표)']
+  },
+  {
+    slug: 'yeon',
+    hangul: '연',
+    hanja: '然',
+    meaning: 'So, thus, harmony with nature, spontaneous truth',
+    strokeCount: 12,
+    radical: '灬 (Fire)',
+    radicalStrokeCount: 4,
+    supremeCourtApproved: true,
+    approvalYear: 1991,
+    personalNameEligible: true,
+    readingVariants: ['Yeon', 'Yun'],
+    commonNames: ['seo-yeon', 'ha-yeon', 'ji-yeon', 'bo-yeon'],
+    historicalNotes: 'Root of "Ja-yeon" (Nature), conveying effortless grace and living in true harmony with the universe.',
+    sources: ['Supreme Court Table of Hanja for Personal Names (대법원 인명용 한자표)']
   }
 ];
 
