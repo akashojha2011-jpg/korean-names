@@ -1,0 +1,235 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import NameCard from '../components/NameCard.astro';
+import FAQSection from '../components/FAQSection.astro';
+import { KOREAN_NAMES } from '../data/names';
+
+const unisexNames = KOREAN_NAMES.filter(n => n.gender === 'unisex');
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Korean Names', href: '/names' },
+  { label: 'Unisex Korean Names' }
+];
+
+const unisexFaqs = [
+  {
+    question: "Why are unisex names so popular in contemporary South Korea?",
+    answer: "Unisex Korean names emphasize universal virtues like wisdom (Ji 智), nature (Ha-neul 하늘, Ba-da 바다), cosmic shelter (Woo 宇), and truth (Jin 眞). They offer modern flexibility, sound melodic across international borders, and transcend rigid traditional gender markers."
+  },
+  {
+    question: "Can any Korean name be unisex?",
+    answer: "While many names skew traditionally male or female due to Confucian naming conventions, names based on neutral cosmic concepts (like Ji-woo, Eun-woo, Si-woo, Ha-neul, and On-yu) are universally accepted for any child regardless of gender."
+  },
+  {
+    question: "How does Hanja character selection influence gender perception?",
+    answer: "For a name like Ji-woo (지우), pairing with 智 (Wisdom) and 宇 (Universe) creates an expansive unisex feel, whereas pairing with 祐 (Divine Blessing) might be traditionally chosen for boys, or 雨 (Gentle Rain) for girls."
+  }
+];
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  'name': 'Unisex Korean Names - Gender-Neutral Meanings & Hanja',
+  'description': 'Comprehensive directory of authentic gender-neutral Korean names with Hangul orthography, official Hanja logograms, stroke counts, and universal virtues.',
+  'url': 'https://www.korean-names.info/unisex-names'
+};
+---
+
+<BaseLayout
+  title="Unisex Korean Names - Gender-Neutral Meanings & Hanja"
+  description="Discover authentic unisex and gender-neutral Korean names with Hangul characters, official Hanja logograms, pronunciation guides, and meaning virtues."
+  jsonLd={schema}
+>
+  <div class="container page-wrapper">
+    <Breadcrumb items={breadcrumbs} />
+
+    <!-- Hero Section -->
+    <header class="editorial-hero">
+      <div class="heritage-tag">
+        <span class="emblem font-hangul">중성 이름</span>
+        <span>Gender-Neutral Nomenclature</span>
+      </div>
+      <h1 class="hero-title">Authentic Unisex Korean Names</h1>
+      <p class="hero-lead">
+        Discover {unisexNames.length} modern and traditional gender-neutral Korean given names.
+        From nationwide favorites like Ji-woo (智宇) and Eun-woo (恩宇) to celestial Pure Korean names like Ha-neul (하늘) and Ba-da (바다).
+      </p>
+
+      <div class="filter-shortcuts">
+        <span class="shortcuts-label">Quick Jump:</span>
+        <a href="/names?gender=unisex" class="shortcut-pill">Advanced Search &rarr;</a>
+        <a href="/boy-names" class="shortcut-pill">Browse Boy Names &rarr;</a>
+        <a href="/girl-names" class="shortcut-pill">Browse Girl Names &rarr;</a>
+      </div>
+    </header>
+
+    <!-- Names Grid -->
+    <section class="names-section">
+      <div class="section-meta-bar">
+        <h2 class="section-title">Directory of Unisex Korean Names ({unisexNames.length})</h2>
+        <span class="sort-note">Sorted by national birth registration popularity</span>
+      </div>
+
+      <div class="names-cards-grid">
+        {unisexNames.map(name => (
+          <NameCard name={name} />
+        ))}
+      </div>
+    </section>
+
+    <!-- Cultural Context Editorial Box -->
+    <section class="editorial-box">
+      <h2 class="box-title">The Modern Rise of Gender-Neutral Korean Names</h2>
+      <p>
+        In recent decades, South Korean naming culture has experienced a dynamic evolution.
+        Contemporary parents frequently prioritize universal life values—such as intellectual clarity,
+        boundless openness, empathy, and cosmic harmony—over strict gender boundaries. Names in this collection
+        stand out for their phonetic elegance and ease of pronunciation in both Korea and international settings.
+      </p>
+    </section>
+
+    <!-- FAQ Section -->
+    <FAQSection faqs={unisexFaqs} title="Frequently Asked Questions About Unisex Korean Names" />
+
+  </div>
+</BaseLayout>
+
+<style>
+  .page-wrapper {
+    padding-top: 1.5rem;
+    padding-bottom: 5rem;
+  }
+
+  .editorial-hero {
+    background: linear-gradient(135deg, var(--bg-surface) 0%, #EBF4F0 100%);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 3rem 2.5rem;
+    margin-bottom: 2.5rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .heritage-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    color: var(--brand-jade);
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.35rem 0.85rem;
+    border-radius: var(--radius-full);
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .heritage-tag .emblem {
+    color: var(--brand-jade);
+    border-right: 1px solid var(--border-color);
+    padding-right: 0.5rem;
+  }
+
+  .hero-title {
+    font-family: var(--font-serif);
+    font-size: 2.75rem;
+    font-weight: 800;
+    color: var(--text-main);
+    line-height: 1.15;
+    margin-bottom: 0.75rem;
+  }
+
+  .hero-lead {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    max-width: 800px;
+    margin-bottom: 1.75rem;
+  }
+
+  .filter-shortcuts {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .shortcuts-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-muted);
+  }
+
+  .shortcut-pill {
+    padding: 0.45rem 1rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-full);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--brand-jade);
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+
+  .shortcut-pill:hover {
+    border-color: var(--brand-jade);
+    background: #DEEFE8;
+  }
+
+  .names-section {
+    margin-bottom: 3rem;
+  }
+
+  .section-meta-bar {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--border-color);
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .section-title {
+    font-family: var(--font-serif);
+    font-size: 1.75rem;
+    color: var(--text-main);
+    font-weight: 700;
+  }
+
+  .sort-note {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  .names-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .editorial-box {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .box-title {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    color: var(--brand-jade);
+    margin-bottom: 1rem;
+  }
+
+  .editorial-box p {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--text-main);
+  }
+</style>

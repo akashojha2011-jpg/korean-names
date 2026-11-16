@@ -1,0 +1,253 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../../components/Breadcrumb.astro';
+import { THEME_CATEGORIES } from '../../../data/categories';
+import { KOREAN_NAMES } from '../../../data/names';
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Korean Names', href: '/names' },
+  { label: 'Name Meanings & Themes' }
+];
+
+// Calculate live name counts for each theme category
+const categoriesWithCounts = THEME_CATEGORIES.map(cat => {
+  const count = KOREAN_NAMES.filter(n =>
+    n.themes && n.themes.some(t => t.toLowerCase() === cat.slug.toLowerCase())
+  ).length;
+  return {
+    ...cat,
+    count
+  };
+});
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  'name': 'Korean Name Meanings & Cultural Themes',
+  'description': 'Discover Korean names grouped by cultural meanings, virtues, and natural symbolism including Wisdom, Nature, Brightness, and Grace.',
+  'url': 'https://www.korean-names.info/names/meaning'
+};
+---
+
+<BaseLayout
+  title="Korean Name Meanings & Themes - Discover Names by Virtue & Symbolism"
+  description="Explore Korean given names categorized by traditional virtues and nature themes: Wisdom, Grace, Strength, Nature, Brightness, and Modern K-Culture."
+  jsonLd={schema}
+>
+  <div class="container page-wrapper">
+    <Breadcrumb items={breadcrumbs} />
+
+    <!-- Hero Header -->
+    <header class="themes-hero">
+      <div class="heritage-tag">
+        <span class="emblem font-hangul">의미별 탐색</span>
+        <span>Semantic Nomenclature Registry</span>
+      </div>
+      <h1 class="themes-title">Korean Names by Meaning & Theme</h1>
+      <p class="themes-subtitle">
+        In Korean culture, a personal name is a lifelong wish. Explore authentic Korean names organized
+        by foundational philosophical virtues, natural elements, celestial imagery, and contemporary cultural themes.
+      </p>
+    </header>
+
+    <!-- Themes Grid -->
+    <div class="themes-grid">
+      {categoriesWithCounts.map(cat => (
+        <a href={`/names/meaning/${cat.slug}`} class="theme-card">
+          <div class="theme-card-top">
+            <span class="theme-icon">{cat.icon}</span>
+            <span class="theme-badge">{cat.count} Names</span>
+          </div>
+
+          <div class="theme-card-content">
+            <div class="theme-names-header">
+              <h2 class="theme-name">{cat.name}</h2>
+              <span class="theme-korean font-hangul">({cat.koreanName})</span>
+            </div>
+            <p class="theme-desc">{cat.description}</p>
+          </div>
+
+          <div class="theme-card-footer">
+            <span class="browse-link">Browse {cat.name} Names &rarr;</span>
+          </div>
+        </a>
+      ))}
+    </div>
+
+    <!-- Editorial Context -->
+    <section class="editorial-box">
+      <h2 class="box-title">How Meanings Shape Korean Names</h2>
+      <p>
+        Unlike Western naming traditions that rely primarily on phonetic history, Korean names carry two layers of meaning:
+        the phonetic resonance of Hangul and the precise ideographic meaning of Hanja characters. A single spoken syllable
+        like <em>"Min"</em> (민) can mean <strong>"clever and sharp"</strong> (敏), <strong>"precious jade"</strong> (珉),
+        or <strong>"the people"</strong> (民). Exploring by theme allows you to find characters that embody the exact values,
+        aspirations, and natural beauty you wish to celebrate.
+      </p>
+    </section>
+
+  </div>
+</BaseLayout>
+
+<style>
+  .page-wrapper {
+    padding-top: 1.5rem;
+    padding-bottom: 5rem;
+  }
+
+  .themes-hero {
+    background: linear-gradient(135deg, var(--bg-surface) 0%, #EDE6D8 100%);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 3rem 2.5rem;
+    margin-bottom: 2.5rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .heritage-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--antique-gold);
+    color: var(--brand-jade);
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.35rem 0.85rem;
+    border-radius: var(--radius-full);
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .heritage-tag .emblem {
+    color: var(--accent-burgundy);
+    border-right: 1px solid var(--border-color);
+    padding-right: 0.5rem;
+  }
+
+  .themes-title {
+    font-family: var(--font-serif);
+    font-size: 2.75rem;
+    font-weight: 800;
+    color: var(--text-main);
+    line-height: 1.15;
+    margin-bottom: 0.75rem;
+  }
+
+  .themes-subtitle {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    max-width: 800px;
+  }
+
+  .themes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.75rem;
+    margin-bottom: 3.5rem;
+  }
+
+  .theme-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-decoration: none;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease;
+  }
+
+  .theme-card:hover {
+    border-color: var(--brand-jade);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .theme-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+  }
+
+  .theme-icon {
+    font-size: 2rem;
+  }
+
+  .theme-badge {
+    background: #EAE3D2;
+    color: var(--brand-jade);
+    font-weight: 700;
+    font-size: 0.8rem;
+    padding: 0.3rem 0.65rem;
+    border-radius: var(--radius-full);
+  }
+
+  .theme-names-header {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .theme-name {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--brand-navy);
+  }
+
+  .theme-korean {
+    font-size: 1.1rem;
+    color: var(--antique-gold);
+    font-weight: 600;
+  }
+
+  .theme-desc {
+    font-size: 0.92rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+  }
+
+  .theme-card-footer {
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+  }
+
+  .browse-link {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--brand-jade);
+    transition: color 0.15s ease;
+  }
+
+  .theme-card:hover .browse-link {
+    color: var(--accent-burgundy);
+  }
+
+  .editorial-box {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+  }
+
+  .box-title {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    color: var(--brand-navy);
+    margin-bottom: 1rem;
+  }
+
+  .editorial-box p {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--text-main);
+  }
+</style>

@@ -1,0 +1,240 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../../components/Breadcrumb.astro';
+import NameCard from '../../../components/NameCard.astro';
+import { KOREAN_NAMES } from '../../../data/names';
+
+export async function getStaticPaths() {
+  const letters = 'abcdefghijklmnopqrstuvwxyz'.split('');
+  return letters.map((l) => ({
+    params: { letter: l },
+    props: { letterUpper: l.toUpperCase() }
+  }));
+}
+
+const { letter } = Astro.params;
+const { letterUpper } = Astro.props;
+
+const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+const namesInLetter = KOREAN_NAMES.filter((n) => (n.firstLetter || n.slug[0] || '').toLowerCase() === letter.toLowerCase());
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Korean Names', href: '/names' },
+  { label: `Letter ${letterUpper}` }
+];
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  'name': `Korean Names Starting With Letter ${letterUpper}`,
+  'description': `Directory of authentic Korean given names starting with the letter ${letterUpper}.`,
+  'url': `https://www.korean-names.info/names/letter/${letter}`
+};
+---
+
+<BaseLayout
+  title={`Korean Names Starting with Letter "${letterUpper}" - Meaning & Hanja Directory`}
+  description={`Browse ${namesInLetter.length} authentic Korean given names starting with the letter ${letterUpper}. Review Hangul characters, Hanja logograms, meanings, and pronunciation.`}
+  jsonLd={schema}
+>
+  <div class="container page-wrapper">
+    <Breadcrumb items={breadcrumbs} />
+
+    <!-- Letter Hero Header -->
+    <header class="letter-hero">
+      <div class="heritage-tag">
+        <span class="emblem font-hangul">{letterUpper}</span>
+        <span>Alphabetical Nomenclature Index</span>
+      </div>
+      <h1 class="letter-title">Korean Names Starting with "{letterUpper}"</h1>
+      <p class="letter-lead">
+        Discover {namesInLetter.length} authentic Korean given names beginning with the romanized letter {letterUpper}.
+        Every profile features Hangul script, certified Hanja characters, and cultural meanings.
+      </p>
+
+      <!-- Alphabet Quick Links -->
+      <div class="az-filter-card">
+        <span class="az-filter-label">Jump to Letter:</span>
+        <div class="az-links-grid">
+          {alphabet.map((item) => (
+            <a
+              href={`/names/letter/${item.toLowerCase()}`}
+              class={`az-link-pill ${item === letterUpper ? 'active' : ''}`}
+            >
+              {item}
+            </a>
+          ))}
+        </div>
+      </div>
+    </header>
+
+    <!-- Names Results Grid -->
+    <section class="names-section">
+      <div class="section-meta-bar">
+        <h2 class="section-title">Names Starting with "{letterUpper}" ({namesInLetter.length})</h2>
+        <span class="sort-note">Sorted by birth registry popularity</span>
+      </div>
+
+      {namesInLetter.length > 0 ? (
+        <div class="names-cards-grid">
+          {namesInLetter.map(name => (
+            <NameCard name={name} />
+          ))}
+        </div>
+      ) : (
+        <div class="empty-letter-box">
+          <p class="empty-message">No Korean names starting with "{letterUpper}" in our current statutory index.</p>
+          <a href="/names" class="btn btn-primary">Browse All Korean Names</a>
+        </div>
+      )}
+    </section>
+
+  </div>
+</BaseLayout>
+
+<style>
+  .page-wrapper {
+    padding-top: 1.5rem;
+    padding-bottom: 5rem;
+  }
+
+  .letter-hero {
+    background: linear-gradient(135deg, var(--bg-surface) 0%, #EDE6D8 100%);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 3rem 2.5rem;
+    margin-bottom: 2.5rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .heritage-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    color: var(--brand-jade);
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.35rem 0.85rem;
+    border-radius: var(--radius-full);
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .heritage-tag .emblem {
+    color: var(--accent-burgundy);
+    font-size: 1rem;
+    font-weight: 900;
+    border-right: 1px solid var(--border-color);
+    padding-right: 0.5rem;
+  }
+
+  .letter-title {
+    font-family: var(--font-serif);
+    font-size: 2.75rem;
+    font-weight: 800;
+    color: var(--text-main);
+    line-height: 1.15;
+    margin-bottom: 0.75rem;
+  }
+
+  .letter-lead {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    max-width: 800px;
+    margin-bottom: 2rem;
+  }
+
+  .az-filter-card {
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+  }
+
+  .az-filter-label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+    letter-spacing: 0.05em;
+  }
+
+  .az-links-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .az-link-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text-main);
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+
+  .az-link-pill:hover, .az-link-pill.active {
+    background: var(--brand-jade);
+    color: #FFFFFF;
+    border-color: var(--brand-jade);
+  }
+
+  .names-section {
+    margin-bottom: 3.5rem;
+  }
+
+  .section-meta-bar {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--border-color);
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .section-title {
+    font-family: var(--font-serif);
+    font-size: 1.75rem;
+    color: var(--text-main);
+    font-weight: 700;
+  }
+
+  .sort-note {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  .names-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .empty-letter-box {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    background: var(--bg-surface);
+    border: 1px dashed var(--border-color);
+    border-radius: var(--radius-md);
+  }
+
+  .empty-message {
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+  }
+</style>

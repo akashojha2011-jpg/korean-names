@@ -1,0 +1,893 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import { KOREAN_NAMES } from '../../data/names';
+import { THEME_CATEGORIES } from '../../data/categories';
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Korean Names Directory' }
+];
+
+const totalNames = KOREAN_NAMES.length;
+const boyCount = KOREAN_NAMES.filter(n => n.gender === 'boy').length;
+const girlCount = KOREAN_NAMES.filter(n => n.gender === 'girl').length;
+const unisexCount = KOREAN_NAMES.filter(n => n.gender === 'unisex').length;
+const pureKoreanCount = KOREAN_NAMES.filter(n => n.isPureKorean || n.classification === 'pure-korean').length;
+
+const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+
+// Pre-serialized minimal search index for ultra-fast instant client-side filtering
+const searchIndex = KOREAN_NAMES.map(n => ({
+  slug: n.slug,
+  english: n.english,
+  hangul: n.hangul,
+  hanja: n.hanja || '',
+  gender: n.gender,
+  overallMeaning: n.overallMeaning,
+  revisedRomanization: n.revisedRomanization || n.slug,
+  syllableCount: n.syllableCount || 2,
+  classification: n.classification || (n.isPureKorean ? 'pure-korean' : 'sino-korean'),
+  isPureKorean: Boolean(n.isPureKorean),
+  themes: n.themes || [],
+  popularityRank: n.popularityRank || 9999,
+  firstLetter: (n.firstLetter || n.slug[0] || 'a').toUpperCase()
+}));
+---
+
+<BaseLayout
+  title="Complete Korean Names Directory - Search & Filter Authentic Korean Names"
+  description="Explore the authoritative Korean Names Directory. Advanced faceted search by gender, Hanja logograms, syllable length, pure Korean classification, meaning themes, and stroke count."
+>
+  <div class="container page-wrapper">
+    <Breadcrumb items={breadcrumbs} />
+
+    <!-- Directory Hero Header -->
+    <header class="directory-hero">
+      <div class="hero-heritage-tag">
+        <span class="heritage-emblem">인명 사전</span>
+        <span>National Nomenclature Index</span>
+      </div>
+      <h1 class="directory-title">Comprehensive Korean Names Directory</h1>
+      <p class="directory-subtitle">
+        Explore {totalNames.toLocaleString()} verified authentic Korean given names. Search across Hangul orthography,
+        official Hanja logograms, phonetic romanization, syllable structures, and traditional cultural virtues.
+      </p>
+
+      <!-- Quick Metrics Row -->
+      <div class="metrics-bar">
+        <a href="/boy-names" class="metric-pill">
+          <span class="metric-count">{boyCount}</span>
+          <span class="metric-label">Boy Names</span>
+        </a>
+        <a href="/girl-names" class="metric-pill">
+          <span class="metric-count">{girlCount}</span>
+          <span class="metric-label">Girl Names</span>
+        </a>
+        <a href="/unisex-names" class="metric-pill">
+          <span class="metric-count">{unisexCount}</span>
+          <span class="metric-label">Unisex Names</span>
+        </a>
+        <button type="button" id="pill-pure-korean" class="metric-pill highlight">
+          <span class="metric-count">{pureKoreanCount}</span>
+          <span class="metric-label">Pure Korean (순우리말)</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Master Faceted Search & Filter Interface -->
+    <section class="search-filter-card" aria-label="Faceted Search Interface">
+      <!-- Search Input Bar -->
+      <div class="primary-search-box">
+        <div class="search-input-wrapper">
+          <svg class="search-icon" viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input
+            type="search"
+            id="directory-search-input"
+            class="directory-search-input"
+            placeholder="Search by English, Hangul (민준), Hanja (敏俊), Romanization, or Meaning (wisdom)..."
+            autocomplete="off"
+            aria-label="Search Korean Names"
+          />
+          <button id="clear-search-btn" class="clear-search-btn" title="Clear search" aria-label="Clear search" style="display: none;">
+            ✕
+          </button>
+        </div>
+      </div>
+
+      <!-- Facet Filters Row -->
+      <div class="filters-grid">
+        <!-- Gender Filter -->
+        <div class="filter-group">
+          <label class="filter-label" for="filter-gender">Gender</label>
+          <select id="filter-gender" class="filter-select">
+            <option value="all">All Genders</option>
+            <option value="boy">Boy (남성)</option>
+            <option value="girl">Girl (여성)</option>
+            <option value="unisex">Unisex (중성)</option>
+          </select>
+        </div>
+
+        <!-- Classification Filter -->
+        <div class="filter-group">
+          <label class="filter-label" for="filter-classification">Origin & Type</label>
+          <select id="filter-classification" class="filter-select">
+            <option value="all">All Linguistic Types</option>
+            <option value="sino-korean">Sino-Korean (Hanja 漢字)</option>
+            <option value="pure-korean">Pure Native Korean (순우리말)</option>
+          </select>
+        </div>
+
+        <!-- Syllable Count -->
+        <div class="filter-group">
+          <label class="filter-label" for="filter-syllables">Syllables</label>
+          <select id="filter-syllables" class="filter-select">
+            <option value="all">Any Syllable Length</option>
+            <option value="1">1 Syllable (외자)</option>
+            <option value="2">2 Syllables (Standard)</option>
+            <option value="3">3 Syllables</option>
+          </select>
+        </div>
+
+        <!-- Theme Filter -->
+        <div class="filter-group">
+          <label class="filter-label" for="filter-theme">Virtue & Theme</label>
+          <select id="filter-theme" class="filter-select">
+            <option value="all">All Cultural Themes</option>
+            {THEME_CATEGORIES.map(cat => (
+              <option value={cat.slug}>{cat.name}</option>
+            ))}
+          </select>
+        </div>
+
+        <!-- Sort Filter -->
+        <div class="filter-group">
+          <label class="filter-label" for="filter-sort">Sort By</label>
+          <select id="filter-sort" class="filter-select">
+            <option value="popularity">Popularity (Most Popular First)</option>
+            <option value="az">English Alphabetical (A &rarr; Z)</option>
+            <option value="za">English Alphabetical (Z &rarr; A)</option>
+            <option value="hangul">Hangul Syllable Order (가 &rarr; 하)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Alphabetical Quick Filter Bar -->
+      <div class="alphabet-bar-wrapper">
+        <span class="alphabet-label">First Letter:</span>
+        <div class="alphabet-buttons" id="alphabet-filter-container">
+          <button type="button" class="alpha-btn active" data-letter="all">All</button>
+          {alphabet.map(letter => (
+            <button type="button" class="alpha-btn" data-letter={letter}>{letter}</button>
+          ))}
+        </div>
+      </div>
+
+      <!-- Active Filters & Results Summary -->
+      <div class="results-header-bar">
+        <div class="results-count-text">
+          Showing <strong id="results-count-num">{totalNames}</strong> Korean names
+        </div>
+        <div class="active-filters-chips" id="active-filters-chips"></div>
+        <button id="reset-filters-btn" class="reset-filters-link" type="button">Reset All Filters</button>
+      </div>
+    </section>
+
+    <!-- Results Grid -->
+    <div id="directory-results-container" class="names-directory-grid">
+      <!-- Rendered dynamically via high-performance client script -->
+    </div>
+
+    <!-- Empty State -->
+    <div id="no-results-state" class="empty-results-box" style="display: none;">
+      <div class="empty-icon font-hangul">검색</div>
+      <h3 class="empty-title">No Matching Korean Names Found</h3>
+      <p class="empty-text">
+        Try broadening your search term, clearing syllable filters, or switching to "All Genders".
+      </p>
+      <button type="button" id="empty-reset-btn" class="btn btn-primary">Clear All Filters</button>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div class="pagination-bar" id="directory-pagination" style="display: none;">
+      <button type="button" id="btn-prev-page" class="page-nav-btn">&larr; Previous</button>
+      <span class="page-status-text" id="page-status-text">Page 1 of 1</span>
+      <button type="button" id="btn-next-page" class="page-nav-btn">Next &rarr;</button>
+    </div>
+
+  </div>
+</BaseLayout>
+
+<!-- Client Script: Fast Index Filtering -->
+<script is:inline define:vars={{ searchIndex }}>
+  let currentPage = 1;
+  const PAGE_SIZE = 36;
+  let currentLetter = 'all';
+
+  const searchInput = document.getElementById('directory-search-input');
+  const clearSearchBtn = document.getElementById('clear-search-btn');
+  const filterGender = document.getElementById('filter-gender');
+  const filterClassification = document.getElementById('filter-classification');
+  const filterSyllables = document.getElementById('filter-syllables');
+  const filterTheme = document.getElementById('filter-theme');
+  const filterSort = document.getElementById('filter-sort');
+  const resultsContainer = document.getElementById('directory-results-container');
+  const resultsCountNum = document.getElementById('results-count-num');
+  const noResultsState = document.getElementById('no-results-state');
+  const paginationBar = document.getElementById('directory-pagination');
+  const pageStatusText = document.getElementById('page-status-text');
+  const btnPrevPage = document.getElementById('btn-prev-page');
+  const btnNextPage = document.getElementById('btn-next-page');
+  const resetFiltersBtn = document.getElementById('reset-filters-btn');
+  const emptyResetBtn = document.getElementById('empty-reset-btn');
+  const pillPureKorean = document.getElementById('pill-pure-korean');
+  const alphaButtons = document.querySelectorAll('.alpha-btn');
+
+  function getFilteredNames() {
+    const query = searchInput.value.trim().toLowerCase();
+    const gender = filterGender.value;
+    const classification = filterClassification.value;
+    const syllables = filterSyllables.value;
+    const theme = filterTheme.value;
+    const sort = filterSort.value;
+
+    let filtered = searchIndex.filter(item => {
+      // Query filter
+      if (query) {
+        const matchesEnglish = item.english.toLowerCase().includes(query);
+        const matchesHangul = item.hangul.includes(query);
+        const matchesHanja = item.hanja.includes(query);
+        const matchesMeaning = item.overallMeaning.toLowerCase().includes(query);
+        const matchesRom = item.revisedRomanization.toLowerCase().includes(query);
+        if (!matchesEnglish && !matchesHangul && !matchesHanja && !matchesMeaning && !matchesRom) {
+          return false;
+        }
+      }
+
+      // Gender filter
+      if (gender !== 'all' && item.gender !== gender) {
+        return false;
+      }
+
+      // Classification filter
+      if (classification !== 'all') {
+        if (classification === 'pure-korean' && !item.isPureKorean && item.classification !== 'pure-korean') {
+          return false;
+        }
+        if (classification === 'sino-korean' && (item.isPureKorean || item.classification === 'pure-korean')) {
+          return false;
+        }
+      }
+
+      // Syllable count filter
+      if (syllables !== 'all') {
+        if (item.syllableCount !== parseInt(syllables, 10)) {
+          return false;
+        }
+      }
+
+      // Theme filter
+      if (theme !== 'all') {
+        const hasTheme = item.themes.some(t => t.toLowerCase() === theme.toLowerCase());
+        if (!hasTheme) return false;
+      }
+
+      // First letter filter
+      if (currentLetter !== 'all') {
+        if (item.firstLetter !== currentLetter) return false;
+      }
+
+      return true;
+    });
+
+    // Sorting
+    filtered.sort((a, b) => {
+      if (sort === 'popularity') {
+        return a.popularityRank - b.popularityRank;
+      } else if (sort === 'az') {
+        return a.english.localeCompare(b.english);
+      } else if (sort === 'za') {
+        return b.english.localeCompare(a.english);
+      } else if (sort === 'hangul') {
+        return a.hangul.localeCompare(b.hangul, 'ko');
+      }
+      return 0;
+    });
+
+    return filtered;
+  }
+
+  function renderResults() {
+    const filtered = getFilteredNames();
+    const total = filtered.length;
+    resultsCountNum.textContent = total.toLocaleString();
+
+    if (total === 0) {
+      resultsContainer.innerHTML = '';
+      noResultsState.style.display = 'block';
+      paginationBar.style.display = 'none';
+      return;
+    }
+
+    noResultsState.style.display = 'none';
+
+    // Pagination logic
+    const totalPages = Math.ceil(total / PAGE_SIZE);
+    if (currentPage > totalPages) currentPage = 1;
+
+    const startIdx = (currentPage - 1) * PAGE_SIZE;
+    const pageItems = filtered.slice(startIdx, startIdx + PAGE_SIZE);
+
+    // Build HTML for cards
+    const cardsHtml = pageItems.map(item => {
+      const isPure = item.isPureKorean || item.classification === 'pure-korean';
+      const genderClass = item.gender === 'boy' ? 'badge-boy' : item.gender === 'girl' ? 'badge-girl' : 'badge-unisex';
+      const genderText = item.gender.charAt(0).toUpperCase() + item.gender.slice(1);
+
+      return `
+        <article class="directory-card">
+          <div class="card-top">
+            <span class="badge ${genderClass}">${genderText}</span>
+            ${isPure ? '<span class="badge badge-pure-korean">Pure Korean</span>' : ''}
+            ${item.popularityRank <= 10 ? `<span class="badge badge-gold">Top ${item.popularityRank}</span>` : ''}
+          </div>
+
+          <div class="card-main">
+            <div class="chars-line">
+              <span class="card-hangul">${item.hangul}</span>
+              ${item.hanja ? `<span class="card-hanja">(${item.hanja})</span>` : ''}
+            </div>
+            <h2 class="card-english">
+              <a href="/name/${item.slug}">${item.english}</a>
+            </h2>
+            <p class="card-meaning">"${item.overallMeaning}"</p>
+          </div>
+
+          <div class="card-footer">
+            <span class="card-rom">${item.revisedRomanization}</span>
+            <a href="/name/${item.slug}" class="view-link">Explore Details &rarr;</a>
+          </div>
+        </article>
+      `;
+    }).join('');
+
+    resultsContainer.innerHTML = cardsHtml;
+
+    // Update pagination controls
+    if (totalPages > 1) {
+      paginationBar.style.display = 'flex';
+      pageStatusText.textContent = `Page ${currentPage} of ${totalPages} (${total} names)`;
+      btnPrevPage.disabled = currentPage === 1;
+      btnNextPage.disabled = currentPage === totalPages;
+    } else {
+      paginationBar.style.display = 'none';
+    }
+
+    // Toggle clear search button
+    clearSearchBtn.style.display = searchInput.value ? 'block' : 'none';
+  }
+
+  // Event Listeners
+  searchInput.addEventListener('input', () => {
+    currentPage = 1;
+    renderResults();
+  });
+
+  clearSearchBtn.addEventListener('click', () => {
+    searchInput.value = '';
+    currentPage = 1;
+    renderResults();
+    searchInput.focus();
+  });
+
+  filterGender.addEventListener('change', () => { currentPage = 1; renderResults(); });
+  filterClassification.addEventListener('change', () => { currentPage = 1; renderResults(); });
+  filterSyllables.addEventListener('change', () => { currentPage = 1; renderResults(); });
+  filterTheme.addEventListener('change', () => { currentPage = 1; renderResults(); });
+  filterSort.addEventListener('change', () => { currentPage = 1; renderResults(); });
+
+  alphaButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      alphaButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentLetter = btn.getAttribute('data-letter');
+      currentPage = 1;
+      renderResults();
+    });
+  });
+
+  pillPureKorean?.addEventListener('click', () => {
+    filterClassification.value = 'pure-korean';
+    currentPage = 1;
+    renderResults();
+  });
+
+  function resetAll() {
+    searchInput.value = '';
+    filterGender.value = 'all';
+    filterClassification.value = 'all';
+    filterSyllables.value = 'all';
+    filterTheme.value = 'all';
+    filterSort.value = 'popularity';
+    currentLetter = 'all';
+    alphaButtons.forEach(b => b.classList.toggle('active', b.getAttribute('data-letter') === 'all'));
+    currentPage = 1;
+    renderResults();
+  }
+
+  resetFiltersBtn.addEventListener('click', resetAll);
+  emptyResetBtn.addEventListener('click', resetAll);
+
+  btnPrevPage.addEventListener('click', () => {
+    if (currentPage > 1) {
+      currentPage--;
+      renderResults();
+      window.scrollTo({ top: document.querySelector('.search-filter-card').offsetTop - 60, behavior: 'smooth' });
+    }
+  });
+
+  btnNextPage.addEventListener('click', () => {
+    currentPage++;
+    renderResults();
+    window.scrollTo({ top: document.querySelector('.search-filter-card').offsetTop - 60, behavior: 'smooth' });
+  });
+
+  // Initial render
+  renderResults();
+</script>
+
+<style>
+  .page-wrapper {
+    padding-top: 1.5rem;
+    padding-bottom: 5rem;
+  }
+
+  .directory-hero {
+    background: linear-gradient(135deg, var(--bg-surface) 0%, #EFE8DA 100%);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 3rem 2.5rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .hero-heritage-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--antique-gold);
+    color: var(--brand-jade);
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.35rem 0.85rem;
+    border-radius: var(--radius-full);
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .heritage-emblem {
+    font-family: var(--font-korean);
+    color: var(--accent-burgundy);
+    border-right: 1px solid var(--border-color);
+    padding-right: 0.5rem;
+  }
+
+  .directory-title {
+    font-family: var(--font-serif);
+    font-size: 2.75rem;
+    font-weight: 800;
+    color: var(--text-main);
+    line-height: 1.15;
+    margin-bottom: 0.75rem;
+  }
+
+  .directory-subtitle {
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    max-width: 800px;
+    margin-bottom: 2rem;
+  }
+
+  .metrics-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+  }
+
+  .metric-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.55rem 1.1rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-full);
+    text-decoration: none;
+    font-size: 0.9rem;
+    color: var(--text-main);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .metric-pill:hover {
+    border-color: var(--brand-jade);
+    background: #EAE3D2;
+    transform: translateY(-1px);
+  }
+
+  .metric-pill.highlight {
+    background: #F1ECE0;
+    border-color: var(--antique-gold);
+    color: var(--brand-jade);
+    font-weight: 600;
+  }
+
+  .metric-count {
+    font-weight: 800;
+    color: var(--brand-jade);
+    background: #E5DDCB;
+    padding: 0.15rem 0.55rem;
+    border-radius: var(--radius-full);
+    font-size: 0.8rem;
+  }
+
+  /* Search & Filter Card */
+  .search-filter-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    margin-bottom: 2.5rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .primary-search-box {
+    margin-bottom: 1.5rem;
+  }
+
+  .search-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 1.15rem;
+    color: var(--brand-jade);
+    pointer-events: none;
+  }
+
+  .directory-search-input {
+    width: 100%;
+    padding: 1rem 3rem 1rem 3.25rem;
+    font-size: 1.05rem;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    background: #FAF8F2;
+    color: var(--text-main);
+    transition: all 0.2s ease;
+  }
+
+  .directory-search-input:focus {
+    outline: none;
+    border-color: var(--brand-jade);
+    background: #FFFFFF;
+    box-shadow: 0 0 0 4px rgba(23, 76, 60, 0.12);
+  }
+
+  .clear-search-btn {
+    position: absolute;
+    right: 1.1rem;
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0.25rem;
+  }
+
+  .filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .filter-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+  }
+
+  .filter-select {
+    padding: 0.65rem 0.85rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    background: #FAF8F2;
+    color: var(--text-main);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+  }
+
+  .filter-select:focus {
+    outline: none;
+    border-color: var(--brand-jade);
+  }
+
+  /* Alphabet Quick Filter */
+  .alphabet-bar-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .alphabet-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .alphabet-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+  }
+
+  .alpha-btn {
+    background: #FAF8F2;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 0.25rem 0.55rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-main);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .alpha-btn:hover, .alpha-btn.active {
+    background: var(--brand-jade);
+    color: #FFFFFF;
+    border-color: var(--brand-jade);
+  }
+
+  .results-header-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+    font-size: 0.9rem;
+  }
+
+  .results-count-text strong {
+    color: var(--brand-jade);
+  }
+
+  .reset-filters-link {
+    background: none;
+    border: none;
+    color: var(--accent-burgundy);
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: underline;
+    font-size: 0.85rem;
+  }
+
+  /* Directory Names Grid */
+  .names-directory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  /* Directory Card */
+  .directory-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease;
+  }
+
+  .directory-card:hover {
+    border-color: var(--brand-jade);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .card-top {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .chars-line {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .card-hangul {
+    font-family: var(--font-korean);
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: var(--text-main);
+    line-height: 1;
+  }
+
+  .card-hanja {
+    font-family: var(--font-korean);
+    font-size: 1.35rem;
+    color: var(--antique-gold);
+    font-weight: 600;
+  }
+
+  .card-english {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .card-english a {
+    color: var(--brand-navy);
+    text-decoration: none;
+  }
+
+  .card-english a:hover {
+    color: var(--brand-jade);
+  }
+
+  .card-meaning {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 1.25rem;
+  }
+
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+    font-size: 0.85rem;
+  }
+
+  .card-rom {
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  .view-link {
+    color: var(--brand-jade);
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  .view-link:hover {
+    color: var(--accent-burgundy);
+  }
+
+  .badge-pure-korean {
+    background: rgba(135, 61, 72, 0.1);
+    color: var(--accent-burgundy);
+    border: 1px solid rgba(135, 61, 72, 0.25);
+    font-weight: 600;
+  }
+
+  /* Empty Results State */
+  .empty-results-box {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: var(--bg-surface);
+    border: 1px dashed var(--border-color);
+    border-radius: var(--radius-lg);
+    margin-bottom: 3rem;
+  }
+
+  .empty-icon {
+    font-size: 3rem;
+    color: var(--antique-gold);
+    margin-bottom: 1rem;
+  }
+
+  .empty-title {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    color: var(--text-main);
+    margin-bottom: 0.5rem;
+  }
+
+  .empty-text {
+    color: var(--text-muted);
+    max-width: 480px;
+    margin: 0 auto 1.5rem;
+  }
+
+  /* Pagination Bar */
+  .pagination-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    padding: 1.5rem 0;
+  }
+
+  .page-nav-btn {
+    padding: 0.65rem 1.25rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--brand-jade);
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .page-nav-btn:hover:not(:disabled) {
+    background: var(--brand-jade);
+    color: #FFFFFF;
+    border-color: var(--brand-jade);
+  }
+
+  .page-nav-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .page-status-text {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  @media (max-width: 768px) {
+    .directory-hero {
+      padding: 2rem 1.5rem;
+    }
+    .directory-title {
+      font-size: 2rem;
+    }
+    .search-filter-card {
+      padding: 1.25rem;
+    }
+    .filters-grid {
+      grid-template-columns: 1fr;
+    }
+    .names-directory-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

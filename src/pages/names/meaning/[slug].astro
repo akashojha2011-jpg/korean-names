@@ -1,0 +1,214 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../../components/Breadcrumb.astro';
+import NameCard from '../../../components/NameCard.astro';
+import FAQSection from '../../../components/FAQSection.astro';
+import { THEME_CATEGORIES } from '../../../data/categories';
+import { KOREAN_NAMES } from '../../../data/names';
+import type { ThemeCategory } from '../../../types/name';
+
+export async function getStaticPaths() {
+  return THEME_CATEGORIES.map((cat) => ({
+    params: { slug: cat.slug },
+    props: { category: cat }
+  }));
+}
+
+export interface Props {
+  category: ThemeCategory;
+}
+
+const { category } = Astro.props;
+const namesInTheme = KOREAN_NAMES.filter(n =>
+  n.themes && n.themes.some(t => t.toLowerCase() === category.slug.toLowerCase())
+);
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Korean Names', href: '/names' },
+  { label: 'Meanings', href: '/names/meaning' },
+  { label: category.name }
+];
+
+const themeFaqs = [
+  {
+    question: `What makes a Korean name belong to the "${category.name}" theme?`,
+    answer: `Names in this collection feature Sino-Korean Hanja characters or native Korean words representing ${category.description.toLowerCase()}.`
+  },
+  {
+    question: `Are names in this theme suitable for both boys and girls?`,
+    answer: `Many thematic virtues in Korean culture (such as wisdom, nature, and brightness) are gender-neutral and can be given to either boys or girls depending on the specific character pairing.`
+  }
+];
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  'name': `Korean Names Meaning ${category.name} (${category.koreanName})`,
+  'description': `Discover authentic Korean given names associated with ${category.name}. Includes Hangul orthography, Hanja logograms, stroke counts, and pronunciation guides.`,
+  'url': `https://www.korean-names.info/names/meaning/${category.slug}`
+};
+---
+
+<BaseLayout
+  title={`Korean Names Meaning ${category.name} (${category.koreanName}) - Hanja & Pronunciation`}
+  description={`Discover ${namesInTheme.length} authentic Korean given names meaning ${category.name}. Features Hangul characters, official Hanja logograms, stroke counts, and cultural insights.`}
+  jsonLd={schema}
+>
+  <div class="container page-wrapper">
+    <Breadcrumb items={breadcrumbs} />
+
+    <!-- Theme Hero Header -->
+    <header class="theme-hero">
+      <div class="heritage-tag">
+        <span class="theme-icon">{category.icon}</span>
+        <span class="theme-korean font-hangul">{category.koreanName}</span>
+        <span>Thematic Collection</span>
+      </div>
+      <h1 class="theme-title">Korean Names Meaning "{category.name}"</h1>
+      <p class="theme-lead">
+        Explore {namesInTheme.length} authentic Korean given names celebrating {category.description.toLowerCase()}.
+      </p>
+
+      <div class="theme-shortcuts">
+        <a href="/names/meaning" class="shortcut-pill">&larr; All Meaning Themes</a>
+        <a href={`/names?theme=${category.slug}`} class="shortcut-pill">Filter in Search Directory &rarr;</a>
+      </div>
+    </header>
+
+    <!-- Names Section -->
+    <section class="names-section">
+      <div class="section-meta-bar">
+        <h2 class="section-title">Names in the {category.name} Collection ({namesInTheme.length})</h2>
+        <span class="sort-note">Sorted by birth registry popularity</span>
+      </div>
+
+      <div class="names-cards-grid">
+        {namesInTheme.map(name => (
+          <NameCard name={name} />
+        ))}
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <FAQSection faqs={themeFaqs} title={`Frequently Asked Questions About ${category.name} Korean Names`} />
+
+  </div>
+</BaseLayout>
+
+<style>
+  .page-wrapper {
+    padding-top: 1.5rem;
+    padding-bottom: 5rem;
+  }
+
+  .theme-hero {
+    background: linear-gradient(135deg, var(--bg-surface) 0%, #EDE6D8 100%);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 3rem 2.5rem;
+    margin-bottom: 2.5rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .heritage-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    color: var(--brand-jade);
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.35rem 0.85rem;
+    border-radius: var(--radius-full);
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .theme-icon {
+    font-size: 1.1rem;
+  }
+
+  .theme-korean {
+    font-family: var(--font-korean);
+    color: var(--accent-burgundy);
+    border-right: 1px solid var(--border-color);
+    padding-right: 0.5rem;
+  }
+
+  .theme-title {
+    font-family: var(--font-serif);
+    font-size: 2.75rem;
+    font-weight: 800;
+    color: var(--text-main);
+    line-height: 1.15;
+    margin-bottom: 0.75rem;
+  }
+
+  .theme-lead {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    max-width: 800px;
+    margin-bottom: 1.75rem;
+  }
+
+  .theme-shortcuts {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .shortcut-pill {
+    padding: 0.45rem 1rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-full);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--brand-jade);
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+
+  .shortcut-pill:hover {
+    border-color: var(--brand-jade);
+    background: #EAE3D2;
+  }
+
+  .names-section {
+    margin-bottom: 3.5rem;
+  }
+
+  .section-meta-bar {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--border-color);
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .section-title {
+    font-family: var(--font-serif);
+    font-size: 1.75rem;
+    color: var(--text-main);
+    font-weight: 700;
+  }
+
+  .sort-note {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  .names-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+</style>

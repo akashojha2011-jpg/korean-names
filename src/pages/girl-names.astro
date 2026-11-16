@@ -1,0 +1,236 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import NameCard from '../components/NameCard.astro';
+import FAQSection from '../components/FAQSection.astro';
+import { KOREAN_NAMES } from '../data/names';
+
+const girlNames = KOREAN_NAMES.filter(n => n.gender === 'girl');
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Korean Names', href: '/names' },
+  { label: 'Korean Girl Names' }
+];
+
+const girlFaqs = [
+  {
+    question: "What are the most beloved Korean girl naming elements?",
+    answer: "Popular Korean girl names commonly employ Hanja syllables that evoke elegance (Ah 雅), auspicious blessings (Seo 瑞), beauty and clarity (Yeon 然, Jin 眞), and grace (Eun 恩). Vowel-rich endings such as '-ah', '-yeon', and '-yoon' are favored for their gentle phonetic flow."
+  },
+  {
+    question: "Are Pure Korean girl names widely used?",
+    answer: "Yes, pure native Korean (Soon-woori-mal) names are exceptionally popular for girls. Names such as A-reum (아름, Beauty), Bo-ram (보람, Fulfillment), I-seul (이슬, Morning Dew), Da-som (다솜, Archaic Love), and Na-rae (나래, Wings) carry rich, poetic connotations without relying on Chinese Hanja characters."
+  },
+  {
+    question: "How has Korean girl naming changed across generations?",
+    answer: "In the mid-20th century, traditional Sino-Korean suffix characters like '-ja' (子, influenced by earlier Japanese colonial registers) and '-suk' (淑, meaning pure) were ubiquitous. Modern naming has completely moved toward lyrical, soft-sounding, two-syllable pairings that balance international ease of pronunciation with deep classical meanings."
+  }
+];
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  'name': 'Korean Girl Names - Meanings, Hanja & Auspicious Virtues',
+  'description': 'Comprehensive directory of authentic Korean girl names with Hangul orthography, official Hanja logograms, stroke counts, and cultural virtues.',
+  'url': 'https://www.korean-names.info/girl-names'
+};
+---
+
+<BaseLayout
+  title="Korean Girl Names - Meanings, Hanja & Cultural Significance"
+  description="Discover authentic Korean girl names with Hangul characters, official Supreme Court Hanja logograms, pronunciation guides, and meaning virtues."
+  jsonLd={schema}
+>
+  <div class="container page-wrapper">
+    <Breadcrumb items={breadcrumbs} />
+
+    <!-- Hero Section -->
+    <header class="editorial-hero">
+      <div class="heritage-tag">
+        <span class="emblem font-hangul">여자 이름</span>
+        <span>Female Nomenclature Collection</span>
+      </div>
+      <h1 class="hero-title">Authentic Korean Girl Names</h1>
+      <p class="hero-lead">
+        Discover {girlNames.length} elegant, melodic, and culturally rich Korean given names for girls.
+        From modern nationwide favorites like Seo-ah (瑞雅) and Ha-eun (夏恩) to poetic Pure Korean creations like A-reum (아름).
+      </p>
+
+      <div class="filter-shortcuts">
+        <span class="shortcuts-label">Quick Jump:</span>
+        <a href="/names?gender=girl" class="shortcut-pill">Advanced Search &rarr;</a>
+        <a href="/boy-names" class="shortcut-pill">Browse Boy Names &rarr;</a>
+        <a href="/unisex-names" class="shortcut-pill">Browse Unisex Names &rarr;</a>
+      </div>
+    </header>
+
+    <!-- Names Grid -->
+    <section class="names-section">
+      <div class="section-meta-bar">
+        <h2 class="section-title">Directory of Korean Girl Names ({girlNames.length})</h2>
+        <span class="sort-note">Sorted by national birth registration popularity</span>
+      </div>
+
+      <div class="names-cards-grid">
+        {girlNames.map(name => (
+          <NameCard name={name} />
+        ))}
+      </div>
+    </section>
+
+    <!-- Cultural Context Editorial Box -->
+    <section class="editorial-box">
+      <h2 class="box-title">Elegance and Poetic Balance in Korean Female Names</h2>
+      <p>
+        In Korean culture, female names are carefully crafted to convey harmony, brightness, and dignified grace.
+        Parents often choose characters that evoke the purity of nature, artistic talent, and kindness.
+        With the official digitization of the Supreme Court Table of Hanja for Personal Names, families enjoy
+        unprecedented freedom to pair evocative characters that reflect timeless heritage while sounding vibrant
+        and contemporary.
+      </p>
+    </section>
+
+    <!-- FAQ Section -->
+    <FAQSection faqs={girlFaqs} title="Frequently Asked Questions About Korean Girl Names" />
+
+  </div>
+</BaseLayout>
+
+<style>
+  .page-wrapper {
+    padding-top: 1.5rem;
+    padding-bottom: 5rem;
+  }
+
+  .editorial-hero {
+    background: linear-gradient(135deg, var(--bg-surface) 0%, #F5ECEB 100%);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 3rem 2.5rem;
+    margin-bottom: 2.5rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .heritage-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    color: var(--accent-burgundy);
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.35rem 0.85rem;
+    border-radius: var(--radius-full);
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .heritage-tag .emblem {
+    color: var(--accent-burgundy);
+    border-right: 1px solid var(--border-color);
+    padding-right: 0.5rem;
+  }
+
+  .hero-title {
+    font-family: var(--font-serif);
+    font-size: 2.75rem;
+    font-weight: 800;
+    color: var(--text-main);
+    line-height: 1.15;
+    margin-bottom: 0.75rem;
+  }
+
+  .hero-lead {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    max-width: 800px;
+    margin-bottom: 1.75rem;
+  }
+
+  .filter-shortcuts {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .shortcuts-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-muted);
+  }
+
+  .shortcut-pill {
+    padding: 0.45rem 1rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-full);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--accent-burgundy);
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+
+  .shortcut-pill:hover {
+    border-color: var(--accent-burgundy);
+    background: #EFE4E3;
+  }
+
+  .names-section {
+    margin-bottom: 3rem;
+  }
+
+  .section-meta-bar {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--border-color);
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .section-title {
+    font-family: var(--font-serif);
+    font-size: 1.75rem;
+    color: var(--text-main);
+    font-weight: 700;
+  }
+
+  .sort-note {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  .names-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .editorial-box {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .box-title {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    color: var(--accent-burgundy);
+    margin-bottom: 1rem;
+  }
+
+  .editorial-box p {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--text-main);
+  }
+</style>

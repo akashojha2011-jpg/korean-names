@@ -1,0 +1,235 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import NameCard from '../components/NameCard.astro';
+import FAQSection from '../components/FAQSection.astro';
+import { KOREAN_NAMES } from '../data/names';
+
+const boyNames = KOREAN_NAMES.filter(n => n.gender === 'boy');
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Korean Names', href: '/names' },
+  { label: 'Korean Boy Names' }
+];
+
+const boyFaqs = [
+  {
+    question: "What are the most popular Korean boy naming traditions?",
+    answer: "Korean boy names traditionally incorporate Sino-Korean Hanja syllables reflecting strength, scholarly intellect (Min), handsome dignity (Jun), cosmic vision (Woo), and righteous virtue (Do). Historically, many families also employed generation names (Dollimja, 돌림자) shared across brothers and paternal cousins."
+  },
+  {
+    question: "Are modern Korean boy names mostly Sino-Korean or Pure Korean?",
+    answer: "While approximately 80-85% of registered Korean male given names utilize statutory Hanja logograms, pure native Korean (Soon-woori-mal) names like Han-byeol (한별, Great Star), Maru (마루, Summit), and Ro-woon (로운, Wise/Peaceful) have experienced significant resurgence among contemporary parents."
+  },
+  {
+    question: "How do Korean boy names pair with family surnames?",
+    answer: "Because the family surname is spoken first in Korea (e.g., Kim Min-jun), parents carefully evaluate phonetic harmony, ensuring the final consonant (batchim) of the surname flows smoothly into the initial consonant of the given name without awkward acoustic friction."
+  }
+];
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  'name': 'Korean Boy Names - Meanings, Hanja & Popularity',
+  'description': 'Comprehensive directory of authentic Korean boy names with Hangul orthography, official Hanja logograms, stroke counts, and cultural virtues.',
+  'url': 'https://www.korean-names.info/boy-names'
+};
+---
+
+<BaseLayout
+  title="Korean Boy Names - Meanings, Hanja & Cultural Significance"
+  description="Explore authentic Korean boy names with Hangul characters, official Supreme Court Hanja logograms, pronunciation guides, and meaning virtues."
+  jsonLd={schema}
+>
+  <div class="container page-wrapper">
+    <Breadcrumb items={breadcrumbs} />
+
+    <!-- Hero Section -->
+    <header class="editorial-hero">
+      <div class="heritage-tag">
+        <span class="emblem font-hangul">남자 이름</span>
+        <span>Male Nomenclature Collection</span>
+      </div>
+      <h1 class="hero-title">Authentic Korean Boy Names</h1>
+      <p class="hero-lead">
+        Discover {boyNames.length} traditional and contemporary Korean given names for boys.
+        From iconic leaders like Min-jun (敏俊) and Do-hyun (道賢) to evocative Pure Korean names like Han-byeol (한별).
+      </p>
+
+      <div class="filter-shortcuts">
+        <span class="shortcuts-label">Quick Jump:</span>
+        <a href="/names?gender=boy" class="shortcut-pill">Advanced Search &rarr;</a>
+        <a href="/girl-names" class="shortcut-pill">Browse Girl Names &rarr;</a>
+        <a href="/unisex-names" class="shortcut-pill">Browse Unisex Names &rarr;</a>
+      </div>
+    </header>
+
+    <!-- Names Grid -->
+    <section class="names-section">
+      <div class="section-meta-bar">
+        <h2 class="section-title">Directory of Korean Boy Names ({boyNames.length})</h2>
+        <span class="sort-note">Sorted by national birth registration popularity</span>
+      </div>
+
+      <div class="names-cards-grid">
+        {boyNames.map(name => (
+          <NameCard name={name} />
+        ))}
+      </div>
+    </section>
+
+    <!-- Cultural Context Editorial Box -->
+    <section class="editorial-box">
+      <h2 class="box-title">Philosophy of Korean Male Nomenclature</h2>
+      <p>
+        In traditional Korean philosophy influenced by Neo-Confucianism and Saju (Four Pillars of Destiny, 사주명리학),
+        naming a boy is an intentional act of blessing. Syllables are chosen not only for melodic resonance but to
+        harmonize the Five Cosmological Elements (Wood, Fire, Earth, Metal, Water) and encourage perseverance,
+        scholarship, civic duty, and familial honor.
+      </p>
+    </section>
+
+    <!-- FAQ Section -->
+    <FAQSection faqs={boyFaqs} title="Frequently Asked Questions About Korean Boy Names" />
+
+  </div>
+</BaseLayout>
+
+<style>
+  .page-wrapper {
+    padding-top: 1.5rem;
+    padding-bottom: 5rem;
+  }
+
+  .editorial-hero {
+    background: linear-gradient(135deg, var(--bg-surface) 0%, #E8EEF5 100%);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 3rem 2.5rem;
+    margin-bottom: 2.5rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .heritage-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    color: var(--brand-navy);
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.35rem 0.85rem;
+    border-radius: var(--radius-full);
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .heritage-tag .emblem {
+    color: var(--brand-jade);
+    border-right: 1px solid var(--border-color);
+    padding-right: 0.5rem;
+  }
+
+  .hero-title {
+    font-family: var(--font-serif);
+    font-size: 2.75rem;
+    font-weight: 800;
+    color: var(--text-main);
+    line-height: 1.15;
+    margin-bottom: 0.75rem;
+  }
+
+  .hero-lead {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    max-width: 800px;
+    margin-bottom: 1.75rem;
+  }
+
+  .filter-shortcuts {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .shortcuts-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-muted);
+  }
+
+  .shortcut-pill {
+    padding: 0.45rem 1rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-full);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--brand-navy);
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+
+  .shortcut-pill:hover {
+    border-color: var(--brand-jade);
+    color: var(--brand-jade);
+  }
+
+  .names-section {
+    margin-bottom: 3rem;
+  }
+
+  .section-meta-bar {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--border-color);
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .section-title {
+    font-family: var(--font-serif);
+    font-size: 1.75rem;
+    color: var(--text-main);
+    font-weight: 700;
+  }
+
+  .sort-note {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  .names-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .editorial-box {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .box-title {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    color: var(--brand-navy);
+    margin-bottom: 1rem;
+  }
+
+  .editorial-box p {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--text-main);
+  }
+</style>
