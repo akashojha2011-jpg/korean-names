@@ -14,33 +14,7 @@ const isActive = (path: string) => {
 };
 ---
 
-<!-- Top Cultural Utility Bar -->
-<div class="top-utility-bar">
-  <div class="container utility-inner">
-    <div class="utility-left">
-      <span class="cultural-badge">대한국민 onomastic archive</span>
-      <span class="utility-separator" aria-hidden="true">•</span>
-      <span class="utility-text">
-        Korean Names Digital Encyclopedia & Cultural Reference
-      </span>
-    </div>
-    <div class="utility-right">
-      <a href="/favorites" class="utility-btn fav-btn" title="View Bookmarked Names Shortlist">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-        <span>Shortlist</span>
-        <span id="nav-fav-count" class="fav-count-pill" style="display: none;">0</span>
-      </a>
-      <a href="/admin" class="utility-btn admin-link-btn" title="Editorial Administration">
-        <span>Admin</span>
-      </a>
-      <button id="theme-toggle-btn" class="utility-btn theme-btn" aria-label="Toggle Dark Mode" title="Toggle Theme">
-        <span id="theme-toggle-icon" aria-hidden="true">🌙</span>
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- Main Editorial Navigation Header (Deep Jade Green) -->
+<!-- Main Editorial Navigation Header (Clean Deep Jade Green) -->
 <header class="main-navbar">
   <div class="container header-inner">
     <!-- Brand Identity -->
@@ -49,19 +23,19 @@ const isActive = (path: string) => {
         <img
           src="/logo.jpg"
           alt="KoreanNames.info Authentic Seal Logo"
-          width="44"
-          height="44"
+          width="42"
+          height="42"
           class="brand-logo-img"
           loading="eager"
         />
         <div class="brand-text-group">
           <span class="brand-title">KoreanNames<span class="brand-tld">.info</span></span>
-          <span class="brand-subtitle">Korean Naming Encyclopedia</span>
+          <span class="brand-subtitle">Korean Naming Dictionary</span>
         </div>
       </a>
     </div>
 
-    <!-- Quick Search Pill (Visible on Desktop >= 1200px) -->
+    <!-- Quick Search Pill (Desktop >= 1200px) -->
     <div class="header-search-wrap">
       <a href="/names" class="header-search-pill" title="Search all Korean names (Press /)">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
@@ -70,7 +44,7 @@ const isActive = (path: string) => {
       </a>
     </div>
 
-    <!-- Desktop Navigation Links (Clean, streamlined labels that fit perfectly) -->
+    <!-- Desktop Navigation Links -->
     <nav class="nav-links" id="main-nav-links" aria-label="Main Navigation">
       <a href="/names" class={`nav-item ${isActive('/names') ? 'active' : ''}`}>Names</a>
       <a href="/names/meaning" class={`nav-item ${isActive('/names/meaning') ? 'active' : ''}`}>Meanings</a>
@@ -81,10 +55,26 @@ const isActive = (path: string) => {
       <a href="/about" class={`nav-item ${isActive('/about') ? 'active' : ''}`}>About</a>
     </nav>
 
-    <!-- Mobile Header Actions (Visible on screens < 1024px) -->
+    <!-- Desktop Right Utility: Shortlist & Theme Toggle -->
+    <div class="header-right-actions">
+      <a href="/favorites" class="header-shortlist-btn" title="View Saved Names Shortlist">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+        <span class="shortlist-label">Shortlist</span>
+        <span id="nav-fav-count" class="fav-count-pill" style="display: none;">0</span>
+      </a>
+      <button id="theme-toggle-btn" class="header-theme-btn" aria-label="Toggle Dark Mode" title="Toggle Theme">
+        <span id="theme-toggle-icon" aria-hidden="true">🌙</span>
+      </button>
+    </div>
+
+    <!-- Mobile Header Actions (< 1024px) -->
     <div class="mobile-header-actions">
+      <a href="/favorites" class="mobile-icon-btn fav-mobile-btn" aria-label="Saved Shortlist" title="Shortlist">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+        <span id="mobile-fav-count" class="fav-count-pill" style="display: none;">0</span>
+      </a>
       <a href="/names" class="mobile-icon-btn" aria-label="Search Korean Names" title="Search">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
       </a>
       <button
         id="mobile-menu-toggle"
@@ -106,10 +96,10 @@ const isActive = (path: string) => {
 <aside id="mobile-nav-drawer" class="mobile-nav-drawer" aria-label="Mobile Navigation" aria-hidden="true">
   <div class="drawer-header">
     <div class="drawer-brand">
-      <img src="/logo.jpg" alt="KoreanNames.info Logo" width="36" height="36" class="drawer-logo" />
+      <img src="/logo.jpg" alt="KoreanNames.info Logo" width="34" height="34" class="drawer-logo" />
       <div>
         <span class="drawer-title">KoreanNames.info</span>
-        <span class="drawer-sub">Onomastic Reference</span>
+        <span class="drawer-sub">Korean Naming Dictionary</span>
       </div>
     </div>
     <button id="mobile-menu-close" class="drawer-close-btn" aria-label="Close Navigation Menu">
@@ -120,7 +110,7 @@ const isActive = (path: string) => {
   <!-- Search Quick Access inside Drawer -->
   <div class="drawer-search-box">
     <a href="/names" class="drawer-search-link">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
       <span>Search Names, Hanja, Hangul...</span>
     </a>
   </div>
@@ -173,22 +163,17 @@ const isActive = (path: string) => {
       <span class="drawer-link-icon">ℹ️</span>
       <div class="drawer-link-text">
         <span class="drawer-link-name">About the Project</span>
-        <span class="drawer-link-desc">Editorial board, citations & methodology</span>
+        <span class="drawer-link-desc">Editorial mission, sources & methodology</span>
       </div>
     </a>
   </nav>
 
-  <!-- Drawer Bottom Cultural Utility Links -->
+  <!-- Drawer Bottom Utility Links -->
   <div class="drawer-footer">
-    <div class="drawer-footer-actions">
-      <a href="/favorites" class="drawer-btn">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-        <span>Shortlist (<span id="drawer-fav-count">0</span>)</span>
-      </a>
-      <a href="/admin" class="drawer-btn">
-        <span>Admin</span>
-      </a>
-    </div>
+    <a href="/favorites" class="drawer-btn drawer-btn-fav">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+      <span>Saved Shortlist (<span id="drawer-fav-count">0</span>)</span>
+    </a>
   </div>
 </aside>
 
@@ -227,15 +212,20 @@ const isActive = (path: string) => {
       const legacy = JSON.parse(localStorage.getItem('hanname-saved-names') || '[]');
       const count = modern.length > 0 ? modern.length : legacy.length;
       const countPill = document.getElementById('nav-fav-count');
+      const mobileCount = document.getElementById('mobile-fav-count');
       const drawerCount = document.getElementById('drawer-fav-count');
-      if (countPill) {
-        if (count > 0) {
-          countPill.textContent = String(count);
-          countPill.style.display = 'inline-flex';
-        } else {
-          countPill.style.display = 'none';
+
+      [countPill, mobileCount].forEach(pill => {
+        if (pill) {
+          if (count > 0) {
+            pill.textContent = String(count);
+            pill.style.display = 'inline-flex';
+          } else {
+            pill.style.display = 'none';
+          }
         }
-      }
+      });
+
       if (drawerCount) {
         drawerCount.textContent = String(count);
       }
@@ -292,102 +282,6 @@ const isActive = (path: string) => {
 </script>
 
 <style>
-  /* Top Cultural Utility Bar */
-  .top-utility-bar {
-    width: 100%;
-    background-color: var(--bg-surface-warm);
-    border-bottom: 1px solid var(--border-color);
-    padding: 0.35rem 0;
-    font-size: 0.8125rem;
-    color: var(--text-muted);
-  }
-
-  .utility-inner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .utility-left {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .cultural-badge {
-    font-family: var(--font-hangul);
-    font-size: 0.725rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--color-burgundy);
-    background: var(--color-burgundy-surface);
-    border: 1px solid var(--color-burgundy-border);
-    padding: 0.15rem 0.5rem;
-    border-radius: var(--radius-xs);
-  }
-
-  .utility-separator {
-    color: var(--border-strong);
-    font-size: 0.75rem;
-  }
-
-  .utility-text {
-    font-weight: 500;
-    letter-spacing: -0.01em;
-  }
-
-  .utility-right {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .utility-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    padding: 0.2rem 0.65rem;
-    border-radius: var(--radius-full);
-    border: 1px solid var(--border-color);
-    background: var(--bg-surface);
-    font-size: 0.775rem;
-    font-weight: 600;
-    color: var(--text-main);
-    transition: all 0.15s ease;
-  }
-
-  .utility-btn:hover {
-    border-color: var(--color-jade);
-    color: var(--color-jade);
-    background: var(--color-jade-surface);
-  }
-
-  .fav-btn svg {
-    color: var(--color-gold-dark);
-  }
-
-  .fav-count-pill {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 17px;
-    height: 17px;
-    padding: 0 4px;
-    background: var(--color-burgundy);
-    color: white;
-    font-size: 0.65rem;
-    font-weight: 800;
-    border-radius: var(--radius-full);
-  }
-
-  .theme-btn {
-    padding: 0.2rem 0.45rem;
-    width: 28px;
-    height: 28px;
-    justify-content: center;
-  }
-
   /* Main Navigation Header: Deep Jade Green (#174C3C) */
   .main-navbar {
     width: 100%;
@@ -422,8 +316,8 @@ const isActive = (path: string) => {
   }
 
   .brand-logo-img {
-    width: 44px;
-    height: 44px;
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid var(--color-gold);
@@ -458,7 +352,7 @@ const isActive = (path: string) => {
     margin-top: 0.15rem;
   }
 
-  /* Header Search Pill (Compact, Elegant) */
+  /* Header Search Pill (Compact, Clean) */
   .header-search-wrap {
     flex-shrink: 1;
     max-width: 220px;
@@ -538,7 +432,72 @@ const isActive = (path: string) => {
     font-weight: 700;
   }
 
-  /* Mobile Actions */
+  /* Desktop Right Utility: Shortlist & Theme */
+  .header-right-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  .header-shortlist-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: var(--radius-full);
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    color: #FFFFFF;
+    font-size: 0.775rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+
+  .header-shortlist-btn:hover {
+    background: rgba(255, 255, 255, 0.22);
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+
+  .header-shortlist-btn svg {
+    color: var(--color-gold);
+  }
+
+  .fav-count-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 17px;
+    height: 17px;
+    padding: 0 4px;
+    background: var(--color-burgundy);
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 800;
+    border-radius: var(--radius-full);
+  }
+
+  .header-theme-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-full);
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    color: #FFFFFF;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .header-theme-btn:hover {
+    background: rgba(255, 255, 255, 0.22);
+  }
+
+  /* Mobile Actions (< 1024px) */
   .mobile-header-actions {
     display: none;
     align-items: center;
@@ -546,6 +505,7 @@ const isActive = (path: string) => {
   }
 
   .mobile-icon-btn {
+    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -560,6 +520,16 @@ const isActive = (path: string) => {
 
   .mobile-icon-btn:hover {
     background: rgba(255, 255, 255, 0.22);
+  }
+
+  .fav-mobile-btn svg {
+    color: var(--color-gold);
+  }
+
+  .fav-mobile-btn .fav-count-pill {
+    position: absolute;
+    top: -2px;
+    right: -2px;
   }
 
   .mobile-menu-btn {
@@ -587,7 +557,6 @@ const isActive = (path: string) => {
     height: 2px;
     background-color: #FFFFFF;
     border-radius: 2px;
-    transition: transform 0.2s ease, opacity 0.2s ease;
   }
 
   /* Responsive Breakpoints */
@@ -598,7 +567,8 @@ const isActive = (path: string) => {
   }
 
   @media (max-width: 1023px) {
-    .nav-links {
+    .nav-links,
+    .header-right-actions {
       display: none;
     }
 
@@ -613,12 +583,6 @@ const isActive = (path: string) => {
   }
 
   @media (max-width: 600px) {
-    .utility-left {
-      display: none;
-    }
-    .utility-inner {
-      justify-content: flex-end;
-    }
     .brand-title {
       font-size: 1.2rem;
     }
@@ -626,8 +590,8 @@ const isActive = (path: string) => {
       font-size: 0.6rem;
     }
     .brand-logo-img {
-      width: 38px;
-      height: 38px;
+      width: 36px;
+      height: 36px;
     }
   }
 
@@ -799,28 +763,27 @@ const isActive = (path: string) => {
     background: var(--bg-surface-warm);
   }
 
-  .drawer-footer-actions {
-    display: flex;
-    gap: 0.5rem;
-  }
-
-  .drawer-btn {
-    flex: 1;
+  .drawer-btn-fav {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.4rem;
-    padding: 0.5rem;
+    width: 100%;
+    padding: 0.65rem;
     background: var(--bg-surface);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-sm);
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     font-weight: 600;
     color: var(--text-main);
     text-decoration: none;
   }
 
-  .drawer-btn:hover {
+  .drawer-btn-fav svg {
+    color: var(--color-gold);
+  }
+
+  .drawer-btn-fav:hover {
     border-color: var(--color-jade);
     color: var(--color-jade);
   }
