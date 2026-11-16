@@ -3,24 +3,29 @@ const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
 
 const isActive = (path: string) => {
   if (path === '/') return pathname === '/';
+  if (path === '/names') return pathname === '/names' || pathname.startsWith('/names/');
   return pathname.startsWith(path);
 };
 ---
 
-<!-- Top Utility / Announcement Bar -->
+<!-- Top Cultural Utility Bar -->
 <div class="top-utility-bar">
   <div class="container utility-inner">
     <div class="utility-left">
-      <span class="cultural-emblem" aria-hidden="true">🇰🇷</span>
+      <span class="cultural-badge">대한국민 onomastic archive</span>
+      <span class="utility-separator" aria-hidden="true">•</span>
       <span class="utility-text">
-        Authentic Korean Names Dictionary & Cultural Heritage Guide
+        Korean Names Digital Encyclopedia & Cultural Reference
       </span>
     </div>
     <div class="utility-right">
-      <a href="/tools/favorite-names" class="utility-btn fav-btn" title="View Bookmarked Names">
-        <span class="star-icon" aria-hidden="true">⭐</span>
-        <span>My Saved Names</span>
+      <a href="/favorites" class="utility-btn fav-btn" title="View Bookmarked Names Shortlist">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+        <span>Shortlist</span>
         <span id="nav-fav-count" class="fav-count-pill" style="display: none;">0</span>
+      </a>
+      <a href="/admin" class="utility-btn admin-link-btn" title="Editorial Administration">
+        <span>Admin</span>
       </a>
       <button id="theme-toggle-btn" class="utility-btn theme-btn" aria-label="Toggle Dark Mode" title="Toggle Theme">
         <span id="theme-toggle-icon" aria-hidden="true">🌙</span>
@@ -29,36 +34,45 @@ const isActive = (path: string) => {
   </div>
 </div>
 
-<!-- Main Editorial Navigation Header -->
+<!-- Main Editorial Navigation Header (Deep Jade Green) -->
 <header class="main-navbar">
   <div class="container header-inner">
+    <!-- Brand Identity -->
     <div class="brand-wrapper">
       <a href="/" class="site-brand" aria-label="KoreanNames.info Homepage">
         <img
           src="/logo.jpg"
-          alt="Korean Names Logo"
-          width="44"
-          height="44"
+          alt="KoreanNames.info Authentic Seal Logo"
+          width="46"
+          height="46"
           class="brand-logo-img"
           loading="eager"
         />
         <div class="brand-text-group">
-          <span class="brand-title">Korean Names</span>
-          <span class="brand-subtitle">Dictionary & Cultural Resource</span>
+          <span class="brand-title">KoreanNames<span class="brand-tld">.info</span></span>
+          <span class="brand-subtitle">Korean Naming Encyclopedia & Dictionary</span>
         </div>
       </a>
     </div>
 
-    <!-- Navigation Tabs Bar -->
+    <!-- Quick Search Pill (Prominent in header) -->
+    <div class="header-search-wrap">
+      <a href="/names" class="header-search-pill" title="Search all Korean names">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <span>Search Hangul, English, Hanja, or Meaning...</span>
+        <kbd class="search-kbd">/</kbd>
+      </a>
+    </div>
+
+    <!-- Primary Navigation Bar (Part 3) -->
     <nav class="nav-links" id="main-nav-links" aria-label="Main Navigation">
-      <a href="/" class={`nav-item ${isActive('/') ? 'active' : ''}`}>Home</a>
-      <a href="/gender/girl" class={`nav-item ${isActive('/gender/girl') ? 'active' : ''}`}>Girl Names</a>
-      <a href="/gender/boy" class={`nav-item ${isActive('/gender/boy') ? 'active' : ''}`}>Boy Names</a>
-      <a href="/gender/unisex" class={`nav-item ${isActive('/gender/unisex') ? 'active' : ''}`}>Unisex Names</a>
-      <a href="/surname" class={`nav-item ${isActive('/surname') ? 'active' : ''}`}>Surnames</a>
+      <a href="/names" class={`nav-item ${isActive('/names') ? 'active' : ''}`}>Explore Names</a>
+      <a href="/names/meaning" class={`nav-item ${isActive('/names/meaning') ? 'active' : ''}`}>Names by Meaning</a>
+      <a href="/surnames" class={`nav-item ${isActive('/surnames') || isActive('/surname') ? 'active' : ''}`}>Korean Surnames</a>
       <a href="/hanja" class={`nav-item ${isActive('/hanja') ? 'active' : ''}`}>Hanja Dictionary</a>
-      <a href="/guides" class={`nav-item ${isActive('/guides') ? 'active' : ''}`}>Guides</a>
-      <a href="/tools/name-generator" class={`nav-item ${isActive('/tools/name-generator') ? 'active' : ''}`}>Name Generator</a>
+      <a href="/name-generator" class={`nav-item ${isActive('/name-generator') || isActive('/tools/name-generator') ? 'active' : ''}`}>Name Generator</a>
+      <a href="/learn" class={`nav-item ${isActive('/learn') || isActive('/guides') ? 'active' : ''}`}>Learn Korean Naming</a>
+      <a href="/about" class={`nav-item ${isActive('/about') ? 'active' : ''}`}>About</a>
     </nav>
   </div>
 </header>
@@ -94,11 +108,13 @@ const isActive = (path: string) => {
   // Favorites Badge Count
   function updateNavFavCount() {
     try {
-      const saved = JSON.parse(localStorage.getItem('hanname-saved-names') || '[]');
+      const modern = JSON.parse(localStorage.getItem('korean_name_favorites') || '[]');
+      const legacy = JSON.parse(localStorage.getItem('hanname-saved-names') || '[]');
+      const count = modern.length > 0 ? modern.length : legacy.length;
       const countPill = document.getElementById('nav-fav-count');
       if (countPill) {
-        if (saved.length > 0) {
-          countPill.textContent = String(saved.length);
+        if (count > 0) {
+          countPill.textContent = String(count);
           countPill.style.display = 'inline-flex';
         } else {
           countPill.style.display = 'none';
@@ -111,15 +127,24 @@ const isActive = (path: string) => {
 
   updateNavFavCount();
   window.addEventListener('storage', updateNavFavCount);
+  window.addEventListener('favoritesUpdated', updateNavFavCount);
+
+  // Global hotkey '/' to focus search
+  document.addEventListener('keydown', (e) => {
+    if (e.key === '/' && !['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName)) {
+      e.preventDefault();
+      window.location.href = '/names';
+    }
+  });
 </script>
 
 <style>
-  /* Top Utility Bar */
+  /* Top Cultural Utility Bar */
   .top-utility-bar {
     width: 100%;
-    background: var(--bg-surface);
+    background-color: var(--bg-surface-warm);
     border-bottom: 1px solid var(--border-color);
-    padding: 0.35rem 0;
+    padding: 0.4rem 0;
     font-size: 0.8125rem;
     color: var(--text-muted);
   }
@@ -133,11 +158,25 @@ const isActive = (path: string) => {
   .utility-left {
     display: flex;
     align-items: center;
-    gap: 0.45rem;
+    gap: 0.5rem;
   }
 
-  .cultural-emblem {
-    font-size: 0.95rem;
+  .cultural-badge {
+    font-family: var(--font-hangul);
+    font-size: 0.725rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-burgundy);
+    background: var(--color-burgundy-surface);
+    border: 1px solid var(--color-burgundy-border);
+    padding: 0.15rem 0.5rem;
+    border-radius: var(--radius-xs);
+  }
+
+  .utility-separator {
+    color: var(--border-strong);
+    font-size: 0.75rem;
   }
 
   .utility-text {
@@ -158,29 +197,34 @@ const isActive = (path: string) => {
     padding: 0.25rem 0.65rem;
     border-radius: var(--radius-full);
     border: 1px solid var(--border-color);
-    background: var(--bg-primary);
+    background: var(--bg-surface);
     font-size: 0.775rem;
     font-weight: 600;
-    color: var(--text-body);
+    color: var(--text-main);
     transition: all 0.15s ease;
   }
 
   .utility-btn:hover {
-    border-color: var(--brand-teal);
-    color: var(--brand-teal-deep);
+    border-color: var(--color-jade);
+    color: var(--color-jade);
+    background: var(--color-jade-surface);
+  }
+
+  .fav-btn svg {
+    color: var(--color-gold-dark);
   }
 
   .fav-count-pill {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 16px;
-    height: 16px;
+    min-width: 17px;
+    height: 17px;
     padding: 0 4px;
-    background: var(--brand-teal);
+    background: var(--color-burgundy);
     color: white;
     font-size: 0.65rem;
-    font-weight: 700;
+    font-weight: 800;
     border-radius: var(--radius-full);
   }
 
@@ -191,66 +235,118 @@ const isActive = (path: string) => {
     justify-content: center;
   }
 
-  /* Main Navigation Header */
+  /* Main Navigation Header: Deep Jade Green (#174C3C) */
   .main-navbar {
     width: 100%;
-    background: var(--brand-teal);
+    background-color: var(--color-jade);
     color: white;
     box-shadow: var(--shadow-sm);
+    border-bottom: 2px solid var(--color-gold);
   }
 
   .header-inner {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-top: 0.75rem;
-    padding-bottom: 0.75rem;
+    padding-top: 0.85rem;
+    padding-bottom: 0.85rem;
     gap: 1.5rem;
   }
 
   .site-brand {
     display: inline-flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.85rem;
     color: white;
   }
 
   .brand-logo-img {
-    width: 44px;
-    height: 44px;
+    width: 46px;
+    height: 46px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid rgba(255, 255, 255, 0.9);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+    border: 2px solid var(--color-gold);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
     flex-shrink: 0;
   }
 
   .brand-text-group {
     display: flex;
     flex-direction: column;
-    line-height: 1.1;
+    line-height: 1.15;
   }
 
   .brand-title {
     font-size: 1.45rem;
     font-weight: 800;
-    letter-spacing: -0.02em;
-    color: white;
+    letter-spacing: -0.025em;
+    color: #FFFFFF;
+    font-family: var(--font-sans);
+  }
+
+  .brand-tld {
+    color: var(--color-gold);
   }
 
   .brand-subtitle {
     font-size: 0.725rem;
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.9);
-    letter-spacing: 0.02em;
+    color: rgba(255, 255, 255, 0.85);
+    letter-spacing: 0.03em;
     text-transform: uppercase;
     margin-top: 0.15rem;
   }
 
+  /* Header Search Pill */
+  .header-search-wrap {
+    flex: 1;
+    max-width: 320px;
+  }
+
+  .header-search-pill {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.5rem 0.95rem;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-full);
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.8125rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .header-search-pill:hover {
+    background: rgba(255, 255, 255, 0.22);
+    border-color: rgba(255, 255, 255, 0.4);
+    color: #FFFFFF;
+  }
+
+  .header-search-pill span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .search-kbd {
+    display: inline-block;
+    padding: 0.1rem 0.4rem;
+    font-size: 0.7rem;
+    font-family: inherit;
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.2);
+    color: #FFFFFF;
+    border-radius: var(--radius-xs);
+    line-height: 1;
+  }
+
+  /* Primary Navigation Tabs */
   .nav-links {
     display: flex;
     align-items: center;
-    gap: 0.25rem;
+    gap: 0.35rem;
     overflow-x: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
@@ -262,38 +358,46 @@ const isActive = (path: string) => {
 
   .nav-item {
     display: inline-block;
-    padding: 0.45rem 0.85rem;
+    padding: 0.5rem 0.85rem;
     font-size: 0.875rem;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.95);
+    color: rgba(255, 255, 255, 0.92);
     border-radius: var(--radius-sm);
     white-space: nowrap;
-    transition: background-color 0.15s ease, color 0.15s ease;
+    transition: all 0.15s ease;
+    border-bottom: 2px solid transparent;
   }
 
   .nav-item:hover {
-    background: rgba(255, 255, 255, 0.18);
-    color: white;
+    background: rgba(255, 255, 255, 0.15);
+    color: #FFFFFF;
   }
 
   .nav-item.active {
-    background: var(--brand-teal-deep);
-    color: white;
+    background: rgba(0, 0, 0, 0.2);
+    color: #FFFFFF;
+    border-bottom-color: var(--color-gold);
     font-weight: 700;
+  }
+
+  @media (max-width: 1100px) {
+    .header-search-wrap {
+      display: none;
+    }
   }
 
   @media (max-width: 900px) {
     .header-inner {
       flex-direction: column;
       align-items: flex-start;
-      gap: 0.75rem;
-      padding-top: 0.65rem;
-      padding-bottom: 0.65rem;
+      gap: 0.85rem;
+      padding-top: 0.75rem;
+      padding-bottom: 0.75rem;
     }
 
     .nav-links {
       width: 100%;
-      padding-bottom: 0.25rem;
+      padding-bottom: 0.35rem;
     }
 
     .utility-text {

@@ -64,7 +64,7 @@ const genderSymbol = name.gender === 'boy' ? 'â™‚' : name.gender === 'girl' ? 'â
   }
 
   .name-row-item:hover {
-    background-color: var(--brand-teal-surface);
+    background-color: var(--color-jade-surface);
     padding-left: 0.5rem;
     padding-right: 0.5rem;
     border-radius: var(--radius-sm);
@@ -87,20 +87,21 @@ const genderSymbol = name.gender === 'boy' ? 'â™‚' : name.gender === 'girl' ? 'â
   .name-row-title {
     font-size: 1.05rem;
     font-weight: 700;
-    color: var(--brand-teal-deep);
+    color: var(--color-jade);
     transition: color 0.15s ease;
   }
 
   .name-row-title:hover {
-    color: var(--brand-teal);
+    color: var(--color-jade-dark);
     text-decoration: underline;
   }
 
   .rank-tag {
     font-size: 0.725rem;
     font-weight: 700;
-    color: var(--accent-gold);
-    background: var(--accent-gold-light);
+    color: var(--color-gold-dark);
+    background: var(--color-gold-surface);
+    border: 1px solid var(--color-gold-border);
     padding: 0.15rem 0.5rem;
     border-radius: var(--radius-full);
   }
@@ -129,7 +130,7 @@ const genderSymbol = name.gender === 'boy' ? 'â™‚' : name.gender === 'girl' ? 'â
     font-family: var(--font-korean);
     font-size: 1rem;
     font-weight: 700;
-    color: var(--accent-indigo);
+    color: var(--color-navy);
   }
 
   .row-syllable-meanings {
