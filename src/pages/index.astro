@@ -88,12 +88,15 @@ const websiteSchema = {
 
       <!-- Quick Directory Navigation Pills -->
       <nav class="hero-pills-nav" aria-label="Quick directory links">
-        <a href="/gender/girl" class="hero-nav-pill pill-girl">🌸 Girl Names</a>
-        <a href="/gender/boy" class="hero-nav-pill pill-boy">👦 Boy Names</a>
-        <a href="/gender/unisex" class="hero-nav-pill pill-unisex">✳️ Unisex Names</a>
+        <a href="/names" class="hero-nav-pill">📚 All Names Directory</a>
+        <a href="/girl-names" class="hero-nav-pill pill-girl">🌸 Girl Names</a>
+        <a href="/boy-names" class="hero-nav-pill pill-boy">👦 Boy Names</a>
+        <a href="/unisex-names" class="hero-nav-pill pill-unisex">✳️ Unisex Names</a>
+        <a href="/names/meaning" class="hero-nav-pill">✨ By Meaning</a>
         <a href="/surname" class="hero-nav-pill">👑 Surnames</a>
         <a href="/hanja" class="hero-nav-pill">📜 Hanja Dictionary</a>
-        <a href="/tools/name-generator" class="hero-nav-pill">🎲 Name Generator</a>
+        <a href="/name-generator" class="hero-nav-pill">🎲 Name Generator</a>
+        <a href="/name-finder" class="hero-nav-pill">🔤 Name Finder</a>
       </nav>
     </div>
   </section>
@@ -105,7 +108,7 @@ const websiteSchema = {
         <span class="alphabet-label">Browse A–Z:</span>
         <div class="alphabet-links">
           {alphabetLetters.map((letter) => (
-            <a href={`/letter/${letter.toLowerCase()}`} class="alphabet-letter-btn" aria-label={`Korean names starting with ${letter}`}>
+            <a href={`/names/letter/${letter.toLowerCase()}`} class="alphabet-letter-btn" aria-label={`Korean names starting with ${letter}`}>
               {letter}
             </a>
           ))}
@@ -128,7 +131,7 @@ const websiteSchema = {
               <span class="section-eyebrow eyebrow-girl">🌸 Beautiful & Graceful</span>
               <h2 class="section-title">Popular Korean Girl Names</h2>
             </div>
-            <a href="/gender/girl" class="section-see-all-link">
+            <a href="/girl-names" class="section-see-all-link">
               View All Girl Names &rarr;
             </a>
           </div>
@@ -150,7 +153,7 @@ const websiteSchema = {
               <span class="section-eyebrow eyebrow-boy">👦 Strong & Virtuous</span>
               <h2 class="section-title">Popular Korean Boy Names</h2>
             </div>
-            <a href="/gender/boy" class="section-see-all-link">
+            <a href="/boy-names" class="section-see-all-link">
               View All Boy Names &rarr;
             </a>
           </div>
@@ -172,7 +175,7 @@ const websiteSchema = {
               <span class="section-eyebrow eyebrow-unisex">✳️ Modern & Melodic</span>
               <h2 class="section-title">Trending Unisex Korean Names</h2>
             </div>
-            <a href="/gender/unisex" class="section-see-all-link">
+            <a href="/unisex-names" class="section-see-all-link">
               View All Unisex Names &rarr;
             </a>
           </div>
@@ -196,11 +199,11 @@ const websiteSchema = {
               Looking for the ideal name to pair with your family surname? Select your surname, preferred gender, and desired character virtue to discover matching combinations with phonetic harmony notes.
             </p>
             <div class="cta-actions">
-              <a href="/tools/name-generator" class="cta-primary-btn">
+              <a href="/name-generator" class="cta-primary-btn">
                 <span>Launch Name Generator</span>
                 <span aria-hidden="true">&rarr;</span>
               </a>
-              <a href="/tools/favorite-names" class="cta-secondary-btn">
+              <a href="/favorites" class="cta-secondary-btn">
                 <span>View Bookmarked Names</span>
               </a>
             </div>

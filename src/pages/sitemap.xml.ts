@@ -8,28 +8,48 @@ import { EDUCATIONAL_GUIDES } from '../data/guides';
 export const GET: APIRoute = () => {
   const siteUrl = 'https://www.korean-names.info';
 
-  const staticPages = [
+  const canonicalStaticPages = [
     '',
+    '/names',
+    '/boy-names',
+    '/girl-names',
+    '/unisex-names',
+    '/surname',
+    '/hanja',
+    '/name-generator',
+    '/name-finder',
+    '/name-comparison',
+    '/certificate',
+    '/favorites',
+    '/learn',
+    '/about',
+    '/methodology',
+    '/sources',
+    '/names/meaning',
+    '/sitemap',
+    '/privacy',
+    '/terms',
+    // Backward-compatible legacy indexed routes
     '/gender/boy',
     '/gender/girl',
     '/gender/unisex',
-    '/surname',
-    '/hanja',
     '/guides',
-    '/letter/a',
     '/tools/name-generator',
     '/tools/favorite-names',
-    '/sitemap',
-    '/acknowledgments',
-    '/author',
-    '/contact',
-    '/privacy',
-    '/terms',
   ];
 
-  const letterPages = 'abcdefghijklmnopqrstuvwxyz'.split('').map((l) => `/letter/${l}`);
-  const themePages = THEME_CATEGORIES.map((c) => `/theme/${c.slug}`);
-  const guidePages = EDUCATIONAL_GUIDES.map((g) => `/guides/${g.slug}`);
+  const letterPages = 'abcdefghijklmnopqrstuvwxyz'.split('').flatMap((l) => [
+    `/names/letter/${l}`,
+    `/letter/${l}`
+  ]);
+  const themePages = THEME_CATEGORIES.flatMap((c) => [
+    `/names/meaning/${c.slug}`,
+    `/theme/${c.slug}`
+  ]);
+  const guidePages = EDUCATIONAL_GUIDES.flatMap((g) => [
+    `/learn/${g.slug}`,
+    `/guides/${g.slug}`
+  ]);
   const surnamePages = SURNAMES.map((s) => `/surname/${s.slug}`);
   const hanjaPages = HANJA_ENTRIES.flatMap((h) => [
     `/hanja/${encodeURIComponent(h.hangul)}`,
@@ -37,15 +57,15 @@ export const GET: APIRoute = () => {
   ]);
   const namePages = KOREAN_NAMES.map((n) => `/name/${n.slug}`);
 
-  const allPaths = [
-    ...staticPages,
+  const allPaths = Array.from(new Set([
+    ...canonicalStaticPages,
     ...letterPages,
     ...themePages,
     ...guidePages,
     ...surnamePages,
     ...hanjaPages,
     ...namePages,
-  ];
+  ]));
 
   const xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -54,7 +74,7 @@ ${allPaths
     (path) => `  <url>
     <loc>${siteUrl}${path}</loc>
     <changefreq>weekly</changefreq>
-    <priority>${path === '' ? '1.0' : path.startsWith('/name/') ? '0.8' : '0.6'}</priority>
+    <priority>${path === '' ? '1.0' : path.startsWith('/name/') ? '0.8' : path === '/names' || path === '/boy-names' || path === '/girl-names' ? '0.9' : '0.6'}</priority>
   </url>`
   )
   .join('\n')}

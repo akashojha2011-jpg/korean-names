@@ -30,26 +30,34 @@ const letters = 'abcdefghijklmnopqrstuvwxyz'.split('');
     <div class="sitemap-grid">
       <!-- Main Sections -->
       <section class="sitemap-section-card">
-        <h2 class="sitemap-section-title">Directory Sections</h2>
+        <h2 class="sitemap-section-title">Directory Sections & Nomenclature Tools</h2>
         <ul class="sitemap-links-list">
           <li><a href="/">Homepage</a></li>
-          <li><a href="/gender/girl">Korean Girl Names (여성 이름)</a></li>
-          <li><a href="/gender/boy">Korean Boy Names (남성 이름)</a></li>
-          <li><a href="/gender/unisex">Unisex Korean Names (중성 이름)</a></li>
-          <li><a href="/surname">Korean Surnames Directory (성씨)</a></li>
-          <li><a href="/hanja">Sino-Korean Hanja Directory (漢字)</a></li>
-          <li><a href="/tools/name-generator">Baby Name Generator & Harmony Tool</a></li>
-          <li><a href="/tools/favorite-names">Saved Bookmarked Names</a></li>
+          <li><a href="/names">Master Korean Names Directory (인명 사전)</a></li>
+          <li><a href="/boy-names">Korean Boy Names (남성 이름)</a></li>
+          <li><a href="/girl-names">Korean Girl Names (여성 이름)</a></li>
+          <li><a href="/unisex-names">Unisex Korean Names (중성 이름)</a></li>
+          <li><a href="/surname">Korean Surnames & Clan Seats (성씨 및 본관)</a></li>
+          <li><a href="/hanja">Sino-Korean Hanja Directory (대법원 인명용 漢字)</a></li>
+          <li><a href="/names/meaning">Names by Meaning & Theme (의미별 탐색)</a></li>
+          <li><a href="/name-generator">Name Generator & Surname Harmony Tool</a></li>
+          <li><a href="/name-finder">Korean Name Finder & Transliteration</a></li>
+          <li><a href="/name-comparison">Side-by-Side Name Comparison Matrix</a></li>
+          <li><a href="/certificate">Korean Name Certificate Generator</a></li>
+          <li><a href="/favorites">Saved Bookmarked Names (Shortlist)</a></li>
+          <li><a href="/about">About Us & Cultural Mission</a></li>
+          <li><a href="/methodology">Research Methodology & Verification</a></li>
+          <li><a href="/sources">Official Statutory Sources & Data Citations</a></li>
         </ul>
       </section>
 
       <!-- Educational Guides -->
       <section class="sitemap-section-card">
-        <h2 class="sitemap-section-title">Educational Guides (문화 및 작명 가이드)</h2>
+        <h2 class="sitemap-section-title">Educational Knowledge Centre (지식 백과)</h2>
         <ul class="sitemap-links-list">
-          <li><a href="/guides">All Educational Guides Hub</a></li>
+          <li><a href="/learn">Knowledge Centre Hub</a></li>
           {EDUCATIONAL_GUIDES.map(g => (
-            <li><a href={`/guides/${g.slug}`}>{g.title} ({g.koreanTitle})</a></li>
+            <li><a href={`/learn/${g.slug}`}>{g.title} ({g.koreanTitle})</a></li>
           ))}
         </ul>
       </section>

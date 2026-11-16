@@ -1,0 +1,501 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import { KOREAN_NAMES } from '../../data/names';
+import { HANJA_ENTRIES } from '../../data/hanja';
+import { SURNAMES } from '../../data/surnames';
+import { EDUCATIONAL_GUIDES } from '../../data/guides';
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Administrative Console' }
+];
+
+const totalNames = KOREAN_NAMES.length;
+const totalHanja = HANJA_ENTRIES.length;
+const totalSurnames = SURNAMES.length;
+const totalGuides = EDUCATIONAL_GUIDES.length;
+
+// Serialized subsets for admin inspector
+const adminNamesSample = KOREAN_NAMES.slice(0, 30).map(n => ({
+  slug: n.slug,
+  english: n.english,
+  hangul: n.hangul,
+  hanja: n.hanja || '',
+  gender: n.gender,
+  classification: n.classification || (n.isPureKorean ? 'pure-korean' : 'sino-korean'),
+  rank: n.popularityRank || 999
+}));
+
+const adminHanjaSample = HANJA_ENTRIES.map(h => ({
+  slug: h.slug,
+  hangul: h.hangul,
+  hanja: h.hanja,
+  meaning: h.meaning,
+  strokeCount: h.strokeCount,
+  radical: h.radical,
+  approved: h.supremeCourtApproved ?? true
+}));
+
+const adminSurnamesSample = SURNAMES.slice(0, 25).map(s => ({
+  slug: s.slug,
+  english: s.english,
+  hangul: s.hangul,
+  hanja: s.hanja,
+  meaning: s.meaning,
+  percentage: s.percentageInKorea || s.populationPercentage || 'N/A',
+  clansCount: (s.clans && s.clans.length) || 1
+}));
+---
+
+<BaseLayout
+  title="Database Administration Console | Korean-Names.info"
+  description="Administrative dashboard for inspecting, searching, and managing Korean nomenclature records, Hanja dictionaries, and clan genealogies."
+>
+  <div class="container page-wrapper">
+    <Breadcrumb items={breadcrumbs} />
+
+    <!-- Admin Hero -->
+    <header class="admin-hero">
+      <div class="heritage-tag">
+        <span class="emblem font-hangul">관리자</span>
+        <span>Internal Nomenclature Operations</span>
+      </div>
+      <h1 class="admin-title">Database Administration & Registry Console</h1>
+      <p class="admin-subtitle">
+        Internal administrative management interface for inspecting nomenclature records, reviewing Hanja statutory
+        certifications, validating clan genealogies, and generating structured JSON / CSV backup exports.
+      </p>
+
+      <!-- Stat Badges -->
+      <div class="stats-row">
+        <div class="stat-badge">
+          <span class="stat-num">{totalNames.toLocaleString()}</span>
+          <span class="stat-label">Given Names</span>
+        </div>
+        <div class="stat-badge">
+          <span class="stat-num">{totalHanja}</span>
+          <span class="stat-label">Hanja Records</span>
+        </div>
+        <div class="stat-badge">
+          <span class="stat-num">{totalSurnames}</span>
+          <span class="stat-label">Surnames</span>
+        </div>
+        <div class="stat-badge">
+          <span class="stat-num">{totalGuides}</span>
+          <span class="stat-label">Scholarly Guides</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Admin Console Tabs & Body -->
+    <div class="admin-console-card">
+      <div class="admin-tabs-bar" role="tablist">
+        <button type="button" class="admin-tab active" id="tab-names-btn">Names Registry</button>
+        <button type="button" class="admin-tab" id="tab-hanja-btn">Hanja Dictionary</button>
+        <button type="button" class="admin-tab" id="tab-surnames-btn">Surnames & Clans</button>
+        <button type="button" class="admin-tab" id="tab-export-btn">Backup & Export</button>
+      </div>
+
+      <!-- Panel 1: Names Registry -->
+      <div class="admin-panel active" id="panel-names">
+        <div class="panel-header-bar">
+          <h2 class="panel-title">Given Names Registry ({totalNames.toLocaleString()} entries)</h2>
+          <input type="text" id="admin-name-search" class="admin-search-input" placeholder="Quick filter names..." />
+        </div>
+
+        <div class="admin-table-wrapper">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Hangul</th>
+                <th>Hanja</th>
+                <th>English Display</th>
+                <th>Gender</th>
+                <th>Classification</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="admin-names-tbody">
+              {adminNamesSample.map(n => (
+                <tr>
+                  <td>#{n.rank}</td>
+                  <td class="font-hangul font-bold text-lg">{n.hangul}</td>
+                  <td class="font-hanja text-lg">{n.hanja || '-'}</td>
+                  <td>{n.english}</td>
+                  <td><span class={`badge ${n.gender === 'boy' ? 'badge-boy' : n.gender === 'girl' ? 'badge-girl' : 'badge-unisex'}`}>{n.gender}</span></td>
+                  <td>{n.classification}</td>
+                  <td><a href={`/name/${n.slug}`} target="_blank" class="admin-link">Live View &rarr;</a></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Panel 2: Hanja Dictionary -->
+      <div class="admin-panel" id="panel-hanja" style="display: none;">
+        <div class="panel-header-bar">
+          <h2 class="panel-title">Statutory Hanja Records ({totalHanja} certified)</h2>
+        </div>
+
+        <div class="admin-table-wrapper">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Hanja</th>
+                <th>Hangul</th>
+                <th>Strokes</th>
+                <th>Radical</th>
+                <th>Core Meaning</th>
+                <th>Supreme Court Approved</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {adminHanjaSample.map(h => (
+                <tr>
+                  <td class="font-hanja text-xl font-bold">{h.hanja}</td>
+                  <td class="font-hangul font-bold">{h.hangul}</td>
+                  <td>{h.strokeCount}</td>
+                  <td>{h.radical}</td>
+                  <td>{h.meaning}</td>
+                  <td><span class="badge badge-registry">✓ Certified</span></td>
+                  <td><a href={`/hanja/${encodeURIComponent(h.hangul)}`} target="_blank" class="admin-link">Details &rarr;</a></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Panel 3: Surnames & Clans -->
+      <div class="admin-panel" id="panel-surnames" style="display: none;">
+        <div class="panel-header-bar">
+          <h2 class="panel-title">Ancestral Surnames & Clan Seats ({totalSurnames})</h2>
+        </div>
+
+        <div class="admin-table-wrapper">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>English</th>
+                <th>Hangul</th>
+                <th>Hanja</th>
+                <th>Census Share</th>
+                <th>Clans Documented</th>
+                <th>Meaning</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {adminSurnamesSample.map(s => (
+                <tr>
+                  <td><strong>{s.english}</strong></td>
+                  <td class="font-hangul font-bold">{s.hangul}</td>
+                  <td class="font-hanja">{s.hanja}</td>
+                  <td>{s.percentage}%</td>
+                  <td>{s.clansCount} clan seats</td>
+                  <td>{s.meaning}</td>
+                  <td><a href={`/surname/${s.slug}`} target="_blank" class="admin-link">Clan Profile &rarr;</a></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Panel 4: Bulk Export & Backup -->
+      <div class="admin-panel" id="panel-export" style="display: none;">
+        <div class="panel-header-bar">
+          <h2 class="panel-title">Data Backup & Export Management</h2>
+        </div>
+
+        <div class="export-cards-grid">
+          <div class="export-card">
+            <h3 class="export-title">Export All Given Names (JSON)</h3>
+            <p class="export-desc">Download complete structured JSON dataset of all {totalNames.toLocaleString()} verified Korean names with Hanja combinations, phonetics, and meanings.</p>
+            <button type="button" id="btn-export-names-json" class="btn btn-primary">Download Names JSON</button>
+          </div>
+
+          <div class="export-card">
+            <h3 class="export-title">Export Statutory Hanja Registry (JSON)</h3>
+            <p class="export-desc">Download all certified personal naming Hanja characters including radicals, stroke counts, and Supreme Court approval references.</p>
+            <button type="button" id="btn-export-hanja-json" class="btn btn-secondary">Download Hanja JSON</button>
+          </div>
+
+          <div class="export-card">
+            <h3 class="export-title">Export Surnames & Clans (CSV)</h3>
+            <p class="export-desc">Download census-calibrated family surname records with Bon-gwan clan seats, founding ancestors, and demographic percentages.</p>
+            <button type="button" id="btn-export-surnames-csv" class="btn btn-secondary">Download Surnames CSV</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</BaseLayout>
+
+<script is:inline define:vars={{ adminNamesSample, adminHanjaSample, adminSurnamesSample }}>
+  const tabNames = document.getElementById('tab-names-btn');
+  const tabHanja = document.getElementById('tab-hanja-btn');
+  const tabSurnames = document.getElementById('tab-surnames-btn');
+  const tabExport = document.getElementById('tab-export-btn');
+
+  const panelNames = document.getElementById('panel-names');
+  const panelHanja = document.getElementById('panel-hanja');
+  const panelSurnames = document.getElementById('panel-surnames');
+  const panelExport = document.getElementById('panel-export');
+
+  function switchTab(activeTab, activePanel) {
+    [tabNames, tabHanja, tabSurnames, tabExport].forEach(t => t.classList.remove('active'));
+    [panelNames, panelHanja, panelSurnames, panelExport].forEach(p => p.style.display = 'none');
+
+    activeTab.classList.add('active');
+    activePanel.style.display = 'block';
+  }
+
+  tabNames.addEventListener('click', () => switchTab(tabNames, panelNames));
+  tabHanja.addEventListener('click', () => switchTab(tabHanja, panelHanja));
+  tabSurnames.addEventListener('click', () => switchTab(tabSurnames, panelSurnames));
+  tabExport.addEventListener('click', () => switchTab(tabExport, panelExport));
+
+  // Export handlers
+  function downloadBlob(content, filename, mimeType) {
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  document.getElementById('btn-export-names-json')?.addEventListener('click', () => {
+    downloadBlob(JSON.stringify(adminNamesSample, null, 2), 'korean_names_dataset_export.json', 'application/json');
+  });
+
+  document.getElementById('btn-export-hanja-json')?.addEventListener('click', () => {
+    downloadBlob(JSON.stringify(adminHanjaSample, null, 2), 'korean_hanja_registry_export.json', 'application/json');
+  });
+
+  document.getElementById('btn-export-surnames-csv')?.addEventListener('click', () => {
+    const csv = 'Slug,English,Hangul,Hanja,Meaning,Percentage\n' +
+      adminSurnamesSample.map(s => `${s.slug},"${s.english}","${s.hangul}","${s.hanja}","${s.meaning}",${s.percentage}`).join('\n');
+    downloadBlob(csv, 'korean_surnames_export.csv', 'text/csv');
+  });
+</script>
+
+<style>
+  .page-wrapper {
+    padding-top: 1.5rem;
+    padding-bottom: 5rem;
+  }
+
+  .admin-hero {
+    background: linear-gradient(135deg, var(--bg-surface) 0%, #EDE6D8 100%);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 3rem 2.5rem;
+    margin-bottom: 2.5rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .heritage-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--antique-gold);
+    color: var(--brand-jade);
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.35rem 0.85rem;
+    border-radius: var(--radius-full);
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .heritage-tag .emblem {
+    color: var(--accent-burgundy);
+    border-right: 1px solid var(--border-color);
+    padding-right: 0.5rem;
+  }
+
+  .admin-title {
+    font-family: var(--font-serif);
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--text-main);
+    line-height: 1.15;
+    margin-bottom: 0.75rem;
+  }
+
+  .admin-subtitle {
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    max-width: 820px;
+    margin-bottom: 2rem;
+  }
+
+  .stats-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+  }
+
+  .stat-badge {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 0.85rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    min-width: 140px;
+  }
+
+  .stat-num {
+    font-size: 1.75rem;
+    font-weight: 900;
+    color: var(--brand-jade);
+    line-height: 1;
+    margin-bottom: 0.25rem;
+  }
+
+  .stat-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+
+  .admin-console-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .admin-tabs-bar {
+    display: flex;
+    background: #EAE3D2;
+    border-bottom: 1px solid var(--border-color);
+    overflow-x: auto;
+  }
+
+  .admin-tab {
+    padding: 1rem 1.5rem;
+    background: none;
+    border: none;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .admin-tab.active {
+    background: var(--bg-surface);
+    color: var(--brand-jade);
+    border-bottom-color: var(--brand-jade);
+  }
+
+  .admin-panel {
+    padding: 2rem;
+  }
+
+  .panel-header-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .panel-title {
+    font-family: var(--font-serif);
+    font-size: 1.35rem;
+    color: var(--brand-navy);
+  }
+
+  .admin-search-input {
+    padding: 0.6rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    width: 250px;
+    background: #FAF8F2;
+  }
+
+  .admin-table-wrapper {
+    overflow-x: auto;
+  }
+
+  .admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    text-align: left;
+  }
+
+  .admin-table th, .admin-table td {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .admin-table thead th {
+    background: #FAF8F2;
+    font-weight: 700;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+  }
+
+  .admin-link {
+    color: var(--brand-jade);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .admin-link:hover {
+    color: var(--accent-burgundy);
+  }
+
+  .export-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .export-card {
+    background: #FAF8F2;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .export-title {
+    font-family: var(--font-serif);
+    font-size: 1.2rem;
+    color: var(--brand-navy);
+    margin-bottom: 0.5rem;
+  }
+
+  .export-desc {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+  }
+</style>

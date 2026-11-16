@@ -1,0 +1,247 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'About Us', href: '/about' },
+  { label: 'Primary Sources' }
+];
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemPage',
+  'name': 'Korean-Names.info Primary Sources & Data Citations',
+  'url': 'https://www.korean-names.info/sources',
+  'description': 'Comprehensive listing of official statutory registries, government publications, and linguistic authorities underpinning Korean-Names.info.'
+};
+---
+
+<BaseLayout
+  title="Primary Sources & Data Citations - Korean Nomenclature Authority"
+  description="Examine the official primary sources, Supreme Court statutory registries, and National Institute of Korean Language references behind Korean-Names.info."
+  jsonLd={schema}
+>
+  <div class="container page-wrapper">
+    <Breadcrumb items={breadcrumbs} />
+
+    <!-- Hero Header -->
+    <header class="sources-hero">
+      <div class="heritage-tag">
+        <span class="emblem font-hangul">공인 출처</span>
+        <span>Statutory Authority & Institutional Citations</span>
+      </div>
+      <h1 class="sources-title">Primary Sources & Official Citations</h1>
+      <p class="sources-subtitle">
+        We rely strictly on authentic, peer-reviewed, and statutory government publications to construct our
+        Korean nomenclature database, Hanja character definitions, and demographic census records.
+      </p>
+    </header>
+
+    <!-- Sources Grid -->
+    <div class="sources-sections-grid">
+      <!-- 1. Supreme Court -->
+      <section class="source-group-card">
+        <div class="source-badge">Statutory Registry</div>
+        <h2 class="source-group-title">Supreme Court of the Republic of Korea (대한민국 대법원)</h2>
+        <ul class="sources-list">
+          <li>
+            <strong>Table of Hanja for Personal Names (대법원 인명용 한자표)</strong>
+            <p>The legally binding catalog of over 8,400 approved Hanja characters authorized for civil family relationships registration under Supreme Court Rules.</p>
+          </li>
+          <li>
+            <strong>Electronic Family Relationship Registration System (전자가족관계등록시스템)</strong>
+            <p>Annual nationwide vital statistics documenting live birth registration frequencies for given names across South Korea.</p>
+          </li>
+        </ul>
+      </section>
+
+      <!-- 2. NIIED / NIKL -->
+      <section class="source-group-card">
+        <div class="source-badge">Linguistic Standards</div>
+        <h2 class="source-group-title">National Institute of Korean Language (국립국어원)</h2>
+        <ul class="sources-list">
+          <li>
+            <strong>Standard Korean Dictionary (표준국어대사전)</strong>
+            <p>The definitive national lexicon used to establish authentic etymologies for Pure Native Korean (순우리말) names and Sino-Korean compounds.</p>
+          </li>
+          <li>
+            <strong>The Revised Romanization of Korean (국어의 로마자 표기법)</strong>
+            <p>Ministry of Culture, Sports and Tourism Notification No. 2000-8, providing the official Latin script transcription rules applied throughout our database.</p>
+          </li>
+        </ul>
+      </section>
+
+      <!-- 3. Statistics Korea -->
+      <section class="source-group-card">
+        <div class="source-badge">Demographics</div>
+        <h2 class="source-group-title">Statistics Korea (통계청)</h2>
+        <ul class="sources-list">
+          <li>
+            <strong>Population and Housing Census: Surnames and Clan Seats (인구주택총조사: 성씨 및 본관 보고서)</strong>
+            <p>Official decennial census enumeration identifying the national population counts, percentages, and ancestral clan seats (본관) across Korea.</p>
+          </li>
+        </ul>
+      </section>
+
+      <!-- 4. Historical Genealogies -->
+      <section class="source-group-card">
+        <div class="source-badge">Genealogical Archives</div>
+        <h2 class="source-group-title">Historical Lineage Registers (족보 族譜)</h2>
+        <ul class="sources-list">
+          <li>
+            <strong>Academy of Korean Studies (한국학중앙연구원) Clan Archives</strong>
+            <p>Genealogical records detailing the founding ancestors, ancient kingdoms (Silla, Gaya, Joseon), and ancestral seats for Korea's major clans.</p>
+          </li>
+        </ul>
+      </section>
+    </div>
+
+    <!-- Citation Statement -->
+    <section class="editorial-box citation-ethics-box">
+      <h3 class="box-title">Citation & Research Ethics Policy</h3>
+      <p>
+        Korean-Names.info rejects the use of unverified baby-name scrapers, forum rumors, or automated machine-translated
+        connotations. All name definitions, character stroke counts, and clan histories are individually reviewed
+        against these primary sources. If you represent an academic or civil institution seeking data exchange,
+        please reach out through our official editorial desk.
+      </p>
+    </section>
+
+  </div>
+</BaseLayout>
+
+<style>
+  .page-wrapper {
+    padding-top: 1.5rem;
+    padding-bottom: 5rem;
+  }
+
+  .sources-hero {
+    background: linear-gradient(135deg, var(--bg-surface) 0%, #EDE6D8 100%);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 3.5rem 2.5rem;
+    margin-bottom: 3rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .heritage-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--antique-gold);
+    color: var(--brand-jade);
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.35rem 0.85rem;
+    border-radius: var(--radius-full);
+    margin-bottom: 1.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .heritage-tag .emblem {
+    color: var(--accent-burgundy);
+    border-right: 1px solid var(--border-color);
+    padding-right: 0.5rem;
+  }
+
+  .sources-title {
+    font-family: var(--font-serif);
+    font-size: 2.75rem;
+    font-weight: 800;
+    color: var(--text-main);
+    line-height: 1.15;
+    margin-bottom: 1rem;
+    max-width: 900px;
+  }
+
+  .sources-subtitle {
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+    max-width: 820px;
+  }
+
+  .sources-sections-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3.5rem;
+  }
+
+  .source-group-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 2.25rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .source-badge {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: #EAE3D2;
+    color: var(--brand-navy);
+    padding: 0.25rem 0.65rem;
+    border-radius: var(--radius-sm);
+    margin-bottom: 0.85rem;
+  }
+
+  .source-group-title {
+    font-family: var(--font-serif);
+    font-size: 1.35rem;
+    color: var(--brand-navy);
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--border-color);
+  }
+
+  .sources-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .sources-list strong {
+    font-size: 1rem;
+    color: var(--brand-jade);
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+
+  .sources-list p {
+    font-size: 0.92rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .citation-ethics-box {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+  }
+
+  .box-title {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    color: var(--brand-navy);
+    margin-bottom: 1rem;
+  }
+
+  .citation-ethics-box p {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--text-main);
+  }
+</style>

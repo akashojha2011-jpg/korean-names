@@ -1,0 +1,288 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import { EDUCATIONAL_GUIDES } from '../../data/guides';
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Learn & Culture' }
+];
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  'name': 'Korean Naming Knowledge Centre & Cultural Guides',
+  'description': 'Authoritative educational guides on Korean naming culture, Hangul phonology, Hanja characters, Pure Korean words, and ancestral clan genealogy.',
+  'url': 'https://www.korean-names.info/learn'
+};
+---
+
+<BaseLayout
+  title="Korean Naming Knowledge Centre - Culture, Hanja & Tradition Guides"
+  description="Explore authoritative educational guides on Korean naming traditions, Hanja character selection, Pure Korean names, pronunciation rules, and ancestral clan seats."
+  jsonLd={schema}
+>
+  <div class="container page-wrapper">
+    <Breadcrumb items={breadcrumbs} />
+
+    <!-- Knowledge Hub Hero -->
+    <header class="learn-hero">
+      <div class="heritage-tag">
+        <span class="emblem font-hangul">지식 백과</span>
+        <span>Educational Knowledge Centre</span>
+      </div>
+      <h1 class="learn-title">Korean Naming Knowledge Centre</h1>
+      <p class="learn-subtitle">
+        Explore scholarly, culturally authentic educational guides demystifying the art and science of Korean names.
+        From Confucian dollimja generational lineages and Supreme Court Hanja registries to the renaissance of Pure Korean names.
+      </p>
+    </header>
+
+    <!-- Guides Grid -->
+    <div class="guides-grid">
+      {EDUCATIONAL_GUIDES.map(guide => (
+        <article class="guide-card">
+          <div class="guide-card-top">
+            <span class="category-pill">{guide.category.replace('-', ' ').toUpperCase()}</span>
+            <span class="read-time">{guide.readTime}</span>
+          </div>
+
+          <div class="guide-card-main">
+            <span class="guide-korean-title font-hangul">{guide.koreanTitle}</span>
+            <h2 class="guide-title">
+              <a href={`/learn/${guide.slug}`}>{guide.title}</a>
+            </h2>
+            <p class="guide-excerpt">{guide.excerpt}</p>
+          </div>
+
+          <div class="guide-card-footer">
+            <span class="guide-date">{guide.publishedDate}</span>
+            <a href={`/learn/${guide.slug}`} class="read-more-link">Read Full Guide &rarr;</a>
+          </div>
+        </article>
+      ))}
+    </div>
+
+    <!-- Methodology & Sources Banner -->
+    <section class="editorial-box authority-banner">
+      <div class="auth-content">
+        <h2 class="auth-title">Research Standards & Scholarly Methodology</h2>
+        <p class="auth-text">
+          All educational content and nomenclature entries are verified against primary statutory documents: the
+          <strong>Supreme Court Table of Hanja for Personal Names (대법원 인명용 한자표)</strong>, the
+          <strong>National Institute of Korean Language (국립국어원)</strong>, and national census datasets
+          published by <strong>Statistics Korea (통계청)</strong>.
+        </p>
+        <div class="auth-links">
+          <a href="/methodology" class="auth-pill">Our Research Methodology &rarr;</a>
+          <a href="/sources" class="auth-pill">Official Primary Sources &rarr;</a>
+          <a href="/about" class="auth-pill">Editorial Board & Mission &rarr;</a>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</BaseLayout>
+
+<style>
+  .page-wrapper {
+    padding-top: 1.5rem;
+    padding-bottom: 5rem;
+  }
+
+  .learn-hero {
+    background: linear-gradient(135deg, var(--bg-surface) 0%, #EDE6D8 100%);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 3rem 2.5rem;
+    margin-bottom: 2.5rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .heritage-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--antique-gold);
+    color: var(--brand-jade);
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.35rem 0.85rem;
+    border-radius: var(--radius-full);
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .heritage-tag .emblem {
+    color: var(--accent-burgundy);
+    border-right: 1px solid var(--border-color);
+    padding-right: 0.5rem;
+  }
+
+  .learn-title {
+    font-family: var(--font-serif);
+    font-size: 2.75rem;
+    font-weight: 800;
+    color: var(--text-main);
+    line-height: 1.15;
+    margin-bottom: 0.75rem;
+  }
+
+  .learn-subtitle {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    max-width: 800px;
+  }
+
+  .guides-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3.5rem;
+  }
+
+  .guide-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease;
+  }
+
+  .guide-card:hover {
+    border-color: var(--brand-jade);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .guide-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  .category-pill {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    background: #EAE3D2;
+    color: var(--brand-navy);
+    padding: 0.25rem 0.6rem;
+    border-radius: var(--radius-sm);
+  }
+
+  .read-time {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  .guide-korean-title {
+    display: block;
+    font-size: 0.95rem;
+    color: var(--antique-gold);
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+  }
+
+  .guide-title {
+    font-family: var(--font-serif);
+    font-size: 1.35rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 0.85rem;
+  }
+
+  .guide-title a {
+    color: var(--brand-navy);
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  .guide-title a:hover {
+    color: var(--brand-jade);
+  }
+
+  .guide-excerpt {
+    font-size: 0.92rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+
+  .guide-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+    font-size: 0.85rem;
+  }
+
+  .guide-date {
+    color: var(--text-muted);
+  }
+
+  .read-more-link {
+    color: var(--brand-jade);
+    font-weight: 700;
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  .read-more-link:hover {
+    color: var(--accent-burgundy);
+  }
+
+  .authority-banner {
+    background: var(--bg-surface);
+    border: 1px solid var(--antique-gold);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+  }
+
+  .auth-title {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    color: var(--brand-navy);
+    margin-bottom: 0.75rem;
+  }
+
+  .auth-text {
+    font-size: 1rem;
+    color: var(--text-main);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+
+  .auth-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .auth-pill {
+    padding: 0.5rem 1rem;
+    background: #FAF8F2;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-full);
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--brand-jade);
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+
+  .auth-pill:hover {
+    background: var(--brand-jade);
+    color: #FFFFFF;
+    border-color: var(--brand-jade);
+  }
+</style>
