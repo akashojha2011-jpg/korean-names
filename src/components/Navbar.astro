@@ -3,7 +3,13 @@ const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
 
 const isActive = (path: string) => {
   if (path === '/') return pathname === '/';
-  if (path === '/names') return pathname === '/names' || pathname.startsWith('/names/');
+  if (path === '/names') return pathname === '/names' || (pathname.startsWith('/names/') && !pathname.startsWith('/names/meaning'));
+  if (path === '/names/meaning') return pathname.startsWith('/names/meaning') || pathname.startsWith('/theme/');
+  if (path === '/surnames') return pathname.startsWith('/surname');
+  if (path === '/learn') return pathname.startsWith('/learn') || pathname.startsWith('/guides');
+  if (path === '/hanja') return pathname.startsWith('/hanja');
+  if (path === '/name-generator') return pathname.startsWith('/name-generator') || pathname.startsWith('/tools/name-generator');
+  if (path === '/about') return pathname === '/about' || pathname === '/author' || pathname === '/contact';
   return pathname.startsWith(path);
 };
 ---
@@ -43,39 +49,148 @@ const isActive = (path: string) => {
         <img
           src="/logo.jpg"
           alt="KoreanNames.info Authentic Seal Logo"
-          width="46"
-          height="46"
+          width="44"
+          height="44"
           class="brand-logo-img"
           loading="eager"
         />
         <div class="brand-text-group">
           <span class="brand-title">KoreanNames<span class="brand-tld">.info</span></span>
-          <span class="brand-subtitle">Korean Naming Encyclopedia & Dictionary</span>
+          <span class="brand-subtitle">Korean Naming Encyclopedia</span>
         </div>
       </a>
     </div>
 
-    <!-- Quick Search Pill (Prominent in header) -->
+    <!-- Quick Search Pill (Visible on Desktop >= 1200px) -->
     <div class="header-search-wrap">
-      <a href="/names" class="header-search-pill" title="Search all Korean names">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-        <span>Search Hangul, English, Hanja, or Meaning...</span>
+      <a href="/names" class="header-search-pill" title="Search all Korean names (Press /)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <span>Search names, Hanja...</span>
         <kbd class="search-kbd">/</kbd>
       </a>
     </div>
 
-    <!-- Primary Navigation Bar (Part 3) -->
+    <!-- Desktop Navigation Links (Clean, streamlined labels that fit perfectly) -->
     <nav class="nav-links" id="main-nav-links" aria-label="Main Navigation">
-      <a href="/names" class={`nav-item ${isActive('/names') ? 'active' : ''}`}>Explore Names</a>
-      <a href="/names/meaning" class={`nav-item ${isActive('/names/meaning') ? 'active' : ''}`}>Names by Meaning</a>
-      <a href="/surnames" class={`nav-item ${isActive('/surnames') || isActive('/surname') ? 'active' : ''}`}>Korean Surnames</a>
-      <a href="/hanja" class={`nav-item ${isActive('/hanja') ? 'active' : ''}`}>Hanja Dictionary</a>
-      <a href="/name-generator" class={`nav-item ${isActive('/name-generator') || isActive('/tools/name-generator') ? 'active' : ''}`}>Name Generator</a>
-      <a href="/learn" class={`nav-item ${isActive('/learn') || isActive('/guides') ? 'active' : ''}`}>Learn Korean Naming</a>
+      <a href="/names" class={`nav-item ${isActive('/names') ? 'active' : ''}`}>Names</a>
+      <a href="/names/meaning" class={`nav-item ${isActive('/names/meaning') ? 'active' : ''}`}>Meanings</a>
+      <a href="/surnames" class={`nav-item ${isActive('/surnames') ? 'active' : ''}`}>Surnames</a>
+      <a href="/hanja" class={`nav-item ${isActive('/hanja') ? 'active' : ''}`}>Hanja</a>
+      <a href="/name-generator" class={`nav-item ${isActive('/name-generator') ? 'active' : ''}`}>Generator</a>
+      <a href="/learn" class={`nav-item ${isActive('/learn') ? 'active' : ''}`}>Learn</a>
       <a href="/about" class={`nav-item ${isActive('/about') ? 'active' : ''}`}>About</a>
     </nav>
+
+    <!-- Mobile Header Actions (Visible on screens < 1024px) -->
+    <div class="mobile-header-actions">
+      <a href="/names" class="mobile-icon-btn" aria-label="Search Korean Names" title="Search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      </a>
+      <button
+        id="mobile-menu-toggle"
+        class="mobile-menu-btn"
+        aria-label="Open Navigation Menu"
+        aria-expanded="false"
+        aria-controls="mobile-nav-drawer"
+      >
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+      </button>
+    </div>
   </div>
 </header>
+
+<!-- Mobile Navigation Drawer & Backdrop -->
+<div id="mobile-nav-backdrop" class="mobile-nav-backdrop" aria-hidden="true"></div>
+<aside id="mobile-nav-drawer" class="mobile-nav-drawer" aria-label="Mobile Navigation" aria-hidden="true">
+  <div class="drawer-header">
+    <div class="drawer-brand">
+      <img src="/logo.jpg" alt="KoreanNames.info Logo" width="36" height="36" class="drawer-logo" />
+      <div>
+        <span class="drawer-title">KoreanNames.info</span>
+        <span class="drawer-sub">Onomastic Reference</span>
+      </div>
+    </div>
+    <button id="mobile-menu-close" class="drawer-close-btn" aria-label="Close Navigation Menu">
+      ✕
+    </button>
+  </div>
+
+  <!-- Search Quick Access inside Drawer -->
+  <div class="drawer-search-box">
+    <a href="/names" class="drawer-search-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      <span>Search Names, Hanja, Hangul...</span>
+    </a>
+  </div>
+
+  <!-- Full Mobile Nav Links List -->
+  <nav class="drawer-nav-list">
+    <a href="/names" class={`drawer-link ${isActive('/names') ? 'active' : ''}`}>
+      <span class="drawer-link-icon">🏷️</span>
+      <div class="drawer-link-text">
+        <span class="drawer-link-name">Names Directory</span>
+        <span class="drawer-link-desc">All Korean boy, girl & unisex names</span>
+      </div>
+    </a>
+    <a href="/names/meaning" class={`drawer-link ${isActive('/names/meaning') ? 'active' : ''}`}>
+      <span class="drawer-link-icon">🌸</span>
+      <div class="drawer-link-text">
+        <span class="drawer-link-name">Names by Meaning</span>
+        <span class="drawer-link-desc">Wisdom, nature, grace & traditional virtues</span>
+      </div>
+    </a>
+    <a href="/surnames" class={`drawer-link ${isActive('/surnames') ? 'active' : ''}`}>
+      <span class="drawer-link-icon">👑</span>
+      <div class="drawer-link-text">
+        <span class="drawer-link-name">Korean Surnames</span>
+        <span class="drawer-link-desc">Ancestral clan origins (본관) & lineages</span>
+      </div>
+    </a>
+    <a href="/hanja" class={`drawer-link ${isActive('/hanja') ? 'active' : ''}`}>
+      <span class="drawer-link-icon">漢字</span>
+      <div class="drawer-link-text">
+        <span class="drawer-link-name">Hanja Dictionary</span>
+        <span class="drawer-link-desc">Supreme Court naming characters & strokes</span>
+      </div>
+    </a>
+    <a href="/name-generator" class={`drawer-link ${isActive('/name-generator') ? 'active' : ''}`}>
+      <span class="drawer-link-icon">⚡</span>
+      <div class="drawer-link-text">
+        <span class="drawer-link-name">Name Generator</span>
+        <span class="drawer-link-desc">Harmonious first names for your family surname</span>
+      </div>
+    </a>
+    <a href="/learn" class={`drawer-link ${isActive('/learn') ? 'active' : ''}`}>
+      <span class="drawer-link-icon">📚</span>
+      <div class="drawer-link-text">
+        <span class="drawer-link-name">Learn & Culture</span>
+        <span class="drawer-link-desc">Naming rules, dollimja & pronunciation</span>
+      </div>
+    </a>
+    <a href="/about" class={`drawer-link ${isActive('/about') ? 'active' : ''}`}>
+      <span class="drawer-link-icon">ℹ️</span>
+      <div class="drawer-link-text">
+        <span class="drawer-link-name">About the Project</span>
+        <span class="drawer-link-desc">Editorial board, citations & methodology</span>
+      </div>
+    </a>
+  </nav>
+
+  <!-- Drawer Bottom Cultural Utility Links -->
+  <div class="drawer-footer">
+    <div class="drawer-footer-actions">
+      <a href="/favorites" class="drawer-btn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+        <span>Shortlist (<span id="drawer-fav-count">0</span>)</span>
+      </a>
+      <a href="/admin" class="drawer-btn">
+        <span>Admin</span>
+      </a>
+    </div>
+  </div>
+</aside>
 
 <script>
   // Theme Toggle Logic
@@ -112,6 +227,7 @@ const isActive = (path: string) => {
       const legacy = JSON.parse(localStorage.getItem('hanname-saved-names') || '[]');
       const count = modern.length > 0 ? modern.length : legacy.length;
       const countPill = document.getElementById('nav-fav-count');
+      const drawerCount = document.getElementById('drawer-fav-count');
       if (countPill) {
         if (count > 0) {
           countPill.textContent = String(count);
@@ -119,6 +235,9 @@ const isActive = (path: string) => {
         } else {
           countPill.style.display = 'none';
         }
+      }
+      if (drawerCount) {
+        drawerCount.textContent = String(count);
       }
     } catch (e) {
       // Storage unavailable
@@ -136,6 +255,40 @@ const isActive = (path: string) => {
       window.location.href = '/names';
     }
   });
+
+  // Mobile Drawer Toggle Logic
+  const menuToggle = document.getElementById('mobile-menu-toggle');
+  const menuClose = document.getElementById('mobile-menu-close');
+  const drawer = document.getElementById('mobile-nav-drawer');
+  const backdrop = document.getElementById('mobile-nav-backdrop');
+
+  function openDrawer() {
+    drawer?.classList.add('open');
+    backdrop?.classList.add('open');
+    menuToggle?.setAttribute('aria-expanded', 'true');
+    drawer?.setAttribute('aria-hidden', 'false');
+    backdrop?.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDrawer() {
+    drawer?.classList.remove('open');
+    backdrop?.classList.remove('open');
+    menuToggle?.setAttribute('aria-expanded', 'false');
+    drawer?.setAttribute('aria-hidden', 'true');
+    backdrop?.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  menuToggle?.addEventListener('click', openDrawer);
+  menuClose?.addEventListener('click', closeDrawer);
+  backdrop?.addEventListener('click', closeDrawer);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && drawer?.classList.contains('open')) {
+      closeDrawer();
+    }
+  });
 </script>
 
 <style>
@@ -144,7 +297,7 @@ const isActive = (path: string) => {
     width: 100%;
     background-color: var(--bg-surface-warm);
     border-bottom: 1px solid var(--border-color);
-    padding: 0.4rem 0;
+    padding: 0.35rem 0;
     font-size: 0.8125rem;
     color: var(--text-muted);
   }
@@ -194,7 +347,7 @@ const isActive = (path: string) => {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    padding: 0.25rem 0.65rem;
+    padding: 0.2rem 0.65rem;
     border-radius: var(--radius-full);
     border: 1px solid var(--border-color);
     background: var(--bg-surface);
@@ -229,7 +382,7 @@ const isActive = (path: string) => {
   }
 
   .theme-btn {
-    padding: 0.25rem 0.45rem;
+    padding: 0.2rem 0.45rem;
     width: 28px;
     height: 28px;
     justify-content: center;
@@ -242,27 +395,35 @@ const isActive = (path: string) => {
     color: white;
     box-shadow: var(--shadow-sm);
     border-bottom: 2px solid var(--color-gold);
+    position: sticky;
+    top: 0;
+    z-index: 900;
   }
 
   .header-inner {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-top: 0.85rem;
-    padding-bottom: 0.85rem;
-    gap: 1.5rem;
+    padding-top: 0.65rem;
+    padding-bottom: 0.65rem;
+    gap: 1rem;
+  }
+
+  .brand-wrapper {
+    flex-shrink: 0;
   }
 
   .site-brand {
     display: inline-flex;
     align-items: center;
-    gap: 0.85rem;
+    gap: 0.75rem;
     color: white;
+    text-decoration: none;
   }
 
   .brand-logo-img {
-    width: 46px;
-    height: 46px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid var(--color-gold);
@@ -277,9 +438,9 @@ const isActive = (path: string) => {
   }
 
   .brand-title {
-    font-size: 1.45rem;
+    font-size: 1.35rem;
     font-weight: 800;
-    letter-spacing: -0.025em;
+    letter-spacing: -0.02em;
     color: #FFFFFF;
     font-family: var(--font-sans);
   }
@@ -289,7 +450,7 @@ const isActive = (path: string) => {
   }
 
   .brand-subtitle {
-    font-size: 0.725rem;
+    font-size: 0.675rem;
     font-weight: 500;
     color: rgba(255, 255, 255, 0.85);
     letter-spacing: 0.03em;
@@ -297,30 +458,31 @@ const isActive = (path: string) => {
     margin-top: 0.15rem;
   }
 
-  /* Header Search Pill */
+  /* Header Search Pill (Compact, Elegant) */
   .header-search-wrap {
-    flex: 1;
-    max-width: 320px;
+    flex-shrink: 1;
+    max-width: 220px;
+    width: 100%;
   }
 
   .header-search-pill {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 0.5rem;
-    padding: 0.5rem 0.95rem;
+    gap: 0.45rem;
+    padding: 0.4rem 0.75rem;
     background: rgba(255, 255, 255, 0.12);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.22);
     border-radius: var(--radius-full);
     color: rgba(255, 255, 255, 0.85);
-    font-size: 0.8125rem;
+    font-size: 0.775rem;
     text-decoration: none;
     transition: all 0.2s ease;
   }
 
   .header-search-pill:hover {
     background: rgba(255, 255, 255, 0.22);
-    border-color: rgba(255, 255, 255, 0.4);
+    border-color: rgba(255, 255, 255, 0.45);
     color: #FFFFFF;
   }
 
@@ -332,8 +494,8 @@ const isActive = (path: string) => {
 
   .search-kbd {
     display: inline-block;
-    padding: 0.1rem 0.4rem;
-    font-size: 0.7rem;
+    padding: 0.1rem 0.35rem;
+    font-size: 0.65rem;
     font-family: inherit;
     font-weight: 700;
     background: rgba(255, 255, 255, 0.2);
@@ -342,28 +504,24 @@ const isActive = (path: string) => {
     line-height: 1;
   }
 
-  /* Primary Navigation Tabs */
+  /* Primary Navigation Tabs (Desktop) */
   .nav-links {
     display: flex;
     align-items: center;
-    gap: 0.35rem;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-  }
-
-  .nav-links::-webkit-scrollbar {
-    display: none;
+    gap: 0.25rem;
+    flex-shrink: 0;
   }
 
   .nav-item {
-    display: inline-block;
-    padding: 0.5rem 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    padding: 0.45rem 0.65rem;
     font-size: 0.875rem;
     font-weight: 600;
     color: rgba(255, 255, 255, 0.92);
     border-radius: var(--radius-sm);
     white-space: nowrap;
+    text-decoration: none;
     transition: all 0.15s ease;
     border-bottom: 2px solid transparent;
   }
@@ -374,34 +532,83 @@ const isActive = (path: string) => {
   }
 
   .nav-item.active {
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.22);
     color: #FFFFFF;
     border-bottom-color: var(--color-gold);
     font-weight: 700;
   }
 
-  @media (max-width: 1100px) {
+  /* Mobile Actions */
+  .mobile-header-actions {
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .mobile-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-full);
+    background: rgba(255, 255, 255, 0.12);
+    color: white;
+    text-decoration: none;
+    transition: background 0.15s ease;
+  }
+
+  .mobile-icon-btn:hover {
+    background: rgba(255, 255, 255, 0.22);
+  }
+
+  .mobile-menu-btn {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    width: 38px;
+    height: 38px;
+    padding: 6px;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .mobile-menu-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .hamburger-bar {
+    width: 20px;
+    height: 2px;
+    background-color: #FFFFFF;
+    border-radius: 2px;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  /* Responsive Breakpoints */
+  @media (max-width: 1240px) {
     .header-search-wrap {
       display: none;
     }
   }
 
-  @media (max-width: 900px) {
-    .header-inner {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0.85rem;
-      padding-top: 0.75rem;
-      padding-bottom: 0.75rem;
-    }
-
+  @media (max-width: 1023px) {
     .nav-links {
-      width: 100%;
-      padding-bottom: 0.35rem;
+      display: none;
     }
 
-    .utility-text {
-      font-size: 0.75rem;
+    .mobile-header-actions {
+      display: inline-flex;
+    }
+
+    .header-inner {
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
     }
   }
 
@@ -412,5 +619,209 @@ const isActive = (path: string) => {
     .utility-inner {
       justify-content: flex-end;
     }
+    .brand-title {
+      font-size: 1.2rem;
+    }
+    .brand-subtitle {
+      font-size: 0.6rem;
+    }
+    .brand-logo-img {
+      width: 38px;
+      height: 38px;
+    }
+  }
+
+  /* Mobile Drawer Overlay */
+  .mobile-nav-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(3px);
+    z-index: 998;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+  }
+
+  .mobile-nav-backdrop.open {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .mobile-nav-drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 320px;
+    max-width: 85vw;
+    height: 100vh;
+    background: var(--bg-surface);
+    border-left: 2px solid var(--color-gold);
+    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.3);
+    z-index: 999;
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  .mobile-nav-drawer.open {
+    transform: translateX(0);
+  }
+
+  .drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.25rem;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-surface-warm);
+  }
+
+  .drawer-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+  }
+
+  .drawer-logo {
+    border-radius: 50%;
+    border: 1.5px solid var(--color-gold);
+  }
+
+  .drawer-title {
+    display: block;
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--text-main);
+  }
+
+  .drawer-sub {
+    display: block;
+    font-size: 0.675rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .drawer-close-btn {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--border-color);
+    background: var(--bg-surface);
+    color: var(--text-main);
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .drawer-close-btn:hover {
+    background: var(--border-color);
+  }
+
+  .drawer-search-box {
+    padding: 1rem 1.25rem 0.5rem;
+  }
+
+  .drawer-search-link {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.65rem 0.85rem;
+    background: var(--bg-surface-warm);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    text-decoration: none;
+  }
+
+  .drawer-nav-list {
+    display: flex;
+    flex-direction: column;
+    padding: 0.5rem 0.75rem;
+    flex: 1;
+  }
+
+  .drawer-link {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.75rem 0.85rem;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    transition: background 0.15s ease;
+  }
+
+  .drawer-link:hover {
+    background: var(--bg-surface-warm);
+  }
+
+  .drawer-link.active {
+    background: var(--color-jade-surface);
+    border-left: 3px solid var(--color-jade);
+  }
+
+  .drawer-link-icon {
+    font-size: 1.15rem;
+    width: 26px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .drawer-link-text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .drawer-link-name {
+    font-size: 0.925rem;
+    font-weight: 700;
+    color: var(--text-main);
+  }
+
+  .drawer-link-desc {
+    font-size: 0.725rem;
+    color: var(--text-muted);
+  }
+
+  .drawer-footer {
+    padding: 1rem 1.25rem 1.5rem;
+    border-top: 1px solid var(--border-color);
+    background: var(--bg-surface-warm);
+  }
+
+  .drawer-footer-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .drawer-btn {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.5rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-main);
+    text-decoration: none;
+  }
+
+  .drawer-btn:hover {
+    border-color: var(--color-jade);
+    color: var(--color-jade);
   }
 </style>

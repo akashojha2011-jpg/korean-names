@@ -37,7 +37,7 @@ const letters = 'abcdefghijklmnopqrstuvwxyz'.split('');
           <li><a href="/boy-names">Korean Boy Names (남성 이름)</a></li>
           <li><a href="/girl-names">Korean Girl Names (여성 이름)</a></li>
           <li><a href="/unisex-names">Unisex Korean Names (중성 이름)</a></li>
-          <li><a href="/surname">Korean Surnames & Clan Seats (성씨 및 본관)</a></li>
+          <li><a href="/surnames">Korean Surnames & Clan Seats (성씨 및 본관)</a></li>
           <li><a href="/hanja">Sino-Korean Hanja Directory (대법원 인명용 漢字)</a></li>
           <li><a href="/names/meaning">Names by Meaning & Theme (의미별 탐색)</a></li>
           <li><a href="/name-generator">Name Generator & Surname Harmony Tool</a></li>
@@ -77,9 +77,9 @@ const letters = 'abcdefghijklmnopqrstuvwxyz'.split('');
         <h2 class="sitemap-section-title">Korean Surnames (성씨)</h2>
         <ul class="sitemap-links-list">
           {SURNAMES.slice(0, 15).map(s => (
-            <li><a href={`/surname/${s.slug}`}>{s.english} ({s.hangul} {s.hanja}) - "{s.meaning}"</a></li>
+            <li><a href={`/surnames/${s.slug}`}>{s.english} ({s.hangul} {s.hanja}) - "{s.meaning}"</a></li>
           ))}
-          <li><a href="/surname" class="more-link">View all {SURNAMES.length} surnames &rarr;</a></li>
+          <li><a href="/surnames" class="more-link">View all {SURNAMES.length} surnames &rarr;</a></li>
         </ul>
       </section>
 

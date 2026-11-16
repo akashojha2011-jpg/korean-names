@@ -93,7 +93,7 @@ const websiteSchema = {
         <a href="/boy-names" class="hero-nav-pill pill-boy">👦 Boy Names</a>
         <a href="/unisex-names" class="hero-nav-pill pill-unisex">✳️ Unisex Names</a>
         <a href="/names/meaning" class="hero-nav-pill">✨ By Meaning</a>
-        <a href="/surname" class="hero-nav-pill">👑 Surnames</a>
+        <a href="/surnames" class="hero-nav-pill">👑 Surnames</a>
         <a href="/hanja" class="hero-nav-pill">📜 Hanja Dictionary</a>
         <a href="/name-generator" class="hero-nav-pill">🎲 Name Generator</a>
         <a href="/name-finder" class="hero-nav-pill">🔤 Name Finder</a>
@@ -217,7 +217,7 @@ const websiteSchema = {
               <span class="section-eyebrow">👑 Family Lineages & Clans</span>
               <h2 class="section-title">Major Korean Surnames (성씨)</h2>
             </div>
-            <a href="/surname" class="section-see-all-link">
+            <a href="/surnames" class="section-see-all-link">
               View Surname Directory &rarr;
             </a>
           </div>
@@ -227,7 +227,7 @@ const websiteSchema = {
 
           <div class="surnames-cards-grid">
             {topSurnames.map((s) => (
-              <a href={`/surname/${s.slug}`} class="surname-summary-card">
+              <a href={`/surnames/${s.slug}`} class="surname-summary-card">
                 <div class="surname-top">
                   <span class="s-hangul">{s.hangul}</span>
                   <span class="s-hanja">({s.hanja})</span>
