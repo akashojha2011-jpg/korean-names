@@ -1,0 +1,627 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import { KOREAN_NAMES } from '../data/names';
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Interactive Tools' },
+  { label: 'Korean Name Finder' }
+];
+
+// Pre-serialized dataset for client-side matching
+const searchableNames = KOREAN_NAMES.map(n => ({
+  slug: n.slug,
+  english: n.english,
+  hangul: n.hangul,
+  hanja: n.hanja || '',
+  gender: n.gender,
+  overallMeaning: n.overallMeaning,
+  revisedRomanization: n.revisedRomanization || n.slug,
+  themes: n.themes || [],
+  isPureKorean: Boolean(n.isPureKorean)
+}));
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  'name': 'Korean Name Finder - English Name Adaptation & Meaning Matcher',
+  'url': 'https://www.korean-names.info/name-finder',
+  'description': 'Find your Korean name. Convert your English name into official Hangul transliteration and discover culturally harmonious authentic Korean names that match your sound or meaning.'
+};
+---
+
+<BaseLayout
+  title="Korean Name Finder - Convert English Names & Match Korean Meanings"
+  description="Find your authentic Korean name. Transliterate your English name into Hangul, discover phonetically similar Korean names, and search by personal virtues and meanings."
+  jsonLd={schema}
+>
+  <div class="container page-wrapper">
+    <Breadcrumb items={breadcrumbs} />
+
+    <!-- Hero Header -->
+    <header class="tool-hero">
+      <div class="heritage-tag">
+        <span class="emblem font-hangul">이름 찾기</span>
+        <span>Phonetic & Semantic Matcher</span>
+      </div>
+      <h1 class="tool-title">Korean Name Finder & Name Adaptation</h1>
+      <p class="tool-subtitle">
+        Discover an authentic Korean name that mirrors your identity. Enter your English name to generate
+        official Hangul transliteration and find phonetically similar Korean names, or search by personal life virtues.
+      </p>
+    </header>
+
+    <!-- Finder Dual-Mode Interface -->
+    <div class="finder-card">
+      <!-- Mode Tabs -->
+      <div class="finder-tabs-bar" role="tablist">
+        <button type="button" class="tab-btn active" id="tab-phonetic-btn" role="tab" aria-selected="true" aria-controls="panel-phonetic">
+          <span class="tab-icon">🔤</span>
+          <span>Match by English Name (Phonetic)</span>
+        </button>
+        <button type="button" class="tab-btn" id="tab-semantic-btn" role="tab" aria-selected="false" aria-controls="panel-semantic">
+          <span class="tab-icon">✨</span>
+          <span>Match by Meaning & Virtue (Semantic)</span>
+        </button>
+      </div>
+
+      <!-- Panel 1: English Phonetic Transliteration -->
+      <div class="tab-panel active" id="panel-phonetic" role="tabpanel">
+        <div class="finder-input-box">
+          <label class="input-label" for="english-name-input">Enter Your English / Western Name:</label>
+          <div class="input-row">
+            <input
+              type="text"
+              id="english-name-input"
+              class="finder-text-input"
+              placeholder="e.g., Sarah, Michael, Emma, David, Olivia, Lucas..."
+              autocomplete="off"
+            />
+            <button type="button" id="transliterate-btn" class="btn btn-primary">Find Korean Match</button>
+          </div>
+          <div class="preset-suggestions">
+            <span class="preset-label">Try popular names:</span>
+            <button type="button" class="preset-pill" data-name="Sarah">Sarah</button>
+            <button type="button" class="preset-pill" data-name="Emma">Emma</button>
+            <button type="button" class="preset-pill" data-name="Michael">Michael</button>
+            <button type="button" class="preset-pill" data-name="David">David</button>
+            <button type="button" class="preset-pill" data-name="Lucas">Lucas</button>
+            <button type="button" class="preset-pill" data-name="Olivia">Olivia</button>
+          </div>
+        </div>
+
+        <!-- Phonetic Results Box -->
+        <div id="phonetic-output-box" class="output-box" style="display: none;">
+          <div class="transliteration-banner">
+            <div class="trans-label">Official Hangul Transliteration:</div>
+            <div class="trans-chars font-hangul" id="direct-hangul-result">사라</div>
+            <p class="trans-expl" id="direct-hangul-expl">
+              Transliterated according to National Institute of Korean Language (국립국어원) loanword orthography rules.
+            </p>
+          </div>
+
+          <h3 class="matches-heading">Recommended Authentic Korean Names With Similar Resonance</h3>
+          <p class="matches-sub">These authentic Korean given names share phonetic cadence or emotional warmth with your name:</p>
+
+          <div class="matches-grid" id="phonetic-matches-grid"></div>
+        </div>
+      </div>
+
+      <!-- Panel 2: Meaning & Virtue Matcher -->
+      <div class="tab-panel" id="panel-semantic" role="tabpanel" style="display: none;">
+        <div class="finder-input-box">
+          <label class="input-label" for="meaning-concept-input">What meaning or virtue inspires you?</label>
+          <div class="input-row">
+            <input
+              type="text"
+              id="meaning-concept-input"
+              class="finder-text-input"
+              placeholder="e.g., Wisdom, Ocean, Light, Peace, Strength, Grace, Love..."
+              autocomplete="off"
+            />
+            <button type="button" id="semantic-search-btn" class="btn btn-primary">Discover Names</button>
+          </div>
+          <div class="preset-suggestions">
+            <span class="preset-label">Popular virtues:</span>
+            <button type="button" class="preset-meaning-pill" data-concept="Wisdom">Wisdom</button>
+            <button type="button" class="preset-meaning-pill" data-concept="Nature">Nature / Ocean</button>
+            <button type="button" class="preset-meaning-pill" data-concept="Brightness">Light / Brightness</button>
+            <button type="button" class="preset-meaning-pill" data-concept="Grace">Grace / Kindness</button>
+            <button type="button" class="preset-meaning-pill" data-concept="Strength">Strength / Courage</button>
+          </div>
+        </div>
+
+        <!-- Semantic Results Box -->
+        <div id="semantic-output-box" class="output-box" style="display: none;">
+          <h3 class="matches-heading" id="semantic-results-heading">Matching Korean Names</h3>
+          <div class="matches-grid" id="semantic-matches-grid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Educational Editorial Section -->
+    <section class="editorial-box">
+      <h2 class="box-title">Western Loanword Transliteration vs. Authentic Korean Names</h2>
+      <p>
+        When a foreign name like "Sarah" is transliterated into Korean, it becomes <strong>사라 (Sa-ra)</strong>.
+        While this accurately captures English phonetics for legal identity, many people also adopt an
+        <strong>authentic Korean name</strong>—such as <strong>Seo-ah (서아)</strong>, <strong>Sa-rang (사랑, Love)</strong>,
+        or <strong>Seo-yeon (서연)</strong>—which carries genuine Hanja roots or pure native Korean cultural heritage.
+        This tool gives you both: an accurate foreign-word transcription and meaningful cultural equivalents.
+      </p>
+    </section>
+
+  </div>
+</BaseLayout>
+
+<script is:inline define:vars={{ searchableNames }}>
+  // Common Western names to Hangul rules dictionary
+  const TRANSLITERATION_MAP = {
+    'sarah': { hangul: '사라', suggestions: ['seo-ah', 'da-som', 'seo-jun'] },
+    'sara': { hangul: '사라', suggestions: ['seo-ah', 'da-som'] },
+    'emma': { hangul: '엠마', suggestions: ['eun-woo', 'a-reum', 'ha-eun'] },
+    'michael': { hangul: '마이클', suggestions: ['maru', 'min-jun'] },
+    'david': { hangul: '데이비드', suggestions: ['do-hyun', 'da-som'] },
+    'lucas': { hangul: '루카스', suggestions: ['ro-woon', 'min-jun'] },
+    'olivia': { hangul: '올리비아', suggestions: ['on-yu', 'i-seul'] },
+    'sophia': { hangul: '소피아', suggestions: ['seo-ah', 'su-ah'] },
+    'daniel': { hangul: '대니얼', suggestions: ['do-jun', 'do-hyun'] },
+    'james': { hangul: '제임스', suggestions: ['ji-woo', 'jin-woo'] },
+    'alex': { hangul: '알렉스', suggestions: ['a-reum', 'ha-joon'] },
+    'noah': { hangul: '노아', suggestions: ['na-rae', 'on-yu'] },
+    'chloe': { hangul: '클로이', suggestions: ['ro-woon', 'ga-ram'] },
+    'grace': { hangul: '그레이스', suggestions: ['ha-eun', 'eun-woo'] },
+    'john': { hangul: '존', suggestions: ['min-jun', 'ye-jun'] },
+    'lily': { hangul: '릴리', suggestions: ['i-seul', 'a-reum'] }
+  };
+
+  // Tab switching
+  const tabPhoneticBtn = document.getElementById('tab-phonetic-btn');
+  const tabSemanticBtn = document.getElementById('tab-semantic-btn');
+  const panelPhonetic = document.getElementById('panel-phonetic');
+  const panelSemantic = document.getElementById('panel-semantic');
+
+  tabPhoneticBtn.addEventListener('click', () => {
+    tabPhoneticBtn.classList.add('active');
+    tabPhoneticBtn.setAttribute('aria-selected', 'true');
+    tabSemanticBtn.classList.remove('active');
+    tabSemanticBtn.setAttribute('aria-selected', 'false');
+    panelPhonetic.style.display = 'block';
+    panelSemantic.style.display = 'none';
+  });
+
+  tabSemanticBtn.addEventListener('click', () => {
+    tabSemanticBtn.classList.add('active');
+    tabSemanticBtn.setAttribute('aria-selected', 'true');
+    tabPhoneticBtn.classList.remove('active');
+    tabPhoneticBtn.setAttribute('aria-selected', 'false');
+    panelSemantic.style.display = 'block';
+    panelPhonetic.style.display = 'none';
+  });
+
+  // Phonetic Handler
+  const englishInput = document.getElementById('english-name-input');
+  const transliterateBtn = document.getElementById('transliterate-btn');
+  const phoneticOutputBox = document.getElementById('phonetic-output-box');
+  const directHangulResult = document.getElementById('direct-hangul-result');
+  const phoneticMatchesGrid = document.getElementById('phonetic-matches-grid');
+
+  function runPhoneticMatch(name) {
+    if (!name) return;
+    const clean = name.trim().toLowerCase();
+    const entry = TRANSLITERATION_MAP[clean];
+
+    let hangulDirect = '';
+    let suggestedSlugs = [];
+
+    if (entry) {
+      hangulDirect = entry.hangul;
+      suggestedSlugs = entry.suggestions;
+    } else {
+      // Fallback simple phonetic transliteration
+      hangulDirect = clean.charAt(0).toUpperCase() + clean.slice(1) + ' (외래어 표기)';
+      suggestedSlugs = ['min-jun', 'seo-ah', 'ji-woo'];
+    }
+
+    directHangulResult.textContent = hangulDirect;
+
+    // Retrieve matching cards
+    const matchingRecords = searchableNames.filter(n =>
+      suggestedSlugs.includes(n.slug) ||
+      n.english.toLowerCase().startsWith(clean.slice(0, 2)) ||
+      n.hangul.startsWith(hangulDirect[0] || '가')
+    ).slice(0, 4);
+
+    const cardsHtml = matchingRecords.map(item => `
+      <div class="match-item-card">
+        <div class="card-chars">
+          <span class="match-hangul font-hangul">${item.hangul}</span>
+          ${item.hanja ? `<span class="match-hanja font-hanja">(${item.hanja})</span>` : ''}
+        </div>
+        <h4 class="match-english">${item.english}</h4>
+        <p class="match-meaning">"${item.overallMeaning}"</p>
+        <a href="/name/${item.slug}" class="match-link">View Complete Name Profile &rarr;</a>
+      </div>
+    `).join('');
+
+    phoneticMatchesGrid.innerHTML = cardsHtml;
+    phoneticOutputBox.style.display = 'block';
+  }
+
+  transliterateBtn.addEventListener('click', () => {
+    runPhoneticMatch(englishInput.value);
+  });
+
+  englishInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') runPhoneticMatch(englishInput.value);
+  });
+
+  document.querySelectorAll('.preset-pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const name = btn.getAttribute('data-name');
+      englishInput.value = name;
+      runPhoneticMatch(name);
+    });
+  });
+
+  // Semantic Handler
+  const meaningInput = document.getElementById('meaning-concept-input');
+  const semanticBtn = document.getElementById('semantic-search-btn');
+  const semanticOutputBox = document.getElementById('semantic-output-box');
+  const semanticMatchesGrid = document.getElementById('semantic-matches-grid');
+  const semanticResultsHeading = document.getElementById('semantic-results-heading');
+
+  function runSemanticMatch(concept) {
+    if (!concept) return;
+    const term = concept.trim().toLowerCase();
+
+    const matches = searchableNames.filter(n =>
+      n.overallMeaning.toLowerCase().includes(term) ||
+      n.themes.some(t => t.toLowerCase().includes(term))
+    ).slice(0, 6);
+
+    semanticResultsHeading.textContent = `Authentic Korean Names Embodying "${concept}" (${matches.length})`;
+
+    if (matches.length === 0) {
+      semanticMatchesGrid.innerHTML = `<p class="no-matches-msg">No exact matches for "${concept}". Try "Wisdom", "Nature", "Light", or "Grace".</p>`;
+    } else {
+      semanticMatchesGrid.innerHTML = matches.map(item => `
+        <div class="match-item-card">
+          <div class="card-chars">
+            <span class="match-hangul font-hangul">${item.hangul}</span>
+            ${item.hanja ? `<span class="match-hanja font-hanja">(${item.hanja})</span>` : ''}
+          </div>
+          <h4 class="match-english">${item.english}</h4>
+          <p class="match-meaning">"${item.overallMeaning}"</p>
+          <a href="/name/${item.slug}" class="match-link">Explore Details &rarr;</a>
+        </div>
+      `).join('');
+    }
+
+    semanticOutputBox.style.display = 'block';
+  }
+
+  semanticBtn.addEventListener('click', () => {
+    runSemanticMatch(meaningInput.value);
+  });
+
+  meaningInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') runSemanticMatch(meaningInput.value);
+  });
+
+  document.querySelectorAll('.preset-meaning-pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const concept = btn.getAttribute('data-concept');
+      meaningInput.value = concept;
+      runSemanticMatch(concept);
+    });
+  });
+</script>
+
+<style>
+  .page-wrapper {
+    padding-top: 1.5rem;
+    padding-bottom: 5rem;
+  }
+
+  .tool-hero {
+    background: linear-gradient(135deg, var(--bg-surface) 0%, #EDE6D8 100%);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 3rem 2.5rem;
+    margin-bottom: 2.5rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .heritage-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--antique-gold);
+    color: var(--brand-jade);
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.35rem 0.85rem;
+    border-radius: var(--radius-full);
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .heritage-tag .emblem {
+    color: var(--accent-burgundy);
+    border-right: 1px solid var(--border-color);
+    padding-right: 0.5rem;
+  }
+
+  .tool-title {
+    font-family: var(--font-serif);
+    font-size: 2.75rem;
+    font-weight: 800;
+    color: var(--text-main);
+    line-height: 1.15;
+    margin-bottom: 0.75rem;
+  }
+
+  .tool-subtitle {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    max-width: 800px;
+  }
+
+  .finder-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin-bottom: 3.5rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .finder-tabs-bar {
+    display: flex;
+    background: #EAE3D2;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .tab-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 1.25rem 1rem;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .tab-btn.active {
+    background: var(--bg-surface);
+    color: var(--brand-jade);
+    border-bottom-color: var(--brand-jade);
+  }
+
+  .tab-panel {
+    padding: 2.5rem;
+  }
+
+  .finder-input-box {
+    margin-bottom: 2rem;
+  }
+
+  .input-label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 0.75rem;
+  }
+
+  .input-row {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .finder-text-input {
+    flex: 1;
+    padding: 0.85rem 1.25rem;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: 1.05rem;
+    background: #FAF8F2;
+    color: var(--text-main);
+  }
+
+  .finder-text-input:focus {
+    outline: none;
+    border-color: var(--brand-jade);
+    background: #FFFFFF;
+  }
+
+  .preset-suggestions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .preset-label {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+  }
+
+  .preset-pill, .preset-meaning-pill {
+    padding: 0.25rem 0.65rem;
+    background: #EAE3D2;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-full);
+    font-size: 0.8rem;
+    color: var(--brand-navy);
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.15s ease;
+  }
+
+  .preset-pill:hover, .preset-meaning-pill:hover {
+    background: var(--brand-jade);
+    color: #FFFFFF;
+    border-color: var(--brand-jade);
+  }
+
+  /* Output Section */
+  .output-box {
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-color);
+  }
+
+  .transliteration-banner {
+    background: #FDF9F2;
+    border: 1px solid var(--antique-gold);
+    border-radius: var(--radius-md);
+    padding: 2rem;
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  .trans-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+
+  .trans-chars {
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: var(--brand-jade);
+    line-height: 1.1;
+    margin-bottom: 0.5rem;
+  }
+
+  .trans-expl {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .matches-heading {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    color: var(--brand-navy);
+    margin-bottom: 0.35rem;
+  }
+
+  .matches-sub {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+  }
+
+  .matches-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .match-item-card {
+    background: #FAF8F2;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.2s ease;
+  }
+
+  .match-item-card:hover {
+    border-color: var(--brand-jade);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .card-chars {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .match-hangul {
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--text-main);
+  }
+
+  .match-hanja {
+    font-size: 1.25rem;
+    color: var(--antique-gold);
+    font-weight: 700;
+  }
+
+  .match-english {
+    font-size: 1.15rem;
+    color: var(--brand-navy);
+    margin-bottom: 0.5rem;
+  }
+
+  .match-meaning {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 1.25rem;
+  }
+
+  .match-link {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--brand-jade);
+    text-decoration: none;
+  }
+
+  .match-link:hover {
+    color: var(--accent-burgundy);
+  }
+
+  .editorial-box {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+  }
+
+  .box-title {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    color: var(--brand-navy);
+    margin-bottom: 1rem;
+  }
+
+  .editorial-box p {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--text-main);
+  }
+
+  @media (max-width: 640px) {
+    .input-row {
+      flex-direction: column;
+    }
+    .finder-tabs-bar {
+      flex-direction: column;
+    }
+  }
+</style>

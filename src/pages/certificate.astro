@@ -1,0 +1,535 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import { KOREAN_NAMES } from '../data/names';
+import { SURNAMES } from '../data/surnames';
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Interactive Tools' },
+  { label: 'Korean Name Certificate' }
+];
+
+const topSurnames = SURNAMES.slice(0, 20);
+const initialNames = KOREAN_NAMES.slice(0, 50);
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  'name': 'Official Korean Name Certificate Generator',
+  'url': 'https://www.korean-names.info/certificate',
+  'description': 'Generate and print an authentic Korean Name Certificate featuring traditional calligraphy Hangul, Hanja characters, certified meaning, and vermilion seal.'
+};
+---
+
+<BaseLayout
+  title="Official Korean Name Certificate Generator - Printable Heritage Document"
+  description="Generate a beautiful, printable Korean Name Certificate. Features majestic Hangul calligraphy, official Hanja characters, English pronunciation, and vermilion seal."
+  jsonLd={schema}
+>
+  <div class="container page-wrapper">
+    <Breadcrumb items={breadcrumbs} />
+
+    <!-- Hero Header (hidden during print) -->
+    <header class="tool-hero no-print">
+      <div class="heritage-tag">
+        <span class="emblem font-hangul">이름 증서</span>
+        <span>Heritage Document Generator</span>
+      </div>
+      <h1 class="tool-title">Korean Name Heritage Certificate Generator</h1>
+      <p class="tool-subtitle">
+        Create an official, commemorative Korean Name Certificate celebrating your personal or baby's name.
+        Complete with traditional Korean geometric border, Hanja logograms, certified meaning, and crimson seal of authenticity.
+      </p>
+
+      <!-- Action Button -->
+      <div class="action-buttons-row">
+        <button type="button" id="print-cert-btn" class="btn btn-primary">
+          <span>🖨️</span> Print / Download PDF Certificate
+        </button>
+      </div>
+    </header>
+
+    <!-- Customizer Controls (hidden during print) -->
+    <div class="customizer-card no-print">
+      <h3 class="customizer-title">Customize Your Certificate</h3>
+      <div class="controls-grid">
+        <div class="control-box">
+          <label class="control-label" for="cert-surname-select">Family Surname (성씨)</label>
+          <select id="cert-surname-select" class="form-select">
+            {topSurnames.map(s => (
+              <option value={s.english} data-hangul={s.hangul} data-hanja={s.hanja}>
+                {s.english} ({s.hangul} {s.hanja})
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div class="control-box">
+          <label class="control-label" for="cert-name-select">Given Name (이름)</label>
+          <select id="cert-name-select" class="form-select">
+            {initialNames.map(n => (
+              <option
+                value={n.english.split(' ')[0]}
+                data-hangul={n.hangul}
+                data-hanja={n.hanja || 'Pure Korean (순우리말)'}
+                data-meaning={n.overallMeaning}
+                data-rom={n.revisedRomanization || n.slug}
+              >
+                {n.english} ({n.hangul})
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div class="control-box">
+          <label class="control-label" for="cert-date-input">Commemoration Date</label>
+          <input type="text" id="cert-date-input" class="form-input" value="January 1, 2026" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Official Commemorative Certificate Sheet (Print Target) -->
+    <div class="certificate-container" id="certificate-print-sheet">
+      <div class="cert-outer-border">
+        <div class="cert-inner-border">
+          
+          <!-- Top Emblem & Title -->
+          <div class="cert-header">
+            <div class="cert-emblem-seal font-hangul">韓名</div>
+            <div class="cert-korean-title font-hangul">韓 國 名 稱 證 書</div>
+            <div class="cert-english-title">Official Certificate of Korean Nomenclature</div>
+            <div class="cert-sub-id">DOCUMENT CODE: KN-REG-2026-HERITAGE</div>
+          </div>
+
+          <!-- Body Presentation -->
+          <div class="cert-body">
+            <p class="cert-lead-text">
+              This document solemnly attests that the following personal name has been inscribed in accordance with
+              authentic Korean linguistic traditions and civil nomenclature standards:
+            </p>
+
+            <!-- Calligraphy Name Centerpiece -->
+            <div class="cert-name-box">
+              <div class="cert-hangul-display font-hangul" id="cert-display-hangul">김민준</div>
+              <div class="cert-hanja-display font-hanja" id="cert-display-hanja">金 敏 俊</div>
+              <div class="cert-english-display" id="cert-display-english">Kim Min-jun</div>
+              <div class="cert-rom-display" id="cert-display-rom">Official Romanization: Kim Min-jun</div>
+            </div>
+
+            <!-- Certified Meaning Section -->
+            <div class="cert-meaning-box">
+              <span class="cert-meaning-label">Certified Virtue & Meaning:</span>
+              <p class="cert-meaning-text" id="cert-display-meaning">
+                "Clever and handsome; a sharp-minded leader endowed with exceptional talent and moral dignity."
+              </p>
+            </div>
+
+            <!-- Registry Attestation -->
+            <p class="cert-attestation-text">
+              Recorded and verified according to the phonological rules of the National Institute of Korean Language (국립국어원)
+              and the Supreme Court Table of Hanja for Personal Names (대법원 인명용 한자표).
+            </p>
+          </div>
+
+          <!-- Footer Signature & Seal Area -->
+          <div class="cert-footer">
+            <div class="cert-date-col">
+              <span class="cert-date-label">Date of Issuance:</span>
+              <strong class="cert-date-val" id="cert-display-date">January 1, 2026</strong>
+            </div>
+
+            <!-- Vermilion Korean Traditional Seal (도장 / 인영) -->
+            <div class="cert-vermilion-seal">
+              <div class="seal-inner-box font-hangul">
+                <span>대한</span>
+                <span>이름</span>
+                <span>공인</span>
+                <span>정훈</span>
+              </div>
+            </div>
+
+            <div class="cert-authority-col">
+              <span class="cert-auth-label">Registry Attestation:</span>
+              <strong class="cert-auth-val">Korean-Names.info Editorial Registry</strong>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</BaseLayout>
+
+<script is:inline>
+  const surnameSelect = document.getElementById('cert-surname-select');
+  const nameSelect = document.getElementById('cert-name-select');
+  const dateInput = document.getElementById('cert-date-input');
+  const printBtn = document.getElementById('print-cert-btn');
+
+  const displayHangul = document.getElementById('cert-display-hangul');
+  const displayHanja = document.getElementById('cert-display-hanja');
+  const displayEnglish = document.getElementById('cert-display-english');
+  const displayRom = document.getElementById('cert-display-rom');
+  const displayMeaning = document.getElementById('cert-display-meaning');
+  const displayDate = document.getElementById('cert-display-date');
+
+  function updateCertificate() {
+    const sOption = surnameSelect.options[surnameSelect.selectedIndex];
+    const nOption = nameSelect.options[nameSelect.selectedIndex];
+
+    const sEng = sOption.value;
+    const sHan = sOption.getAttribute('data-hangul');
+    const sHanja = sOption.getAttribute('data-hanja');
+
+    const nEng = nOption.value;
+    const nHan = nOption.getAttribute('data-hangul');
+    const nHanja = nOption.getAttribute('data-hanja');
+    const nMeaning = nOption.getAttribute('data-meaning');
+    const nRom = nOption.getAttribute('data-rom');
+
+    displayHangul.textContent = `${sHan}${nHan}`;
+    displayHanja.textContent = nHanja.includes('Pure') ? `${sHanja} (${nHanja})` : `${sHanja} ${nHanja}`;
+    displayEnglish.textContent = `${sEng} ${nEng}`;
+    displayRom.textContent = `Official Romanization: ${sEng} ${nRom}`;
+    displayMeaning.textContent = `"${nMeaning}"`;
+    displayDate.textContent = dateInput.value || '2026';
+  }
+
+  surnameSelect.addEventListener('change', updateCertificate);
+  nameSelect.addEventListener('change', updateCertificate);
+  dateInput.addEventListener('input', updateCertificate);
+
+  printBtn?.addEventListener('click', () => {
+    window.print();
+  });
+
+  // Initial update
+  updateCertificate();
+</script>
+
+<style>
+  .page-wrapper {
+    padding-top: 1.5rem;
+    padding-bottom: 5rem;
+  }
+
+  .tool-hero {
+    background: linear-gradient(135deg, var(--bg-surface) 0%, #EDE6D8 100%);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 3rem 2.5rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .heritage-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--antique-gold);
+    color: var(--brand-jade);
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.35rem 0.85rem;
+    border-radius: var(--radius-full);
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .heritage-tag .emblem {
+    color: var(--accent-burgundy);
+    border-right: 1px solid var(--border-color);
+    padding-right: 0.5rem;
+  }
+
+  .tool-title {
+    font-family: var(--font-serif);
+    font-size: 2.75rem;
+    font-weight: 800;
+    color: var(--text-main);
+    line-height: 1.15;
+    margin-bottom: 0.75rem;
+  }
+
+  .tool-subtitle {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    max-width: 800px;
+    margin-bottom: 1.5rem;
+  }
+
+  .customizer-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    margin-bottom: 3rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .customizer-title {
+    font-family: var(--font-serif);
+    font-size: 1.35rem;
+    color: var(--brand-navy);
+    margin-bottom: 1.25rem;
+  }
+
+  .controls-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .control-box {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .control-label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .form-select, .form-input {
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    background: #FAF8F2;
+    font-size: 0.95rem;
+    color: var(--text-main);
+  }
+
+  .form-select:focus, .form-input:focus {
+    outline: none;
+    border-color: var(--brand-jade);
+    background: #FFFFFF;
+  }
+
+  /* Commemorative Certificate Sheet */
+  .certificate-container {
+    background: #FFFDF9;
+    padding: 2rem;
+    border-radius: var(--radius-md);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    max-width: 850px;
+    margin: 0 auto 4rem;
+  }
+
+  .cert-outer-border {
+    border: 4px solid var(--brand-jade);
+    padding: 12px;
+    position: relative;
+  }
+
+  .cert-inner-border {
+    border: 2px solid var(--antique-gold);
+    padding: 3rem 2.5rem;
+    text-align: center;
+    position: relative;
+    background: radial-gradient(circle at center, #FFFFFF 0%, #FAF6EE 100%);
+  }
+
+  .cert-emblem-seal {
+    width: 60px;
+    height: 60px;
+    line-height: 56px;
+    margin: 0 auto 1rem;
+    border: 2px solid var(--brand-jade);
+    border-radius: 50%;
+    font-size: 1.4rem;
+    color: var(--brand-jade);
+    font-weight: 900;
+  }
+
+  .cert-korean-title {
+    font-size: 2.25rem;
+    font-weight: 900;
+    color: var(--brand-navy);
+    letter-spacing: 0.25em;
+    margin-bottom: 0.35rem;
+  }
+
+  .cert-english-title {
+    font-family: var(--font-serif);
+    font-size: 1.2rem;
+    color: var(--antique-gold);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .cert-sub-id {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-family: monospace;
+    letter-spacing: 0.1em;
+    margin-bottom: 2rem;
+  }
+
+  .cert-lead-text {
+    font-size: 0.95rem;
+    color: var(--text-main);
+    line-height: 1.6;
+    max-width: 600px;
+    margin: 0 auto 2.5rem;
+  }
+
+  .cert-name-box {
+    background: #FFFFFF;
+    border: 1px solid var(--antique-gold);
+    border-radius: var(--radius-sm);
+    padding: 2.25rem 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 12px rgba(185, 154, 96, 0.1);
+  }
+
+  .cert-hangul-display {
+    font-size: 4.5rem;
+    font-weight: 900;
+    color: var(--brand-jade);
+    line-height: 1;
+    margin-bottom: 0.75rem;
+    letter-spacing: 0.05em;
+  }
+
+  .cert-hanja-display {
+    font-size: 2.25rem;
+    color: var(--antique-gold);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.1em;
+  }
+
+  .cert-english-display {
+    font-family: var(--font-serif);
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--brand-navy);
+    margin-bottom: 0.25rem;
+  }
+
+  .cert-rom-display {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  .cert-meaning-box {
+    margin-bottom: 2rem;
+  }
+
+  .cert-meaning-label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    margin-bottom: 0.4rem;
+  }
+
+  .cert-meaning-text {
+    font-family: var(--font-serif);
+    font-size: 1.15rem;
+    color: var(--text-main);
+    font-style: italic;
+    max-width: 620px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  .cert-attestation-text {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    max-width: 580px;
+    margin: 0 auto 3rem;
+  }
+
+  .cert-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+  }
+
+  .cert-date-col, .cert-authority-col {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    font-size: 0.82rem;
+  }
+
+  .cert-authority-col {
+    text-align: right;
+  }
+
+  .cert-date-label, .cert-auth-label {
+    color: var(--text-muted);
+  }
+
+  .cert-date-val, .cert-auth-val {
+    color: var(--brand-navy);
+    font-weight: 700;
+  }
+
+  /* Traditional Crimson Vermilion Seal (인영) */
+  .cert-vermilion-seal {
+    width: 75px;
+    height: 75px;
+    border: 3px solid #B02A37;
+    border-radius: 6px;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 0 2px rgba(176, 42, 55, 0.2);
+  }
+
+  .seal-inner-box {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    width: 100%;
+    height: 100%;
+    color: #B02A37;
+    font-size: 1.1rem;
+    font-weight: 900;
+    line-height: 1;
+    text-align: center;
+    align-items: center;
+  }
+
+  @media print {
+    .no-print, nav, footer, .breadcrumb-container {
+      display: none !important;
+    }
+    body {
+      background: white !important;
+      padding: 0 !important;
+    }
+    .page-wrapper {
+      padding: 0 !important;
+    }
+    .certificate-container {
+      box-shadow: none !important;
+      max-width: 100% !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+    .cert-outer-border {
+      border: 4px solid #174C3C !important;
+      page-break-inside: avoid;
+    }
+  }
+</style>

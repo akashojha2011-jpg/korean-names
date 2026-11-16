@@ -1,0 +1,473 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import { KOREAN_NAMES } from '../data/names';
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Interactive Tools' },
+  { label: 'Name Comparison Tool' }
+];
+
+// Minimal serialized name list for picker
+const pickerNames = KOREAN_NAMES.map(n => ({
+  slug: n.slug,
+  english: n.english,
+  hangul: n.hangul,
+  hanja: n.hanja || 'None (Pure Korean)',
+  gender: n.gender,
+  overallMeaning: n.overallMeaning,
+  revisedRomanization: n.revisedRomanization || n.slug,
+  mccuneReischauer: n.mccuneReischauer || n.slug,
+  syllableCount: n.syllableCount || 2,
+  classification: n.classification || (n.isPureKorean ? 'pure-korean' : 'sino-korean'),
+  isPureKorean: Boolean(n.isPureKorean),
+  themes: (n.themes || []).join(', '),
+  popularityRank: n.popularityRank || 'Unranked',
+  kimHarmony: 'Kim ' + (n.english.split(' ')[0]),
+  leeHarmony: 'Lee ' + (n.english.split(' ')[0]),
+  parkHarmony: 'Park ' + (n.english.split(' ')[0])
+}));
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  'name': 'Korean Name Comparison Tool - Side-by-Side Matrix',
+  'url': 'https://www.korean-names.info/name-comparison',
+  'description': 'Compare Korean names side-by-side. Analyze Hangul orthography, Hanja logograms, syllable counts, popularity ranks, and surname harmony.'
+};
+---
+
+<BaseLayout
+  title="Korean Name Comparison Tool - Side-by-Side Name Matrix"
+  description="Compare 2 or 3 Korean names side-by-side. Compare Hangul, Hanja characters, stroke counts, meaning virtues, and family surname harmony."
+  jsonLd={schema}
+>
+  <div class="container page-wrapper">
+    <Breadcrumb items={breadcrumbs} />
+
+    <!-- Hero Header -->
+    <header class="tool-hero">
+      <div class="heritage-tag">
+        <span class="emblem font-hangul">이름 비교</span>
+        <span>Comparative Nomenclature Matrix</span>
+      </div>
+      <h1 class="tool-title">Side-by-Side Korean Name Comparison</h1>
+      <p class="tool-subtitle">
+        Torn between prospective baby names? Compare two or three authentic Korean names side-by-side
+        across Hangul orthography, Hanja logograms, phonetic flow, and surname harmony.
+      </p>
+
+      <div class="header-action-row">
+        <button type="button" id="print-matrix-btn" class="btn btn-secondary">
+          <span>🖨️</span> Print Comparison Matrix
+        </button>
+      </div>
+    </header>
+
+    <!-- Name Selectors Bar -->
+    <div class="comparison-selectors-card">
+      <div class="selectors-grid">
+        <div class="selector-column">
+          <label class="selector-label" for="select-name-1">Name Candidate #1</label>
+          <select id="select-name-1" class="selector-dropdown">
+            {pickerNames.map((n, idx) => (
+              <option value={n.slug} selected={idx === 0}>{n.english} ({n.hangul})</option>
+            ))}
+          </select>
+        </div>
+
+        <div class="selector-column">
+          <label class="selector-label" for="select-name-2">Name Candidate #2</label>
+          <select id="select-name-2" class="selector-dropdown">
+            {pickerNames.map((n, idx) => (
+              <option value={n.slug} selected={idx === 1}>{n.english} ({n.hangul})</option>
+            ))}
+          </select>
+        </div>
+
+        <div class="selector-column">
+          <label class="selector-label" for="select-name-3">Name Candidate #3 (Optional)</label>
+          <select id="select-name-3" class="selector-dropdown">
+            <option value="none">-- None (Compare 2 Names) --</option>
+            {pickerNames.map((n, idx) => (
+              <option value={n.slug} selected={idx === 2}>{n.english} ({n.hangul})</option>
+            ))}
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Comparison Table Output -->
+    <div class="matrix-table-card">
+      <table class="comparison-table" id="comparison-matrix-table">
+        <thead>
+          <tr id="matrix-head-row">
+            <th class="attribute-col">Attribute</th>
+            <th class="name-col" id="col-head-1">Candidate 1</th>
+            <th class="name-col" id="col-head-2">Candidate 2</th>
+            <th class="name-col" id="col-head-3">Candidate 3</th>
+          </tr>
+        </thead>
+        <tbody id="matrix-body-rows">
+          <!-- Dynamically updated via script -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Editorial Note -->
+    <section class="editorial-box">
+      <h2 class="box-title">Evaluating Korean Name Harmony</h2>
+      <p>
+        When making your final selection between candidate names, consider:
+      </p>
+      <ul>
+        <li><strong>Acoustic Rhythm:</strong> How naturally the name rolls off the tongue when spoken aloud together with your family surname.</li>
+        <li><strong>Hanja Depth vs. Native Warmth:</strong> Whether your family prefers the classical Confucian scholarly tradition of Hanja characters or the lyrical, contemporary beauty of Pure Korean (순우리말) words.</li>
+        <li><strong>International Ease:</strong> How effortlessly non-Korean speakers can pronounce and spell the romanized version in global environments.</li>
+      </ul>
+    </section>
+
+  </div>
+</BaseLayout>
+
+<script is:inline define:vars={{ pickerNames }}>
+  const select1 = document.getElementById('select-name-1');
+  const select2 = document.getElementById('select-name-2');
+  const select3 = document.getElementById('select-name-3');
+  const matrixHeadRow = document.getElementById('matrix-head-row');
+  const matrixBody = document.getElementById('matrix-body-rows');
+  const printBtn = document.getElementById('print-matrix-btn');
+
+  function getRecord(slug) {
+    return pickerNames.find(n => n.slug === slug);
+  }
+
+  function renderMatrix() {
+    const r1 = getRecord(select1.value);
+    const r2 = getRecord(select2.value);
+    const slug3 = select3.value;
+    const r3 = slug3 !== 'none' ? getRecord(slug3) : null;
+
+    const hasThird = Boolean(r3);
+
+    // Build Table Header
+    matrixHeadRow.innerHTML = `
+      <th class="attribute-col">Attribute</th>
+      <th class="name-col">
+        <div class="head-hangul font-hangul">${r1.hangul}</div>
+        <div class="head-english">${r1.english}</div>
+      </th>
+      <th class="name-col">
+        <div class="head-hangul font-hangul">${r2.hangul}</div>
+        <div class="head-english">${r2.english}</div>
+      </th>
+      ${hasThird ? `
+        <th class="name-col">
+          <div class="head-hangul font-hangul">${r3.hangul}</div>
+          <div class="head-english">${r3.english}</div>
+        </th>
+      ` : ''}
+    `;
+
+    // Row definitions
+    const rows = [
+      {
+        label: 'Primary Hanja',
+        val: r => `<span class="matrix-hanja font-hanja">${r.hanja}</span>`
+      },
+      {
+        label: 'Overall Meaning',
+        val: r => `<em>"${r.overallMeaning}"</em>`
+      },
+      {
+        label: 'Gender Category',
+        val: r => `<span class="badge ${r.gender === 'boy' ? 'badge-boy' : r.gender === 'girl' ? 'badge-girl' : 'badge-unisex'}">${r.gender.toUpperCase()}</span>`
+      },
+      {
+        label: 'Linguistic Origin',
+        val: r => r.isPureKorean ? 'Pure Native Korean (순우리말)' : 'Sino-Korean (Hanja 漢字)'
+      },
+      {
+        label: 'Revised Romanization (RR)',
+        val: r => r.revisedRomanization
+      },
+      {
+        label: 'McCune-Reischauer',
+        val: r => r.mccuneReischauer
+      },
+      {
+        label: 'Syllable Count',
+        val: r => `${r.syllableCount} Syllables`
+      },
+      {
+        label: 'Themes & Virtues',
+        val: r => r.themes
+      },
+      {
+        label: 'Pairing with Kim (김)',
+        val: r => `<strong>${r.kimHarmony}</strong> (김${r.hangul})`
+      },
+      {
+        label: 'Pairing with Lee (이)',
+        val: r => `<strong>${r.leeHarmony}</strong> (이${r.hangul})`
+      },
+      {
+        label: 'Pairing with Park (박)',
+        val: r => `<strong>${r.parkHarmony}</strong> (박${r.hangul})`
+      },
+      {
+        label: 'Detailed Profile',
+        val: r => `<a href="/name/${r.slug}" class="matrix-view-link">View Full Profile &rarr;</a>`
+      }
+    ];
+
+    matrixBody.innerHTML = rows.map(row => `
+      <tr>
+        <td class="attr-name">${row.label}</td>
+        <td class="data-cell">${row.val(r1)}</td>
+        <td class="data-cell">${row.val(r2)}</td>
+        ${hasThird ? `<td class="data-cell">${row.val(r3)}</td>` : ''}
+      </tr>
+    `).join('');
+  }
+
+  select1.addEventListener('change', renderMatrix);
+  select2.addEventListener('change', renderMatrix);
+  select3.addEventListener('change', renderMatrix);
+
+  printBtn?.addEventListener('click', () => {
+    window.print();
+  });
+
+  // Initial render
+  renderMatrix();
+</script>
+
+<style>
+  .page-wrapper {
+    padding-top: 1.5rem;
+    padding-bottom: 5rem;
+  }
+
+  .tool-hero {
+    background: linear-gradient(135deg, var(--bg-surface) 0%, #EDE6D8 100%);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 3rem 2.5rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .heritage-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--antique-gold);
+    color: var(--brand-jade);
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.35rem 0.85rem;
+    border-radius: var(--radius-full);
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .heritage-tag .emblem {
+    color: var(--accent-burgundy);
+    border-right: 1px solid var(--border-color);
+    padding-right: 0.5rem;
+  }
+
+  .tool-title {
+    font-family: var(--font-serif);
+    font-size: 2.75rem;
+    font-weight: 800;
+    color: var(--text-main);
+    line-height: 1.15;
+    margin-bottom: 0.75rem;
+  }
+
+  .tool-subtitle {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    max-width: 800px;
+    margin-bottom: 1.5rem;
+  }
+
+  .header-action-row {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .comparison-selectors-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 1.75rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .selectors-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .selector-column {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .selector-label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .selector-dropdown {
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    background: #FAF8F2;
+    font-size: 0.95rem;
+    color: var(--text-main);
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .selector-dropdown:focus {
+    outline: none;
+    border-color: var(--brand-jade);
+    background: #FFFFFF;
+  }
+
+  .matrix-table-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    overflow-x: auto;
+    margin-bottom: 3.5rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+  }
+
+  .comparison-table th, .comparison-table td {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    border-right: 1px solid var(--border-color);
+  }
+
+  .comparison-table th:last-child, .comparison-table td:last-child {
+    border-right: none;
+  }
+
+  .comparison-table thead th {
+    background: #FAF8F2;
+    vertical-align: top;
+  }
+
+  .attribute-col {
+    width: 220px;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 700;
+  }
+
+  .name-col {
+    min-width: 240px;
+  }
+
+  .head-hangul {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--brand-jade);
+    line-height: 1;
+    margin-bottom: 0.35rem;
+  }
+
+  .head-english {
+    font-size: 1.25rem;
+    color: var(--brand-navy);
+    font-weight: 700;
+  }
+
+  .attr-name {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--brand-navy);
+    background: #FAF8F2;
+  }
+
+  .data-cell {
+    font-size: 0.92rem;
+    color: var(--text-main);
+    line-height: 1.5;
+  }
+
+  .matrix-hanja {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--antique-gold);
+  }
+
+  .matrix-view-link {
+    color: var(--brand-jade);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .matrix-view-link:hover {
+    color: var(--accent-burgundy);
+  }
+
+  .editorial-box {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+  }
+
+  .box-title {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    color: var(--brand-navy);
+    margin-bottom: 1rem;
+  }
+
+  .editorial-box p, .editorial-box li {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--text-main);
+  }
+
+  .editorial-box ul {
+    padding-left: 1.25rem;
+    margin-top: 0.75rem;
+  }
+
+  @media print {
+    body {
+      background: white !important;
+    }
+    .comparison-selectors-card, .header-action-row, nav, footer, .breadcrumb-container {
+      display: none !important;
+    }
+    .matrix-table-card {
+      border: 1px solid #333 !important;
+      box-shadow: none !important;
+    }
+  }
+</style>

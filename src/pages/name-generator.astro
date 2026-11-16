@@ -1,0 +1,156 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import NameGeneratorModal from '../components/NameGeneratorModal.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Interactive Tools' },
+  { label: 'Korean Name Generator' }
+];
+
+const generatorFAQs = [
+  {
+    question: 'How does the Korean baby name generator match surnames?',
+    answer: 'The generator evaluates phonetic transitions between your selected family surname (성씨) and the initial consonant of the given name. In traditional Korean naming phonetics (Eum-yang-o-haeng, 음양오행), avoiding awkward consonant friction between the surname final consonant (받침) and the given name is essential for a melodic, natural cadence.'
+  },
+  {
+    question: 'Are all generated names verified in South Korea?',
+    answer: 'Yes. All names are selected from our verified database comprising Sino-Korean characters certified in the Supreme Court Table of Hanja for Personal Names (대법원 인명용 한자표) and authentic native Pure Korean (Soon-woori-mal) words.'
+  },
+  {
+    question: 'Can I generate both Sino-Korean and Pure Korean names?',
+    answer: 'Yes. You can filter by linguistic classification to discover either traditional Hanja-rooted names or native Pure Korean nature names such as Ha-neul (하늘, Sky), Ba-da (바다, Sea), and Bo-ram (보람, Fulfillment).'
+  },
+  {
+    question: 'How do I save names I like?',
+    answer: 'Every generated card includes a quick shortlist bookmark button and a one-click copy button to save full names in both Hangul and Romanized formats.'
+  }
+];
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  'name': 'Authentic Korean Name Generator & Surname Harmony Finder',
+  'url': 'https://www.korean-names.info/name-generator',
+  'description': 'Interactive Korean name generator pairing royal family surnames with authentic given names based on Supreme Court Hanja records and phonetic harmony.'
+};
+---
+
+<BaseLayout
+  title="Korean Name Generator - Authentic Surnames & Hanja Harmony"
+  description="Generate verified Korean given names paired with your family surname. Filter by gender, syllable length, meaning virtues, and explore authentic Hanja logograms."
+  jsonLd={schema}
+>
+  <div class="container page-wrapper">
+    <Breadcrumb items={breadcrumbs} />
+
+    <!-- Hero Header -->
+    <header class="tool-hero">
+      <div class="heritage-tag">
+        <span class="emblem font-hangul">작명 도구</span>
+        <span>Interactive Nomenclature Platform</span>
+      </div>
+      <h1 class="tool-title">Authentic Korean Name Generator & Surname Harmony Finder</h1>
+      <p class="tool-subtitle">
+        Discover beautiful Korean names tailored to your preferred gender, meaning themes, and ancestral surname.
+        Every combination is verified against official South Korean civil registries and traditional phonetic principles.
+      </p>
+    </header>
+
+    <!-- Generator Interface Component -->
+    <section class="generator-section">
+      <NameGeneratorModal />
+    </section>
+
+    <!-- Educational Guide on Korean Name Pairing -->
+    <section class="editorial-box">
+      <h2 class="box-title">The Art of Korean Surname & Given Name Harmony</h2>
+      <p>
+        In Korean culture, the surname and given name form a single acoustic unit. When pairing a surname like
+        <strong>Kim (김)</strong>, which terminates in a bilabial nasal consonant (ㅁ), choosing given names starting
+        with soft liquid consonants (Min, Seo, Ji) creates a balanced, harmonious resonance known as <em>Eum-un-jo-hwa</em> (음운조화).
+        Our generator calculates these tonal balances so you can discover names that sound as melodious as they are meaningful.
+      </p>
+    </section>
+
+  </div>
+</BaseLayout>
+
+<style>
+  .page-wrapper {
+    padding-top: 1.5rem;
+    padding-bottom: 5rem;
+  }
+
+  .tool-hero {
+    background: linear-gradient(135deg, var(--bg-surface) 0%, #EDE6D8 100%);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 3rem 2.5rem;
+    margin-bottom: 2.5rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .heritage-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--antique-gold);
+    color: var(--brand-jade);
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.35rem 0.85rem;
+    border-radius: var(--radius-full);
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .heritage-tag .emblem {
+    color: var(--accent-burgundy);
+    border-right: 1px solid var(--border-color);
+    padding-right: 0.5rem;
+  }
+
+  .tool-title {
+    font-family: var(--font-serif);
+    font-size: 2.75rem;
+    font-weight: 800;
+    color: var(--text-main);
+    line-height: 1.15;
+    margin-bottom: 0.75rem;
+  }
+
+  .tool-subtitle {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    max-width: 800px;
+  }
+
+  .generator-section {
+    margin-bottom: 3.5rem;
+  }
+
+  .editorial-box {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+  }
+
+  .box-title {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    color: var(--brand-navy);
+    margin-bottom: 1rem;
+  }
+
+  .editorial-box p {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--text-main);
+  }
+</style>

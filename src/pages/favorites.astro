@@ -1,0 +1,432 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Personal Shortlist' },
+  { label: 'Saved Favorites' }
+];
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  'name': 'Korean Names Shortlist & Favorites Manager',
+  'url': 'https://www.korean-names.info/favorites',
+  'description': 'Manage, export, and review your curated personal collection of favorite Korean names.'
+};
+---
+
+<BaseLayout
+  title="My Saved Korean Names - Personal Shortlist & Export"
+  description="Manage, print, and export your personal collection of bookmarked Korean baby names. Saved securely on your device."
+  jsonLd={schema}
+>
+  <div class="container page-wrapper">
+    <Breadcrumb items={breadcrumbs} />
+
+    <!-- Hero Header -->
+    <header class="tool-hero">
+      <div class="heritage-tag">
+        <span class="emblem font-hangul">즐겨찾기</span>
+        <span>Curated Shortlist Manager</span>
+      </div>
+      <h1 class="tool-title">Your Saved Korean Names</h1>
+      <p class="tool-subtitle">
+        Review and organize candidate names you've bookmarked across our dictionary.
+        Your list is stored securely on your browser and can be copied or printed for family consultations.
+      </p>
+
+      <div id="shortlist-actions-bar" class="actions-bar" style="display: none;">
+        <span id="shortlist-count-badge" class="count-badge">0 names saved</span>
+        <div class="action-buttons-group">
+          <button type="button" id="copy-shortlist-btn" class="action-btn">
+            <span>📋</span> Copy List
+          </button>
+          <button type="button" id="print-shortlist-btn" class="action-btn">
+            <span>🖨️</span> Print Shortlist
+          </button>
+          <button type="button" id="export-csv-btn" class="action-btn">
+            <span>📥</span> Export CSV
+          </button>
+          <button type="button" id="clear-shortlist-btn" class="action-btn danger">
+            <span>🗑️</span> Clear All
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Shortlist Grid Container -->
+    <div id="favorites-display-container" class="favorites-grid">
+      <div class="loading-state">
+        <p>Loading your saved names...</p>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div id="empty-favorites-box" class="empty-state-box" style="display: none;">
+      <div class="empty-icon font-hangul">별</div>
+      <h3 class="empty-title">Your Shortlist is Empty</h3>
+      <p class="empty-text">
+        As you explore names across the dictionary, click the bookmark icon (★) to save them to your personal shortlist.
+      </p>
+      <div class="empty-action-row">
+        <a href="/names" class="btn btn-primary">Browse All Korean Names &rarr;</a>
+        <a href="/name-generator" class="btn btn-secondary">Try Name Generator &rarr;</a>
+      </div>
+    </div>
+
+  </div>
+</BaseLayout>
+
+<script is:inline>
+  const STORAGE_KEY = 'korean_names_favorites_v1';
+  const container = document.getElementById('favorites-display-container');
+  const emptyBox = document.getElementById('empty-favorites-box');
+  const actionsBar = document.getElementById('shortlist-actions-bar');
+  const countBadge = document.getElementById('shortlist-count-badge');
+  const copyBtn = document.getElementById('copy-shortlist-btn');
+  const printBtn = document.getElementById('print-shortlist-btn');
+  const exportBtn = document.getElementById('export-csv-btn');
+  const clearBtn = document.getElementById('clear-shortlist-btn');
+
+  function getFavorites() {
+    try {
+      const data = localStorage.getItem(STORAGE_KEY);
+      return data ? JSON.parse(data) : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function setFavorites(arr) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+    } catch (e) {}
+  }
+
+  function removeFavorite(slug) {
+    const list = getFavorites().filter(item => (typeof item === 'string' ? item : item.slug) !== slug);
+    setFavorites(list);
+    renderFavorites();
+  }
+
+  function renderFavorites() {
+    const list = getFavorites();
+
+    if (list.length === 0) {
+      container.style.display = 'none';
+      emptyBox.style.display = 'block';
+      actionsBar.style.display = 'none';
+      return;
+    }
+
+    container.style.display = 'grid';
+    emptyBox.style.display = 'none';
+    actionsBar.style.display = 'flex';
+    countBadge.textContent = `${list.length} names saved`;
+
+    container.innerHTML = list.map(item => {
+      const slug = typeof item === 'string' ? item : item.slug;
+      const english = typeof item === 'object' && item.english ? item.english : slug;
+      const hangul = typeof item === 'object' && item.hangul ? item.hangul : '';
+
+      return `
+        <article class="fav-card" id="card-${slug}">
+          <div class="fav-card-top">
+            <span class="fav-hangul font-hangul">${hangul || '이름'}</span>
+            <button type="button" class="remove-fav-btn" data-slug="${slug}" title="Remove from shortlist" aria-label="Remove">
+              ✕
+            </button>
+          </div>
+          <h3 class="fav-name">
+            <a href="/name/${slug}">${english}</a>
+          </h3>
+          <div class="fav-card-footer">
+            <a href="/name/${slug}" class="fav-view-link">View Full Profile &rarr;</a>
+          </div>
+        </article>
+      `;
+    }).join('');
+
+    // Attach remove handlers
+    document.querySelectorAll('.remove-fav-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const slug = btn.getAttribute('data-slug');
+        removeFavorite(slug);
+      });
+    });
+  }
+
+  copyBtn?.addEventListener('click', () => {
+    const list = getFavorites();
+    const text = list.map(item => typeof item === 'string' ? item : `${item.english} (${item.hangul || ''})`).join('\n');
+    navigator.clipboard.writeText(text);
+    copyBtn.innerHTML = '<span>✓</span> Copied!';
+    setTimeout(() => { copyBtn.innerHTML = '<span>📋</span> Copy List'; }, 2000);
+  });
+
+  printBtn?.addEventListener('click', () => {
+    window.print();
+  });
+
+  exportBtn?.addEventListener('click', () => {
+    const list = getFavorites();
+    const csvContent = 'data:text/csv;charset=utf-8,Name,Hangul,Link\n' +
+      list.map(i => {
+        const s = typeof i === 'string' ? i : i.slug;
+        const e = typeof i === 'object' && i.english ? `"${i.english}"` : s;
+        const h = typeof i === 'object' && i.hangul ? `"${i.hangul}"` : '';
+        return `${e},${h},https://www.korean-names.info/name/${s}`;
+      }).join('\n');
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', 'korean_names_shortlist.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  });
+
+  clearBtn?.addEventListener('click', () => {
+    if (confirm('Are you sure you want to clear your saved shortlist?')) {
+      setFavorites([]);
+      renderFavorites();
+    }
+  });
+
+  // Initial render
+  renderFavorites();
+</script>
+
+<style>
+  .page-wrapper {
+    padding-top: 1.5rem;
+    padding-bottom: 5rem;
+  }
+
+  .tool-hero {
+    background: linear-gradient(135deg, var(--bg-surface) 0%, #EDE6D8 100%);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 3rem 2.5rem;
+    margin-bottom: 2.5rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .heritage-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--antique-gold);
+    color: var(--brand-jade);
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.35rem 0.85rem;
+    border-radius: var(--radius-full);
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .heritage-tag .emblem {
+    color: var(--accent-burgundy);
+    border-right: 1px solid var(--border-color);
+    padding-right: 0.5rem;
+  }
+
+  .tool-title {
+    font-family: var(--font-serif);
+    font-size: 2.75rem;
+    font-weight: 800;
+    color: var(--text-main);
+    line-height: 1.15;
+    margin-bottom: 0.75rem;
+  }
+
+  .tool-subtitle {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    max-width: 800px;
+    margin-bottom: 1.5rem;
+  }
+
+  .actions-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border-color);
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .count-badge {
+    background: #EAE3D2;
+    color: var(--brand-jade);
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: var(--radius-full);
+  }
+
+  .action-buttons-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.85rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-full);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-main);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .action-btn:hover {
+    border-color: var(--brand-jade);
+    background: #FAF8F2;
+  }
+
+  .action-btn.danger {
+    color: var(--accent-burgundy);
+  }
+
+  .action-btn.danger:hover {
+    background: #FDF2F2;
+    border-color: var(--accent-burgundy);
+  }
+
+  /* Grid */
+  .favorites-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .fav-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease;
+  }
+
+  .fav-card:hover {
+    border-color: var(--brand-jade);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .fav-card-top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+  }
+
+  .fav-hangul {
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: var(--brand-jade);
+    line-height: 1;
+  }
+
+  .remove-fav-btn {
+    background: none;
+    border: none;
+    font-size: 1rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0.25rem;
+  }
+
+  .remove-fav-btn:hover {
+    color: var(--accent-burgundy);
+  }
+
+  .fav-name {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 1.25rem;
+  }
+
+  .fav-name a {
+    color: var(--brand-navy);
+    text-decoration: none;
+  }
+
+  .fav-name a:hover {
+    color: var(--brand-jade);
+  }
+
+  .fav-card-footer {
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border-color);
+  }
+
+  .fav-view-link {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--brand-jade);
+    text-decoration: none;
+  }
+
+  .fav-view-link:hover {
+    color: var(--accent-burgundy);
+  }
+
+  /* Empty State */
+  .empty-state-box {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: var(--bg-surface);
+    border: 1px dashed var(--border-color);
+    border-radius: var(--radius-lg);
+    margin-bottom: 3rem;
+  }
+
+  .empty-icon {
+    font-size: 3rem;
+    color: var(--antique-gold);
+    margin-bottom: 1rem;
+  }
+
+  .empty-title {
+    font-family: var(--font-serif);
+    font-size: 1.75rem;
+    color: var(--text-main);
+    margin-bottom: 0.5rem;
+  }
+
+  .empty-text {
+    color: var(--text-muted);
+    max-width: 480px;
+    margin: 0 auto 1.75rem;
+    line-height: 1.6;
+  }
+
+  .empty-action-row {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+</style>
