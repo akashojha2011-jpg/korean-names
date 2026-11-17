@@ -226,8 +226,8 @@ const breadcrumbItems = [
     display: inline-block;
     font-size: 0.8125rem;
     font-weight: 700;
-    color: var(--brand-teal-deep);
-    background: var(--brand-teal-surface);
+    color: var(--color-jade);
+    background: var(--color-jade-surface);
     padding: 0.35rem 0.85rem;
     border-radius: var(--radius-full);
     margin-bottom: 0.85rem;
@@ -291,15 +291,15 @@ const breadcrumbItems = [
   }
 
   .fav-tool-btn:hover {
-    border-color: var(--brand-teal);
-    color: var(--brand-teal-deep);
-    background: var(--brand-teal-surface);
+    border-color: var(--color-jade);
+    color: var(--color-jade);
+    background: var(--color-jade-surface);
   }
 
   .fav-tool-btn.text-danger:hover {
-    border-color: var(--accent-crimson);
-    color: var(--accent-crimson);
-    background: #fdf2f2;
+    border-color: var(--color-burgundy);
+    color: var(--color-burgundy);
+    background: var(--color-burgundy-surface);
   }
 
   .fav-grid {
@@ -322,7 +322,7 @@ const breadcrumbItems = [
   .fav-card:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-md);
-    border-color: var(--brand-teal-light);
+    border-color: var(--color-jade-surface);
   }
 
   .fav-card-header {
@@ -348,8 +348,8 @@ const breadcrumbItems = [
   }
 
   .remove-item-btn:hover {
-    color: var(--accent-crimson);
-    background: #fdf2f2;
+    color: var(--color-burgundy);
+    background: var(--color-burgundy-surface);
   }
 
   .fav-name-link {
@@ -371,13 +371,13 @@ const breadcrumbItems = [
     font-family: var(--font-korean);
     font-size: 1.25rem;
     font-weight: 700;
-    color: var(--accent-indigo);
+    color: var(--color-navy);
   }
 
   .fav-english {
     font-size: 1.125rem;
     font-weight: 700;
-    color: var(--brand-teal-deep);
+    color: var(--color-jade);
     margin-top: 0.35rem;
     letter-spacing: -0.01em;
   }
@@ -400,7 +400,7 @@ const breadcrumbItems = [
     gap: 0.35rem;
     font-size: 0.8125rem;
     font-weight: 700;
-    color: var(--brand-teal-deep);
+    color: var(--color-jade);
     text-decoration: none;
   }
 
@@ -421,7 +421,7 @@ const breadcrumbItems = [
   .empty-icon {
     font-size: 3rem;
     margin-bottom: 1rem;
-    color: var(--accent-gold);
+    color: var(--color-gold);
   }
 
   .empty-title {
@@ -449,9 +449,9 @@ const breadcrumbItems = [
   .empty-nav-pill {
     font-size: 0.875rem;
     font-weight: 700;
-    color: var(--brand-teal-deep);
-    background: var(--brand-teal-surface);
-    border: 1px solid var(--brand-teal-light);
+    color: var(--color-jade);
+    background: var(--color-jade-surface);
+    border: 1px solid var(--color-jade-surface);
     padding: 0.65rem 1.25rem;
     border-radius: var(--radius-full);
     text-decoration: none;
@@ -459,7 +459,7 @@ const breadcrumbItems = [
   }
 
   .empty-nav-pill:hover {
-    background: var(--brand-teal);
+    background: var(--color-jade);
     color: white;
   }
 
@@ -474,7 +474,7 @@ const breadcrumbItems = [
     width: 32px;
     height: 32px;
     border: 3px solid var(--border-color);
-    border-top-color: var(--brand-teal);
+    border-top-color: var(--color-jade);
     border-radius: 50%;
     margin: 0 auto 1rem auto;
     animation: spin 0.8s linear infinite;
@@ -497,7 +497,7 @@ const breadcrumbItems = [
       display: none !important;
     }
     .fav-card {
-      border: 1px solid #ccc;
+      border: 1px solid var(--border-color);
       page-break-inside: avoid;
     }
   }

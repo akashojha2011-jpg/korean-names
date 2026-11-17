@@ -83,6 +83,26 @@
   --font-korean: 'Noto Serif KR', 'Nanum Myeongjo', serif;
   --font-hangul: 'Noto Sans KR', sans-serif;
 
+  /* Brand Compatibility & Unified Palette Aliases */
+  --brand-jade: var(--color-jade);
+  --brand-navy: var(--color-navy);
+  --brand-teal: var(--color-jade);
+  --brand-teal-deep: var(--color-jade);
+  --brand-teal-dark: var(--color-jade-dark);
+  --brand-teal-light: var(--color-jade-border);
+  --brand-teal-surface: var(--color-jade-surface);
+  --brand-teal-border: var(--color-jade-border);
+  --accent-indigo: var(--color-navy);
+  --accent-burgundy: var(--color-burgundy);
+  --accent-crimson: var(--color-burgundy);
+  --accent-crimson-light: var(--color-burgundy-surface);
+  --antique-gold: var(--color-gold);
+  --accent-gold: var(--color-gold);
+  --accent-gold-dark: var(--color-gold-dark);
+  --accent-gold-light: var(--color-gold-surface);
+  --accent-gold-border: var(--color-gold-border);
+  --bg-secondary: var(--bg-surface-warm);
+
   /* Layout dimensions */
   --max-width-content: 1220px;
   --max-width-wide: 1360px;
@@ -115,6 +135,7 @@
   --color-burgundy-border: #4D2B32;
 
   --color-gold: #D6B778;
+  --color-gold-dark: #D6B778;
   --color-gold-surface: #2E2718;
   --color-gold-border: #4A3E26;
 
@@ -142,6 +163,26 @@
   --gender-unisex: #4EAA8F;
   --gender-unisex-bg: #193128;
   --gender-unisex-border: #274E3F;
+
+  /* Brand Compatibility Aliases (Dark Mode) */
+  --brand-jade: var(--color-jade);
+  --brand-navy: var(--color-navy);
+  --brand-teal: var(--color-jade);
+  --brand-teal-deep: var(--color-jade);
+  --brand-teal-dark: var(--color-jade-dark);
+  --brand-teal-light: var(--color-jade-border);
+  --brand-teal-surface: var(--color-jade-surface);
+  --brand-teal-border: var(--color-jade-border);
+  --accent-indigo: var(--color-navy);
+  --accent-burgundy: var(--color-burgundy);
+  --accent-crimson: var(--color-burgundy);
+  --accent-crimson-light: var(--color-burgundy-surface);
+  --antique-gold: var(--color-gold);
+  --accent-gold: var(--color-gold);
+  --accent-gold-dark: var(--color-gold-dark);
+  --accent-gold-light: var(--color-gold-surface);
+  --accent-gold-border: var(--color-gold-border);
+  --bg-secondary: var(--bg-surface-warm);
 
   --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.25);
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.35);
