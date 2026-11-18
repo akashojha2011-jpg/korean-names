@@ -24,24 +24,32 @@ const alphabetLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
 const homeFaqs = [
   {
-    question: 'How are traditional Korean given names structured?',
-    answer: 'Traditional Korean given names usually consist of two Sino-Korean syllables written in Hangul (한글), with corresponding Hanja (漢字) logograms chosen for their positive virtues. Korean families may also use generational markers (Dollimja 돌림자), single-syllable names (외자), or native Pure Korean words (순우리말) like Haneul (Sky) or Areum (Beauty).'
+    question: 'How do Korean names work and how are they structured?',
+    answer: 'Korean names traditionally consist of three syllables: a single-syllable family surname followed by a two-syllable given name (e.g., Kim Min-jun). Each given syllable typically represents a Sino-Korean Hanja character with a distinct meaning chosen by parents or naming specialists.'
+  },
+  {
+    question: 'Are Korean names last name first?',
+    answer: 'Yes. In traditional Korean naming culture, the family surname always comes first, followed by the given name (e.g., in "Park Seo-jun", "Park" is the surname and "Seo-jun" is the given name). While some Koreans flip the order when writing for Western audiences, the surname always leads in Korea.'
+  },
+  {
+    question: 'Do Korean people have middle names?',
+    answer: 'No, traditional Korean names do not have middle names. A person has only their family surname and given name. Some families use generational marker syllables (Dollimja 돌림자) shared across siblings or cousins, but these are integrated directly into the two-syllable given name, not as a middle name.'
+  },
+  {
+    question: 'Why are Korean names hyphenated?',
+    answer: 'Korean given names are commonly hyphenated in English (such as Min-jun or Seo-ah) under the official Revised Romanization system to prevent phonetic ambiguity and clearly separate the two distinct Hangul syllables.'
   },
   {
     question: 'What is the role of Hanja in Korean names?',
-    answer: 'Hanja refers to Chinese characters adapted into the Korean linguistic system. Even when two Korean names sound completely identical when spoken or written in Hangul (e.g. Min-jun 민준), different Hanja combinations give each person a distinct, recorded meaning on official civil registries.'
+    answer: 'Hanja refers to Chinese logograms adapted into the Korean linguistic system. Even when two Korean names look and sound identical in Hangul (e.g., Min-jun 민준), different Hanja character combinations give each person a distinct, legally registered meaning on civil birth registers.'
   },
   {
-    question: 'Are Korean surnames placed first or last?',
-    answer: 'In traditional Korean culture, the family surname comes first, followed by the two-syllable given name (e.g., Kim Min-jun, where Kim is the surname and Min-jun is the given name). When romanized in Western contexts, some individuals place their given name first, but in Korean documents, the surname always leads.'
+    question: 'What are Pure Korean (Soon-woori-mal) names?',
+    answer: 'Pure Korean names are native Korean words that carry direct poetic meanings without Chinese Hanja roots—such as Ha-neul (Sky), A-reum (Beauty), Bo-ra (Purple), and Ba-da (Ocean).'
   },
   {
-    question: 'Can someone choose a Pure Korean (Soon-woori-mal) name without Hanja?',
-    answer: 'Yes. Since the late 20th century, native Korean words that have no Hanja equivalent—such as Bora (Purple), Haneul (Sky), Bada (Ocean), and Areum (Beauty)—have grown increasingly popular and can be officially registered on South Korean birth records.'
-  },
-  {
-    question: 'How does clan origin (Bon-gwan) affect Korean surnames?',
-    answer: 'A Bon-gwan (본관) indicates the geographical ancestral seat where a family lineage originated. For example, Gimhae Kim and Gyeongju Kim share the same surname (Kim) but trace back to distinct royal founding ancestors and historical lineages.'
+    question: 'How do you pronounce Korean names accurately?',
+    answer: 'Korean pronunciation follows specific phonetic rules such as consonant aspiration and final consonant (batchim) flow. KoreanNames.info provides native voice audio pronunciation buttons on every name profile.'
   }
 ];
 
@@ -56,7 +64,7 @@ const websiteSchema = {
 
 <BaseLayout
   title="Korean Names and Meanings: Authentic Dictionary, Surnames & Hanja"
-  description="Explore verified Korean names and meanings, historical surnames, Sino-Korean Hanja logograms, and naming traditions. Search 400+ names with English definitions."
+  description="Explore authentic Korean names, meanings, and origins. Discover popular Korean names for girls, boys, and unisex with Hangul characters, Hanja, and native pronunciation."
   jsonLd={websiteSchema}
 >
   <!-- Hero Section -->
@@ -78,7 +86,7 @@ const websiteSchema = {
       </h1>
 
       <p class="hero-subtext">
-        Explore genuine Korean names and meanings, historical surnames, Sino-Korean Hanja logograms, and ancient naming traditions. Curated for parents, writers, and cultural enthusiasts worldwide.
+        Explore genuine Korean names and meanings, historical surnames, and naming traditions. Discover popular Korean names for girls, boys, and gender-neutral choices with Sino-Korean Hanja logograms and audio pronunciation.
       </p>
 
       <!-- Prominent Search Interface -->
