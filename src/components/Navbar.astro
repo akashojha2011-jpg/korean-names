@@ -14,7 +14,7 @@ const isActive = (path: string) => {
 };
 ---
 
-<!-- Main Editorial Navigation Header (Clean Deep Jade Green) -->
+<!-- Main Editorial Navigation Header (Clean Minimal White) -->
 <header class="main-navbar">
   <div class="container header-inner">
     <!-- Brand Identity -->
@@ -22,9 +22,9 @@ const isActive = (path: string) => {
       <a href="/" class="site-brand" aria-label="KoreanNames.info Homepage">
         <img
           src="/logo.jpg"
-          alt="KoreanNames.info Authentic Seal Logo"
-          width="42"
-          height="42"
+          alt="KoreanNames.info Logo"
+          width="40"
+          height="40"
           class="brand-logo-img"
           loading="eager"
         />
@@ -55,22 +55,23 @@ const isActive = (path: string) => {
       <a href="/about" class={`nav-item ${isActive('/about') ? 'active' : ''}`}>About</a>
     </nav>
 
-    <!-- Desktop Right Utility: Shortlist & Theme Toggle -->
+    <!-- Desktop Right Utility: Favorites & Theme Toggle -->
     <div class="header-right-actions">
-      <a href="/favorites" class="header-shortlist-btn" title="View Saved Names Shortlist">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-        <span class="shortlist-label">Shortlist</span>
+      <a href="/favorites" class="header-shortlist-btn" title="View Saved Names">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        <span class="shortlist-label">Favorites</span>
         <span id="nav-fav-count" class="fav-count-pill" style="display: none;">0</span>
       </a>
-      <button id="theme-toggle-btn" class="header-theme-btn" aria-label="Toggle Dark Mode" title="Toggle Theme">
-        <span id="theme-toggle-icon" aria-hidden="true">🌙</span>
+      <button id="theme-toggle-btn" class="header-theme-btn" aria-label="Toggle Theme" title="Toggle Theme">
+        <svg class="theme-icon icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="theme-icon icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display: none;"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
       </button>
     </div>
 
     <!-- Mobile Header Actions (< 1024px) -->
     <div class="mobile-header-actions">
-      <a href="/favorites" class="mobile-icon-btn fav-mobile-btn" aria-label="Saved Shortlist" title="Shortlist">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+      <a href="/favorites" class="mobile-icon-btn fav-mobile-btn" aria-label="Saved Favorites" title="Favorites">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
         <span id="mobile-fav-count" class="fav-count-pill" style="display: none;">0</span>
       </a>
       <a href="/names" class="mobile-icon-btn" aria-label="Search Korean Names" title="Search">
@@ -103,7 +104,7 @@ const isActive = (path: string) => {
       </div>
     </div>
     <button id="mobile-menu-close" class="drawer-close-btn" aria-label="Close Navigation Menu">
-      ✕
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
     </button>
   </div>
 
@@ -115,55 +116,55 @@ const isActive = (path: string) => {
     </a>
   </div>
 
-  <!-- Full Mobile Nav Links List -->
+  <!-- Full Mobile Nav Links List (No Emojis) -->
   <nav class="drawer-nav-list">
     <a href="/names" class={`drawer-link ${isActive('/names') ? 'active' : ''}`}>
-      <span class="drawer-link-icon">🏷️</span>
+      <span class="drawer-link-bullet"></span>
       <div class="drawer-link-text">
         <span class="drawer-link-name">Names Directory</span>
         <span class="drawer-link-desc">All Korean boy, girl & unisex names</span>
       </div>
     </a>
     <a href="/names/meaning" class={`drawer-link ${isActive('/names/meaning') ? 'active' : ''}`}>
-      <span class="drawer-link-icon">🌸</span>
+      <span class="drawer-link-bullet"></span>
       <div class="drawer-link-text">
         <span class="drawer-link-name">Names by Meaning</span>
-        <span class="drawer-link-desc">Wisdom, nature, grace & traditional virtues</span>
+        <span class="drawer-link-desc">Wisdom, nature, grace & virtues</span>
       </div>
     </a>
     <a href="/surnames" class={`drawer-link ${isActive('/surnames') ? 'active' : ''}`}>
-      <span class="drawer-link-icon">👑</span>
+      <span class="drawer-link-bullet"></span>
       <div class="drawer-link-text">
         <span class="drawer-link-name">Korean Surnames</span>
-        <span class="drawer-link-desc">Ancestral clan origins (본관) & lineages</span>
+        <span class="drawer-link-desc">Ancestral clan origins & lineages</span>
       </div>
     </a>
     <a href="/hanja" class={`drawer-link ${isActive('/hanja') ? 'active' : ''}`}>
-      <span class="drawer-link-icon">漢字</span>
+      <span class="drawer-link-bullet"></span>
       <div class="drawer-link-text">
         <span class="drawer-link-name">Hanja Dictionary</span>
-        <span class="drawer-link-desc">Supreme Court naming characters & strokes</span>
+        <span class="drawer-link-desc">Court-approved naming characters</span>
       </div>
     </a>
     <a href="/name-generator" class={`drawer-link ${isActive('/name-generator') ? 'active' : ''}`}>
-      <span class="drawer-link-icon">⚡</span>
+      <span class="drawer-link-bullet"></span>
       <div class="drawer-link-text">
         <span class="drawer-link-name">Name Generator</span>
-        <span class="drawer-link-desc">Harmonious first names for your family surname</span>
+        <span class="drawer-link-desc">Harmonious names with surname pairing</span>
       </div>
     </a>
     <a href="/learn" class={`drawer-link ${isActive('/learn') ? 'active' : ''}`}>
-      <span class="drawer-link-icon">📚</span>
+      <span class="drawer-link-bullet"></span>
       <div class="drawer-link-text">
         <span class="drawer-link-name">Learn & Culture</span>
         <span class="drawer-link-desc">Naming rules, dollimja & pronunciation</span>
       </div>
     </a>
     <a href="/about" class={`drawer-link ${isActive('/about') ? 'active' : ''}`}>
-      <span class="drawer-link-icon">ℹ️</span>
+      <span class="drawer-link-bullet"></span>
       <div class="drawer-link-text">
         <span class="drawer-link-name">About the Project</span>
-        <span class="drawer-link-desc">Editorial mission, sources & methodology</span>
+        <span class="drawer-link-desc">Editorial mission & methodology</span>
       </div>
     </a>
   </nav>
@@ -171,8 +172,8 @@ const isActive = (path: string) => {
   <!-- Drawer Bottom Utility Links -->
   <div class="drawer-footer">
     <a href="/favorites" class="drawer-btn drawer-btn-fav">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-      <span>Saved Shortlist (<span id="drawer-fav-count">0</span>)</span>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+      <span>Saved Favorites (<span id="drawer-fav-count">0</span>)</span>
     </a>
   </div>
 </aside>
@@ -180,17 +181,20 @@ const isActive = (path: string) => {
 <script>
   // Theme Toggle Logic
   const themeToggleBtn = document.getElementById('theme-toggle-btn');
-  const themeToggleIcon = document.getElementById('theme-toggle-icon');
+  const iconSun = themeToggleBtn?.querySelector('.icon-sun') as HTMLElement;
+  const iconMoon = themeToggleBtn?.querySelector('.icon-moon') as HTMLElement;
 
   function applyTheme(theme: string) {
     const isDark = theme === 'dark';
     document.documentElement.setAttribute('data-theme', theme);
     if (isDark) {
       document.body.classList.add('dark-mode');
-      if (themeToggleIcon) themeToggleIcon.textContent = '☀️';
+      if (iconSun) iconSun.style.display = 'block';
+      if (iconMoon) iconMoon.style.display = 'none';
     } else {
       document.body.classList.remove('dark-mode');
-      if (themeToggleIcon) themeToggleIcon.textContent = '🌙';
+      if (iconSun) iconSun.style.display = 'none';
+      if (iconMoon) iconMoon.style.display = 'block';
     }
   }
 
@@ -282,13 +286,13 @@ const isActive = (path: string) => {
 </script>
 
 <style>
-  /* Main Navigation Header: Deep Jade Green (#174C3C) */
+  /* Main Navigation Header: Crisp Minimal White (Bump Style) */
   .main-navbar {
     width: 100%;
-    background-color: var(--color-jade);
-    color: white;
-    box-shadow: var(--shadow-sm);
-    border-bottom: 2px solid var(--color-gold);
+    background-color: var(--bg-surface);
+    color: var(--text-main);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    border-bottom: 1px solid var(--border-color);
     position: sticky;
     top: 0;
     z-index: 900;
@@ -298,9 +302,9 @@ const isActive = (path: string) => {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-top: 0.65rem;
-    padding-bottom: 0.65rem;
-    gap: 1rem;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    gap: 1.25rem;
   }
 
   .brand-wrapper {
@@ -310,18 +314,16 @@ const isActive = (path: string) => {
   .site-brand {
     display: inline-flex;
     align-items: center;
-    gap: 0.75rem;
-    color: white;
+    gap: 0.65rem;
     text-decoration: none;
   }
 
   .brand-logo-img {
-    width: 42px;
-    height: 42px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid var(--color-gold);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--border-color);
     flex-shrink: 0;
   }
 
@@ -332,24 +334,24 @@ const isActive = (path: string) => {
   }
 
   .brand-title {
-    font-size: 1.35rem;
+    font-size: 1.3rem;
     font-weight: 800;
     letter-spacing: -0.02em;
-    color: #FFFFFF;
+    color: var(--text-heading);
     font-family: var(--font-sans);
   }
 
   .brand-tld {
-    color: var(--color-gold);
+    color: var(--color-jade);
   }
 
   .brand-subtitle {
     font-size: 0.675rem;
-    font-weight: 500;
-    color: rgba(255, 255, 255, 0.85);
+    font-weight: 600;
+    color: var(--text-muted);
     letter-spacing: 0.03em;
     text-transform: uppercase;
-    margin-top: 0.15rem;
+    margin-top: 0.1rem;
   }
 
   /* Header Search Pill (Compact, Clean) */
@@ -365,19 +367,19 @@ const isActive = (path: string) => {
     justify-content: space-between;
     gap: 0.45rem;
     padding: 0.4rem 0.75rem;
-    background: rgba(255, 255, 255, 0.12);
-    border: 1px solid rgba(255, 255, 255, 0.22);
+    background: var(--bg-surface-muted);
+    border: 1px solid var(--border-color);
     border-radius: var(--radius-full);
-    color: rgba(255, 255, 255, 0.85);
-    font-size: 0.775rem;
+    color: var(--text-muted);
+    font-size: 0.8rem;
     text-decoration: none;
     transition: all 0.2s ease;
   }
 
   .header-search-pill:hover {
-    background: rgba(255, 255, 255, 0.22);
-    border-color: rgba(255, 255, 255, 0.45);
-    color: #FFFFFF;
+    background: var(--bg-surface-warm);
+    border-color: var(--color-jade-border);
+    color: var(--text-main);
   }
 
   .header-search-pill span {
@@ -392,8 +394,8 @@ const isActive = (path: string) => {
     font-size: 0.65rem;
     font-family: inherit;
     font-weight: 700;
-    background: rgba(255, 255, 255, 0.2);
-    color: #FFFFFF;
+    background: var(--border-color);
+    color: var(--text-main);
     border-radius: var(--radius-xs);
     line-height: 1;
   }
@@ -402,7 +404,7 @@ const isActive = (path: string) => {
   .nav-links {
     display: flex;
     align-items: center;
-    gap: 0.25rem;
+    gap: 0.35rem;
     flex-shrink: 0;
   }
 
@@ -411,8 +413,8 @@ const isActive = (path: string) => {
     align-items: center;
     padding: 0.45rem 0.65rem;
     font-size: 0.875rem;
-    font-weight: 600;
-    color: rgba(255, 255, 255, 0.92);
+    font-weight: 500;
+    color: var(--text-body);
     border-radius: var(--radius-sm);
     white-space: nowrap;
     text-decoration: none;
@@ -421,18 +423,18 @@ const isActive = (path: string) => {
   }
 
   .nav-item:hover {
-    background: rgba(255, 255, 255, 0.15);
-    color: #FFFFFF;
+    color: var(--color-jade);
+    background: var(--bg-surface-warm);
   }
 
   .nav-item.active {
-    background: rgba(0, 0, 0, 0.22);
-    color: #FFFFFF;
-    border-bottom-color: var(--color-gold);
+    color: var(--color-jade);
+    border-bottom-color: var(--color-jade);
     font-weight: 700;
+    background: transparent;
   }
 
-  /* Desktop Right Utility: Shortlist & Theme */
+  /* Desktop Right Utility: Favorites & Theme */
   .header-right-actions {
     display: flex;
     align-items: center;
@@ -444,24 +446,24 @@ const isActive = (path: string) => {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    padding: 0.35rem 0.75rem;
+    padding: 0.4rem 0.75rem;
     border-radius: var(--radius-full);
-    background: rgba(255, 255, 255, 0.12);
-    border: 1px solid rgba(255, 255, 255, 0.22);
-    color: #FFFFFF;
-    font-size: 0.775rem;
+    background: var(--bg-surface-warm);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    font-size: 0.8rem;
     font-weight: 600;
     text-decoration: none;
     transition: all 0.15s ease;
   }
 
   .header-shortlist-btn:hover {
-    background: rgba(255, 255, 255, 0.22);
-    border-color: rgba(255, 255, 255, 0.4);
+    border-color: var(--color-burgundy);
+    color: var(--color-burgundy);
   }
 
   .header-shortlist-btn svg {
-    color: var(--color-gold);
+    color: var(--color-burgundy);
   }
 
   .fav-count-pill {
@@ -482,19 +484,18 @@ const isActive = (path: string) => {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    width: 34px;
+    height: 34px;
     border-radius: var(--radius-full);
-    background: rgba(255, 255, 255, 0.12);
-    border: 1px solid rgba(255, 255, 255, 0.22);
-    color: #FFFFFF;
-    font-size: 0.85rem;
+    background: var(--bg-surface-warm);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
     cursor: pointer;
     transition: background 0.15s ease;
   }
 
   .header-theme-btn:hover {
-    background: rgba(255, 255, 255, 0.22);
+    background: var(--bg-surface-muted);
   }
 
   /* Mobile Actions (< 1024px) */
@@ -512,18 +513,19 @@ const isActive = (path: string) => {
     width: 36px;
     height: 36px;
     border-radius: var(--radius-full);
-    background: rgba(255, 255, 255, 0.12);
-    color: white;
+    background: var(--bg-surface-warm);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
     text-decoration: none;
     transition: background 0.15s ease;
   }
 
   .mobile-icon-btn:hover {
-    background: rgba(255, 255, 255, 0.22);
+    background: var(--bg-surface-muted);
   }
 
   .fav-mobile-btn svg {
-    color: var(--color-gold);
+    color: var(--color-burgundy);
   }
 
   .fav-mobile-btn .fav-count-pill {
@@ -538,24 +540,24 @@ const isActive = (path: string) => {
     justify-content: center;
     align-items: center;
     gap: 4px;
-    width: 38px;
-    height: 38px;
+    width: 36px;
+    height: 36px;
     padding: 6px;
     border-radius: var(--radius-sm);
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-color);
+    background: var(--bg-surface-warm);
     cursor: pointer;
     transition: background 0.15s ease;
   }
 
   .mobile-menu-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: var(--bg-surface-muted);
   }
 
   .hamburger-bar {
-    width: 20px;
+    width: 18px;
     height: 2px;
-    background-color: #FFFFFF;
+    background-color: var(--text-main);
     border-radius: 2px;
   }
 
@@ -584,14 +586,14 @@ const isActive = (path: string) => {
 
   @media (max-width: 600px) {
     .brand-title {
-      font-size: 1.2rem;
+      font-size: 1.15rem;
     }
     .brand-subtitle {
-      font-size: 0.6rem;
+      font-size: 0.58rem;
     }
     .brand-logo-img {
-      width: 36px;
-      height: 36px;
+      width: 32px;
+      height: 32px;
     }
   }
 
@@ -602,8 +604,8 @@ const isActive = (path: string) => {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0, 0, 0, 0.55);
-    backdrop-filter: blur(3px);
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(2px);
     z-index: 998;
     opacity: 0;
     visibility: hidden;
@@ -619,15 +621,15 @@ const isActive = (path: string) => {
     position: fixed;
     top: 0;
     right: 0;
-    width: 320px;
+    width: 300px;
     max-width: 85vw;
     height: 100vh;
     background: var(--bg-surface);
-    border-left: 2px solid var(--color-gold);
-    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.3);
+    border-left: 1px solid var(--border-color);
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.1);
     z-index: 999;
     transform: translateX(100%);
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     display: flex;
     flex-direction: column;
     overflow-y: auto;
@@ -641,7 +643,7 @@ const isActive = (path: string) => {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 1.25rem 1.25rem;
+    padding: 1.1rem 1.25rem;
     border-bottom: 1px solid var(--border-color);
     background: var(--bg-surface-warm);
   }
@@ -654,19 +656,19 @@ const isActive = (path: string) => {
 
   .drawer-logo {
     border-radius: 50%;
-    border: 1.5px solid var(--color-gold);
+    border: 1px solid var(--border-color);
   }
 
   .drawer-title {
     display: block;
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 800;
-    color: var(--text-main);
+    color: var(--text-heading);
   }
 
   .drawer-sub {
     display: block;
-    font-size: 0.675rem;
+    font-size: 0.65rem;
     color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -681,14 +683,14 @@ const isActive = (path: string) => {
     border-radius: var(--radius-full);
     border: 1px solid var(--border-color);
     background: var(--bg-surface);
-    color: var(--text-main);
-    font-size: 1.1rem;
+    color: var(--text-muted);
     cursor: pointer;
     transition: background 0.15s ease;
   }
 
   .drawer-close-btn:hover {
-    background: var(--border-color);
+    background: var(--bg-surface-muted);
+    color: var(--text-main);
   }
 
   .drawer-search-box {
@@ -718,8 +720,8 @@ const isActive = (path: string) => {
   .drawer-link {
     display: flex;
     align-items: center;
-    gap: 0.85rem;
-    padding: 0.75rem 0.85rem;
+    gap: 0.75rem;
+    padding: 0.7rem 0.85rem;
     border-radius: var(--radius-sm);
     text-decoration: none;
     transition: background 0.15s ease;
@@ -734,10 +736,11 @@ const isActive = (path: string) => {
     border-left: 3px solid var(--color-jade);
   }
 
-  .drawer-link-icon {
-    font-size: 1.15rem;
-    width: 26px;
-    text-align: center;
+  .drawer-link-bullet {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-jade);
     flex-shrink: 0;
   }
 
@@ -747,7 +750,7 @@ const isActive = (path: string) => {
   }
 
   .drawer-link-name {
-    font-size: 0.925rem;
+    font-size: 0.9rem;
     font-weight: 700;
     color: var(--text-main);
   }
@@ -780,11 +783,11 @@ const isActive = (path: string) => {
   }
 
   .drawer-btn-fav svg {
-    color: var(--color-gold);
+    color: var(--color-burgundy);
   }
 
   .drawer-btn-fav:hover {
-    border-color: var(--color-jade);
-    color: var(--color-jade);
+    border-color: var(--color-burgundy);
+    color: var(--color-burgundy);
   }
 </style>

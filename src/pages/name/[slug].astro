@@ -21,8 +21,17 @@ export interface Props {
 
 const { name } = Astro.props;
 
-// Related authentic names (same gender, excluding self)
-const relatedNames = KOREAN_NAMES.filter(
+// Sibling Name Ideas
+const brotherNames = KOREAN_NAMES.filter(
+  (n) => n.gender === 'boy' && n.slug !== name.slug
+).slice(0, 3);
+
+const sisterNames = KOREAN_NAMES.filter(
+  (n) => n.gender === 'girl' && n.slug !== name.slug
+).slice(0, 3);
+
+// Similar names (same gender)
+const similarNames = KOREAN_NAMES.filter(
   (n) => n.gender === name.gender && n.slug !== name.slug
 ).slice(0, 4);
 
@@ -35,13 +44,44 @@ const surnamePairings = [
   { surname: 'Jung', hangul: '정', hanja: '鄭', fullHangul: `정${name.hangul}`, fullEnglish: `Jung ${name.english.split(' ')[0]}` },
 ];
 
-const genderLabel = name.gender === 'boy' ? 'Boy (남성)' : name.gender === 'girl' ? 'Girl (여성)' : 'Unisex (중성)';
+const genderLabel = name.gender === 'boy' ? 'Boy' : name.gender === 'girl' ? 'Girl' : 'Unisex';
 const genderBadgeClass = name.gender === 'boy' ? 'badge-boy' : name.gender === 'girl' ? 'badge-girl' : 'badge-unisex';
 
 const breadcrumbs = [
   { label: 'Home', href: '/' },
-  { label: `${name.gender === 'boy' ? 'Boy Names' : name.gender === 'girl' ? 'Girl Names' : 'Unisex Names'}`, href: `/gender/${name.gender}` },
+  { label: `${name.gender === 'boy' ? 'Boy Names' : name.gender === 'girl' ? 'Girl Names' : 'Unisex Names'}`, href: `/${name.gender === 'boy' ? 'boy' : name.gender === 'girl' ? 'girl' : 'unisex'}-names` },
   { label: `${name.english} (${name.hangul})` }
+];
+
+// Clean Nicknames
+const englishParts = name.english.replace(/[^a-zA-Z\s-]/g, '').split(/[\s-]+/).filter(Boolean);
+const baseNicknames = name.nicknames && name.nicknames.length > 0
+  ? name.nicknames
+  : [
+      englishParts[0] ? `${englishParts[0]}ie` : null,
+      englishParts[1] ? `${englishParts[1]}ie` : null,
+      englishParts[0] || null,
+      englishParts[1] || null
+    ].filter(Boolean) as string[];
+
+const uniqueNicknames = Array.from(new Set(baseNicknames));
+
+// Fun Facts
+const funFacts = [
+  {
+    title: 'Sibling Harmony (Dollimja)',
+    desc: `In Korean family tradition, the syllable "${name.syllables?.[0]?.hangul || name.hangul[0]}" or "${name.syllables?.[1]?.hangul || name.hangul[1] || ''}" is frequently selected as a shared generational marker (Dollimja 돌림자) among siblings to symbolize unity and generational bonds.`
+  },
+  {
+    title: 'Phonetic Balance',
+    desc: `Pronounced "${name.revisedRomanization || name.slug}", the name has an open vowel cadence that flows naturally in spoken Korean without sharp consonant clashes.`
+  },
+  {
+    title: 'Civil Registration',
+    desc: name.isPureKorean || name.classification === 'pure-korean'
+      ? `Officially registered in pure native Hangul script under the Supreme Court of Korea Family Relationship Registration guidelines.`
+      : `Both syllables correspond to official Hanja characters authorized for birth records by the Supreme Court of Korea.`
+  }
 ];
 
 const nameSchema = {
@@ -60,138 +100,178 @@ const nameSchema = {
   jsonLd={nameSchema}
 >
   <div class="container page-wrapper">
-    <Breadcrumb items={breadcrumbs} />
+    <!-- Breadcrumb Navigation -->
+    <nav class="name-breadcrumb" aria-label="Breadcrumb">
+      <a href="/">Home</a>
+      <span class="bc-sep">&gt;</span>
+      <a href={`/${name.gender === 'boy' ? 'boy' : name.gender === 'girl' ? 'girl' : 'unisex'}-names`}>
+        {name.gender === 'boy' ? 'Korean Boy Names' : name.gender === 'girl' ? 'Korean Girl Names' : 'Korean Unisex Names'}
+      </a>
+      <span class="bc-sep">&gt;</span>
+      <span class="bc-current">{name.english}</span>
+    </nav>
 
     <div class="content-layout">
       <!-- Main Content Column -->
       <main class="main-column">
         
-        <!-- Name Header Profile Card -->
-        <header class="name-hero-profile">
-          <div class="profile-top-bar">
-            <div class="badge-cluster">
-              <span class={`badge ${genderBadgeClass}`}>{genderLabel}</span>
-              {name.isPureKorean || name.classification === 'pure-korean' ? (
-                <span class="badge badge-pure-korean">Pure Native Korean (순우리말)</span>
-              ) : (
-                <span class="badge badge-sino-korean">Sino-Korean (Hanja 漢字)</span>
-              )}
-              {name.confidenceLevel && (
-                <span class="badge badge-registry">Verified Statutory Registry</span>
-              )}
-              {name.isTrending && name.popularityRank && name.popularityRank <= 30 && (
-                <span class="badge badge-gold">Top {name.popularityRank} Baby Name</span>
-              )}
-            </div>
+        <!-- The Bump Style: Name Hero Card -->
+        <header class="name-profile-hero">
+          <div class="hero-top-row">
+            <h1 class="hero-name-title">{name.english}</h1>
+            <BookmarkButton slug={name.slug} nameEnglish={name.english} size="md" />
+          </div>
 
-            <div class="profile-actions">
-              <button id="copy-hangul-btn" class="action-pill-btn" title="Copy Hangul characters" aria-label="Copy Hangul">
-                <span class="btn-icon">📋</span> Copy Hangul
-              </button>
-              <BookmarkButton slug={name.slug} nameEnglish={name.english} />
-              <button id="share-name-btn" class="action-circle-btn" title="Copy shareable link" aria-label="Share link">
-                🔗
-              </button>
+          <div class="hero-korean-row">
+            <span class="hero-hangul-badge">{name.hangul}</span>
+            {name.hanja && <span class="hero-hanja-badge">({name.hanja})</span>}
+            <div class="hero-audio-inline">
+              <AudioPlayer text={name.hangul} size="sm" label="Pronounce" />
+              <span class="hero-pronunciation-text">pronounced "{name.revisedRomanization || name.slug}"</span>
             </div>
           </div>
 
-          <div class="profile-char-block">
-            <span class="hangul-hero-text" id="name-hangul-text">{name.hangul}</span>
-            {name.hanja && <span class="hanja-hero-text">({name.hanja})</span>}
+          <!-- 4-Segment Action Bar -->
+          <div class="hero-action-bar">
+            <a href="/favorites" class="hero-action-item">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+              <span>My Favorites</span>
+            </a>
+            <a href="/names" class="hero-action-item">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+              <span>Explore Lists</span>
+            </a>
+            <a href="/name-generator" class="hero-action-item">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+              <span>Generator</span>
+            </a>
+            <a href="/name-finder" class="hero-action-item">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <span>Search Names</span>
+            </a>
           </div>
 
-          <h1 class="profile-english-name">{name.english}</h1>
-          {name.ipaPhonetic && (
-            <div class="profile-ipa-row">
-              <span class="ipa-label">IPA Phonetic:</span>
-              <span class="ipa-badge">{name.ipaPhonetic}</span>
-            </div>
-          )}
-          <p class="profile-meaning-lead">"{name.overallMeaning}"</p>
+          <!-- Tag Pills -->
+          <div class="hero-tag-pills">
+            <span class={`tag-pill ${genderBadgeClass}`}>{genderLabel} Name</span>
+            <span class="tag-pill">
+              {name.isPureKorean || name.classification === 'pure-korean' ? 'Pure Native Korean' : 'Sino-Korean (Hanja)'}
+            </span>
+            {name.popularityRank && name.popularityRank <= 30 ? (
+              <span class="tag-pill active">Top {name.popularityRank} Baby Name</span>
+            ) : (
+              <span class="tag-pill">Popular Korean Name</span>
+            )}
+            <span class="tag-pill">2-Syllable Name</span>
+          </div>
 
-          <div class="audio-banner-box">
-            <span class="audio-instruction">Listen to native Korean voice pronunciation:</span>
-            <AudioPlayer text={name.hangul} size="lg" label={`Pronounce "${name.hangul}"`} />
+          <!-- Editorial Byline Strip -->
+          <div class="hero-byline-strip">
+            <div class="byline-left">
+              <span class="byline-author">By <strong>Korean Names Editorial Team</strong></span>
+              <span class="byline-dot">·</span>
+              <span class="byline-date">Updated November 2026</span>
+            </div>
+            <div class="byline-share">
+              <a href={`https://www.facebook.com/sharer/sharer.php?u=https://www.korean-names.info/name/${name.slug}`} target="_blank" rel="noopener noreferrer" class="share-icon-btn" aria-label="Share on Facebook" title="Share on Facebook">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+              </a>
+              <a href={`https://twitter.com/intent/tweet?url=https://www.korean-names.info/name/${name.slug}&text=Korean%20Name%20${name.english}`} target="_blank" rel="noopener noreferrer" class="share-icon-btn" aria-label="Share on X" title="Share on X">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              </a>
+              <button type="button" class="share-icon-btn" id="copy-share-btn" aria-label="Copy link to clipboard" title="Copy link">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+              </button>
+              <a href={`mailto:?subject=Korean%20Name%20${name.english}&body=Check%20out%20the%20meaning%20of%20the%20Korean%20name%20${name.english}:%20https://www.korean-names.info/name/${name.slug}`} class="share-icon-btn" aria-label="Share via Email" title="Email link">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+              </a>
+            </div>
           </div>
         </header>
 
-        <!-- Pure Korean Notice Banner (if Pure Korean) -->
-        {(name.isPureKorean || name.classification === 'pure-korean') && (
-          <aside class="pure-korean-callout-box" aria-label="Pure Korean Nomenclature Information">
-            <div class="callout-icon font-hangul">순우리말</div>
-            <div class="callout-body">
-              <h2 class="callout-title">Native Pure Korean Name (순우리말 이름)</h2>
-              <p class="callout-text">
-                <strong>{name.english} ({name.hangul})</strong> is an authentic native Korean name derived directly from indigenous Korean vocabulary and natural symbolism rather than Chinese-borrowed Hanja logograms.
-                In South Korean civil relationship records (대법원 가족관계등록부), it is officially registered directly in Hangul script without Chinese characters.
-              </p>
-            </div>
-          </aside>
-        )}
-
-        <!-- Fast Facts Key-Value Table -->
-        <section class="editorial-box facts-box">
-          <h2 class="box-heading">Key Linguistic Facts & Romanization</h2>
-
-          <div class="facts-grid">
-            <div class="fact-row">
-              <span class="fact-label">Hangul (Script)</span>
-              <span class="fact-value font-hangul">{name.hangul}</span>
-            </div>
-
-            <div class="fact-row">
-              <span class="fact-label">Primary Hanja (Logograms)</span>
-              <span class="fact-value font-hanja">{name.hanja || 'None (Native Pure Korean)'}</span>
-            </div>
-
-            <div class="fact-row">
-              <span class="fact-label">Linguistic Classification</span>
-              <span class="fact-value">{name.isPureKorean || name.classification === 'pure-korean' ? 'Pure Native Korean (순우리말)' : 'Sino-Korean (한자어)'}</span>
-            </div>
-
-            <div class="fact-row">
-              <span class="fact-label">Revised Romanization (RR)</span>
-              <span class="fact-value">{name.revisedRomanization || name.slug} (National Standard)</span>
-            </div>
-
-            <div class="fact-row">
-              <span class="fact-label">McCune-Reischauer</span>
-              <span class="fact-value">{name.mccuneReischauer || name.slug} (Traditional)</span>
-            </div>
-
-            {name.ipaPhonetic && (
-              <div class="fact-row">
-                <span class="fact-label">IPA Phonetic Realization</span>
-                <span class="fact-value font-mono">{name.ipaPhonetic}</span>
-              </div>
-            )}
-
-            <div class="fact-row">
-              <span class="fact-label">Gender Classification</span>
-              <span class="fact-value capitalize">{name.gender}</span>
-            </div>
-
-            <div class="fact-row">
-              <span class="fact-label">Syllable Structure</span>
-              <span class="fact-value">{name.syllableCount || 2} Syllables</span>
-            </div>
-
-            <div class="fact-row">
-              <span class="fact-label">Civil Registry Eligibility</span>
-              <span class="fact-value">Authorized under Family Relationship Act</span>
-            </div>
+        <!-- Quick Stats Box (The Bump Style) -->
+        <section class="quick-stats-box">
+          <div class="stat-col">
+            <span class="stat-label">Popularity</span>
+            <strong class="stat-value">{name.popularityRank ? `#${name.popularityRank}` : 'Top Tier'}</strong>
+            <span class="stat-sub">in South Korea</span>
+          </div>
+          <div class="stat-col">
+            <span class="stat-label">Origin</span>
+            <strong class="stat-value">{name.isPureKorean || name.classification === 'pure-korean' ? 'Pure Korean' : 'Sino-Korean'}</strong>
+            <span class="stat-sub">{name.hanja ? 'Hanja characters' : 'Native vocabulary'}</span>
+          </div>
+          <div class="stat-col">
+            <span class="stat-label">Meaning</span>
+            <strong class="stat-value stat-meaning">"{name.overallMeaning}"</strong>
+            <span class="stat-sub">Core character virtue</span>
           </div>
         </section>
 
-        <!-- Multi-Hanja Combinations Matrix (Part 5) -->
+        <!-- What Does [Name] Mean? -->
+        <section class="editorial-box">
+          <h2 class="box-heading">What Does {name.english} Mean?</h2>
+          <p class="editorial-body">
+            <strong>{name.english}</strong> (written as <strong>{name.hangul}</strong> in Korean Hangul{name.hanja ? ` and <strong>${name.hanja}</strong> in Hanja logograms` : ''}) is a beloved Korean given name meaning <strong>"{name.overallMeaning}"</strong>.
+          </p>
+          <p class="editorial-body">
+            {name.originStory || `In traditional and contemporary Korean culture, names are selected with great care to convey parents' heartfelt hopes for their child's future. The combination of syllables in ${name.english} brings together complementary attributes of wisdom, character, and harmony, creating a balanced and auspicious identity.`}
+          </p>
+        </section>
+
+        <!-- Syllable-by-Syllable Hanja Breakdown -->
+        {name.syllables && name.syllables.length > 0 && (
+          <section class="editorial-box">
+            <h2 class="box-heading">Syllable & Character Breakdown</h2>
+            <p class="editorial-body">
+              {name.isPureKorean ? (
+                `As a native Pure Korean (순우리말) name, each syllable contributes directly to its poetic natural meaning:`
+              ) : (
+                `In Sino-Korean naming, each syllable represents a distinct Hanja character carrying an individual virtue:`
+              )}
+            </p>
+
+            <div class="syllables-cards-list">
+              {name.syllables.map((s, index) => (
+                <div class="syllable-detail-card">
+                  <div class="syl-left-badge">
+                    <span class="syl-index">Syllable {index + 1}</span>
+                    <span class="syl-chars">{s.hangul} {s.hanja ? `(${s.hanja})` : ''}</span>
+                    <span class="syl-rom">{s.romanization}</span>
+                  </div>
+
+                  <div class="syl-right-info">
+                    <h3 class="syl-meaning-title">Character Meaning: <em>"{s.meaning}"</em></h3>
+                    {s.subDefinitions && s.subDefinitions.length > 0 ? (
+                      <ul class="sub-definitions-list">
+                        {s.subDefinitions.map(def => (
+                          <li><strong>{def.term}:</strong> {def.definition}</li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p class="sub-def-fallback">Associated with noble virtue, clarity, and auspicious character in traditional Korean naming philosophy.</p>
+                    )}
+                    {s.hanja && (
+                      <a href={`/hanja/${encodeURIComponent(s.hangul)}`} class="hanja-lookup-link">
+                        Explore Hanja character {s.hanja} ({s.hangul}) &rarr;
+                      </a>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        <!-- Multi-Hanja Combinations Matrix -->
         {name.hanjaCombinations && name.hanjaCombinations.length > 0 && (
-          <section class="editorial-box hanja-matrix-box">
+          <section class="editorial-box">
             <div class="matrix-heading-bar">
-              <h2 class="box-heading">Official Hanja Character Combinations (대법원 인명용 한자)</h2>
+              <h2 class="box-heading">Hanja Character Pairings for {name.hangul}</h2>
               <span class="matrix-badge">{name.hanjaCombinations.length} Registered Pairings</span>
             </div>
-            <p class="section-lead-text">
-              Because spoken Korean utilizes logographic Hanja characters for personal identification, different character pairings can be chosen on birth certificates to convey distinct virtues:
+            <p class="editorial-body">
+              Because spoken Korean uses logographic Hanja characters on birth records, different character combinations can be chosen to convey distinct nuances:
             </p>
 
             <div class="combinations-matrix-list">
@@ -199,10 +279,10 @@ const nameSchema = {
                 <div class={`combination-card ${combo.isPopularVariant ? 'popular-combo' : ''}`}>
                   <div class="combo-card-header">
                     <div class="combo-chars">
-                      <span class="combo-index">Variant #{idx + 1}</span>
+                      <span class="combo-index">Combination #{idx + 1}</span>
                       <span class="combo-hanja font-hanja">{combo.completeHanja}</span>
                       <span class="combo-hangul font-hangul">({name.hangul})</span>
-                      {combo.isPopularVariant && <span class="badge badge-gold">Most Frequent</span>}
+                      {combo.isPopularVariant && <span class="badge badge-gold">Most Popular</span>}
                     </div>
                   </div>
 
@@ -234,74 +314,119 @@ const nameSchema = {
           </section>
         )}
 
-        <!-- Syllable-by-Syllable Hanja Breakdown -->
-        {name.syllables && name.syllables.length > 0 && !name.isPureKorean && (
-          <section class="editorial-box syllables-box">
-            <h2 class="box-heading">Syllable & Character Breakdown</h2>
-            <p class="section-lead-text">
-              In Sino-Korean names, each syllable carries a distinct Hanja logogram contributing to the combined name virtue:
-            </p>
-
-            <div class="syllables-cards-list">
-              {name.syllables.map((s, index) => (
-                <div class="syllable-detail-card">
-                  <div class="syl-left-badge">
-                    <span class="syl-index">Syllable {index + 1}</span>
-                    <span class="syl-chars">{s.hanja} ({s.hangul})</span>
-                    <span class="syl-rom">{s.romanization}</span>
-                  </div>
-
-                  <div class="syl-right-info">
-                    <h3 class="syl-meaning-title">Meaning: <em>"{s.meaning}"</em></h3>
-                    {s.subDefinitions && s.subDefinitions.length > 0 ? (
-                      <ul class="sub-definitions-list">
-                        {s.subDefinitions.map(def => (
-                          <li><strong>{def.term}:</strong> {def.definition}</li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p class="sub-def-fallback">Associated with noble virtue, clarity, and auspicious character in traditional Korean naming philosophy.</p>
-                    )}
-                    <a href={`/hanja/${encodeURIComponent(s.hangul)}`} class="hanja-lookup-link">
-                      View details for Hanja {s.hanja} ({s.hangul}) &rarr;
-                    </a>
-                  </div>
+        <!-- Fun Facts About the Name (The Bump Style) -->
+        <section class="editorial-box">
+          <h2 class="box-heading">Fun Facts About the Name {name.english}</h2>
+          <div class="fun-facts-list">
+            {funFacts.map((fact, idx) => (
+              <div class="fun-fact-item">
+                <span class="fact-num">{idx + 1}</span>
+                <div class="fact-text-block">
+                  <h3 class="fact-title">{fact.title}</h3>
+                  <p class="fact-desc">{fact.desc}</p>
                 </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <!-- Common Nicknames (The Bump Style) -->
+        {uniqueNicknames.length > 0 && (
+          <section class="editorial-box">
+            <h2 class="box-heading">Common Nicknames for {name.english}</h2>
+            <p class="editorial-body">
+              Affectionate everyday Korean and international nicknames for {name.english}:
+            </p>
+            <div class="nicknames-pills-wrap">
+              {uniqueNicknames.map(nickname => (
+                <span class="nickname-pill">{nickname}</span>
               ))}
             </div>
           </section>
         )}
 
-        <!-- Cultural Background & Context -->
-        <section class="editorial-box culture-box">
-          <h2 class="box-heading">Cultural Background & Usage in Korea</h2>
-          <p class="culture-body-text">
-            {name.originStory || `${name.english} (${name.hangul}) is an authentic Korean given name widely appreciated for its melodic pronunciation and balanced tonal flow. In South Korea, parents select this name to express aspirations of ${name.overallMeaning.toLowerCase()}`}
+        <!-- Famous People Named [Name] (The Bump Style) -->
+        <section class="editorial-box">
+          <h2 class="box-heading">Famous People Named {name.english}</h2>
+          {name.famousNamesakes && name.famousNamesakes.length > 0 ? (
+            <div class="famous-names-list">
+              {name.famousNamesakes.map(person => (
+                <div class="famous-person-card">
+                  <div class="person-info">
+                    <h3 class="person-name">{person.name}</h3>
+                    <span class="person-role">{person.role}</span>
+                    {person.note && <p class="person-note">{person.note}</p>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p class="editorial-body">
+              The given name <strong>{name.english} ({name.hangul})</strong> is widely recognized in South Korean contemporary society, regularly borne by public figures, scholars, athletes, and characters across modern Korean film and television.
+            </p>
+          )}
+        </section>
+
+        <!-- Sibling Name Ideas (The Bump Style) -->
+        <section class="editorial-box sibling-ideas-box">
+          <h2 class="box-heading">Sibling Name Ideas for {name.english}</h2>
+          <p class="editorial-body">
+            Complementary Korean brother and sister names that harmonize with {name.english}:
           </p>
 
-          <!-- Alternate Hanja Combinations -->
-          {name.alternateHanjaList && name.alternateHanjaList.length > 1 && (
-            <div class="alternate-hanja-block">
-              <h3 class="alt-heading">Alternative Hanja Character Writings for {name.hangul}</h3>
-              <p class="alt-sub">Because the Korean language uses logographic Hanja for birth records, the same spoken name {name.hangul} can be registered with different character pairings to yield unique personal meanings:</p>
-              
-              <div class="alt-hanja-grid">
-                {name.alternateHanjaList.map(item => (
-                  <div class="alt-item">
-                    <span class="alt-hanja font-hanja">{item.hanja}</span>
-                    <span class="alt-meaning">{item.literalMeaning}</span>
+          <div class="sibling-columns-grid">
+            <div class="sibling-col">
+              <h3 class="sibling-subheading">Brother Names</h3>
+              <div class="sibling-names-stack">
+                {brotherNames.map(b => (
+                  <div class="sibling-mini-card">
+                    <div class="mini-card-info">
+                      <a href={`/name/${b.slug}`} class="mini-name-link">{b.english}</a>
+                      <span class="mini-hangul">{b.hangul}</span>
+                      <span class="mini-meaning">"{b.overallMeaning}"</span>
+                    </div>
+                    <BookmarkButton slug={b.slug} nameEnglish={b.english} size="sm" />
                   </div>
                 ))}
               </div>
             </div>
-          )}
+
+            <div class="sibling-col">
+              <h3 class="sibling-subheading">Sister Names</h3>
+              <div class="sibling-names-stack">
+                {sisterNames.map(s => (
+                  <div class="sibling-mini-card">
+                    <div class="mini-card-info">
+                      <a href={`/name/${s.slug}`} class="mini-name-link">{s.english}</a>
+                      <span class="mini-hangul">{s.hangul}</span>
+                      <span class="mini-meaning">"{s.overallMeaning}"</span>
+                    </div>
+                    <BookmarkButton slug={s.slug} nameEnglish={s.english} size="sm" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </section>
 
-        <!-- Surname Pairing & Harmony -->
-        <section class="editorial-box harmony-box">
+        <!-- Similar Korean Names (The Bump Style) -->
+        <section class="editorial-box">
+          <h2 class="box-heading">Similar Korean Names</h2>
+          <p class="editorial-body">
+            Parents who like <strong>{name.english}</strong> also consider these names:
+          </p>
+          <div class="similar-names-grid">
+            {similarNames.map(item => (
+              <NameCard name={item} />
+            ))}
+          </div>
+        </section>
+
+        <!-- Surname Harmony & Full Name Examples -->
+        <section class="editorial-box">
           <h2 class="box-heading">Surname Harmony & Full Name Examples</h2>
-          <p class="section-lead-text">
-            In Korean culture, the family surname is spoken first. Here is how <strong>{name.english}</strong> pairs with Korea's most common royal surnames:
+          <p class="editorial-body">
+            In Korean naming tradition, the family surname is always placed first. Here is how <strong>{name.english}</strong> pairs with Korea's most prominent family surnames:
           </p>
 
           <div class="pairings-grid">
@@ -315,18 +440,6 @@ const nameSchema = {
           </div>
         </section>
 
-        <!-- Related Names Grid -->
-        {relatedNames.length > 0 && (
-          <section class="related-names-section">
-            <h2 class="related-heading">Explore Related Korean {genderLabel.split(' ')[0]} Names</h2>
-            <div class="related-cards-grid">
-              {relatedNames.map(item => (
-                <NameCard name={item} />
-              ))}
-            </div>
-          </section>
-        )}
-
       </main>
 
       <!-- Sidebar -->
@@ -338,293 +451,239 @@ const nameSchema = {
 </BaseLayout>
 
 <script is:inline>
-  document.getElementById('share-name-btn')?.addEventListener('click', () => {
-    navigator.clipboard.writeText(window.location.href);
-    alert('Link to this Korean name copied to clipboard!');
-  });
-
-  document.getElementById('copy-hangul-btn')?.addEventListener('click', () => {
-    const hangul = document.getElementById('name-hangul-text')?.textContent?.trim();
-    if (hangul) {
-      navigator.clipboard.writeText(hangul);
-      const btn = document.getElementById('copy-hangul-btn');
-      if (btn) {
-        const orig = btn.innerHTML;
-        btn.innerHTML = '✓ Copied!';
-        setTimeout(() => { btn.innerHTML = orig; }, 2000);
-      }
+  const copyShareBtn = document.getElementById('copy-share-btn');
+  copyShareBtn?.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      const orig = copyShareBtn.getAttribute('title') || 'Copy link';
+      copyShareBtn.setAttribute('title', 'Copied to clipboard!');
+      setTimeout(() => { copyShareBtn.setAttribute('title', orig); }, 2000);
+    } catch (e) {
+      // clipboard unavailable
     }
   });
 </script>
 
 <style>
   .page-wrapper {
-    padding-top: 1rem;
+    padding-top: 1.25rem;
     padding-bottom: 4rem;
   }
 
-  .action-pill-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.35rem 0.75rem;
-    background: var(--bg-surface);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-full);
-    font-size: 0.82rem;
-    font-weight: 600;
-    color: var(--text-main);
-    cursor: pointer;
-    transition: all 0.15s ease;
-  }
-
-  .action-pill-btn:hover {
-    border-color: var(--color-jade);
-    background: #EAE3D2;
-  }
-
-  .profile-ipa-row {
+  /* Breadcrumb Navigation */
+  .name-breadcrumb {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    margin-bottom: 0.75rem;
-  }
-
-  .ipa-label {
-    font-size: 0.8rem;
-    font-weight: 700;
-    text-transform: uppercase;
+    font-size: 0.825rem;
     color: var(--text-muted);
+    margin-bottom: 1.5rem;
   }
 
-  .ipa-badge {
-    background: #EAE3D2;
-    color: var(--color-navy);
-    font-family: monospace;
-    font-size: 0.95rem;
-    font-weight: 700;
-    padding: 0.15rem 0.5rem;
-    border-radius: var(--radius-sm);
+  .name-breadcrumb a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.15s ease;
   }
 
-  /* Pure Korean Callout Box */
-  .pure-korean-callout-box {
-    display: flex;
-    align-items: flex-start;
-    gap: 1.25rem;
-    background: #FDF9F2;
-    border: 1px solid var(--color-gold);
-    border-left: 4px solid var(--color-burgundy);
-    border-radius: var(--radius-md);
-    padding: 1.5rem 1.75rem;
-    margin-bottom: 2.5rem;
-  }
-
-  .pure-korean-callout-box .callout-icon {
-    font-size: 1.1rem;
-    font-weight: 900;
-    color: var(--color-burgundy);
-    background: rgba(135, 61, 72, 0.1);
-    padding: 0.5rem 0.75rem;
-    border-radius: var(--radius-sm);
-    white-space: nowrap;
-  }
-
-  .callout-title {
-    font-family: var(--font-serif);
-    font-size: 1.25rem;
-    color: var(--color-navy);
-    margin-bottom: 0.4rem;
-  }
-
-  .callout-text {
-    font-size: 0.92rem;
-    color: var(--text-main);
-    line-height: 1.6;
-    margin: 0;
-  }
-
-  /* Multi-Hanja Combinations Matrix */
-  .hanja-matrix-box {
-    margin-bottom: 2.5rem;
-  }
-
-  .matrix-heading-bar {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    margin-bottom: 0.5rem;
-  }
-
-  .matrix-badge {
-    background: #EAE3D2;
+  .name-breadcrumb a:hover {
     color: var(--color-jade);
-    font-weight: 700;
-    font-size: 0.8rem;
-    padding: 0.25rem 0.65rem;
-    border-radius: var(--radius-full);
   }
 
-  .combinations-matrix-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-    margin-top: 1.5rem;
-  }
-
-  .combination-card {
-    background: #FAF8F2;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    padding: 1.5rem;
-    transition: all 0.2s ease;
-  }
-
-  .combination-card.popular-combo {
-    border-color: var(--color-gold);
-    background: #FCFAF5;
-  }
-
-  .combo-card-header {
-    margin-bottom: 0.75rem;
-  }
-
-  .combo-chars {
-    display: flex;
-    align-items: baseline;
-    gap: 0.6rem;
-    flex-wrap: wrap;
-  }
-
-  .combo-index {
+  .bc-sep {
     font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    color: var(--text-muted);
+    color: var(--border-strong);
   }
 
-  .combo-hanja {
-    font-size: 1.85rem;
-    font-weight: 900;
-    color: var(--color-navy);
-  }
-
-  .combo-hangul {
-    font-size: 1.2rem;
-    color: var(--text-muted);
-  }
-
-  .combo-interpretation {
-    font-size: 0.95rem;
+  .bc-current {
     color: var(--text-main);
-    line-height: 1.5;
-    margin-bottom: 1rem;
-  }
-
-  .combo-syllables-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-    background: var(--bg-surface);
-    padding: 1rem;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border-color);
-    margin-bottom: 0.75rem;
-  }
-
-  .combo-syllable-item {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-  }
-
-  .combo-syl-char {
-    font-size: 2rem;
-    font-weight: 800;
-    color: var(--color-jade);
-    line-height: 1;
-  }
-
-  .combo-syl-details {
-    display: flex;
-    flex-direction: column;
-    gap: 0.15rem;
-  }
-
-  .combo-syl-hangul {
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: var(--text-main);
-  }
-
-  .combo-syl-meaning {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-  }
-
-  .combo-syl-meta {
-    font-size: 0.75rem;
-    color: var(--color-gold);
     font-weight: 600;
   }
 
-  .combo-context-note {
-    font-size: 0.82rem;
+  /* The Bump Hero Profile Card */
+  .name-profile-hero {
+    background: var(--bg-surface-warm);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 2.25rem 2rem 1.75rem 2rem;
+    box-shadow: var(--shadow-xs);
+    margin-bottom: 1.75rem;
+  }
+
+  .hero-top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+  }
+
+  .hero-name-title {
+    font-size: 2.75rem;
+    font-weight: 800;
+    color: var(--text-heading);
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+  }
+
+  .hero-korean-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+  }
+
+  .hero-hangul-badge {
+    font-family: var(--font-korean);
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: var(--text-main);
+  }
+
+  .hero-hanja-badge {
+    font-family: var(--font-korean);
+    font-size: 1.2rem;
+    color: var(--color-navy);
+    font-weight: 700;
+  }
+
+  .hero-audio-inline {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: 0.5rem;
+  }
+
+  .hero-pronunciation-text {
+    font-size: 0.85rem;
     color: var(--text-muted);
     font-style: italic;
   }
 
-  .badge-pure-korean {
-    background: rgba(135, 61, 72, 0.1);
-    color: var(--color-burgundy);
-    border: 1px solid rgba(135, 61, 72, 0.25);
-    font-weight: 700;
-  }
-
-  .badge-sino-korean {
-    background: rgba(23, 76, 60, 0.1);
-    color: var(--color-jade);
-    border: 1px solid rgba(23, 76, 60, 0.25);
-    font-weight: 700;
-  }
-
-  .badge-registry {
-    background: #EAE3D2;
-    color: var(--color-navy);
-    border: 1px solid var(--color-gold);
-    font-weight: 600;
-  }
-
-  .name-hero-profile {
-    background: linear-gradient(135deg, var(--bg-surface) 0%, var(--color-jade-surface) 100%);
+  /* 4-Segment Action Bar */
+  .hero-action-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    background: var(--bg-surface);
     border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    padding: 2.5rem;
-    box-shadow: var(--shadow-sm);
-    margin-bottom: 2.5rem;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    margin-bottom: 1.25rem;
+    box-shadow: var(--shadow-xs);
   }
 
-  .profile-top-bar {
+  .hero-action-item {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.8rem 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-main);
+    text-decoration: none;
+    border-right: 1px solid var(--border-color);
+    transition: all 0.15s ease;
+  }
+
+  .hero-action-item:last-child {
+    border-right: none;
+  }
+
+  .hero-action-item:first-child svg {
+    color: var(--color-burgundy);
+  }
+
+  .hero-action-item svg {
+    color: var(--color-jade);
+    flex-shrink: 0;
+  }
+
+  .hero-action-item:hover {
+    background: var(--bg-surface-muted);
+    color: var(--color-jade);
+  }
+
+  /* Tag Pills */
+  .hero-tag-pills {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
     margin-bottom: 1.25rem;
   }
 
-  .badge-cluster {
+  .tag-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.3rem 0.8rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-full);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-body);
+  }
+
+  .tag-pill.badge-boy {
+    background: var(--gender-boy-bg);
+    border-color: var(--gender-boy-border);
+    color: var(--gender-boy);
+  }
+
+  .tag-pill.badge-girl {
+    background: var(--gender-girl-bg);
+    border-color: var(--gender-girl-border);
+    color: var(--gender-girl);
+  }
+
+  .tag-pill.badge-unisex {
+    background: var(--gender-unisex-bg);
+    border-color: var(--gender-unisex-border);
+    color: var(--gender-unisex);
+  }
+
+  .tag-pill.active {
+    background: var(--color-jade-surface);
+    border-color: var(--color-jade);
+    color: var(--color-jade);
+  }
+
+  /* Editorial Byline Strip */
+  .hero-byline-strip {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    justify-content: space-between;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-subtle);
+    gap: 1rem;
     flex-wrap: wrap;
   }
 
-  .profile-actions {
+  .byline-left {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.45rem;
+    font-size: 0.825rem;
+    color: var(--text-muted);
   }
 
-  .action-circle-btn {
+  .byline-author strong {
+    color: var(--text-main);
+    font-weight: 700;
+  }
+
+  .byline-dot {
+    color: var(--border-strong);
+  }
+
+  .byline-share {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  .share-icon-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -633,67 +692,61 @@ const nameSchema = {
     border-radius: var(--radius-full);
     background: var(--bg-surface);
     border: 1px solid var(--border-color);
-    font-size: 0.9rem;
+    color: var(--text-muted);
+    text-decoration: none;
     cursor: pointer;
     transition: all 0.15s ease;
   }
 
-  .action-circle-btn:hover {
+  .share-icon-btn:hover {
+    color: var(--color-jade);
     border-color: var(--color-jade);
-    transform: scale(1.05);
+    background: var(--bg-surface-muted);
   }
 
-  .profile-char-block {
+  /* Quick Stats Box (3 Columns) */
+  .quick-stats-box {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .stat-col {
     display: flex;
-    align-items: baseline;
-    gap: 0.75rem;
+    flex-direction: column;
+    padding: 1.25rem 1rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    text-align: center;
+    box-shadow: var(--shadow-xs);
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
     margin-bottom: 0.35rem;
   }
 
-  .hangul-hero-text {
-    font-family: var(--font-korean);
-    font-size: 3.75rem;
-    font-weight: 900;
-    color: var(--text-main);
-    line-height: 1;
-    letter-spacing: -0.02em;
-  }
-
-  .hanja-hero-text {
-    font-family: var(--font-korean);
-    font-size: 2.25rem;
-    font-weight: 700;
-    color: var(--color-navy);
-  }
-
-  .profile-english-name {
-    font-size: 1.75rem;
+  .stat-value {
+    font-size: 1.35rem;
     font-weight: 800;
+    color: var(--text-heading);
+    line-height: 1.2;
+    margin-bottom: 0.25rem;
+  }
+
+  .stat-meaning {
+    font-size: 1.05rem;
     color: var(--color-jade);
-    margin-bottom: 0.4rem;
   }
 
-  .profile-meaning-lead {
-    font-size: 1.15rem;
-    color: var(--text-body);
-    line-height: 1.5;
-    margin-bottom: 1.75rem;
-  }
-
-  .audio-banner-box {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem 1.25rem;
-    background: var(--bg-surface);
-    border: 1px solid var(--color-jade-border);
-    border-radius: var(--radius-md);
-    flex-wrap: wrap;
-  }
-
-  .audio-instruction {
-    font-size: 0.85rem;
-    font-weight: 600;
+  .stat-sub {
+    font-size: 0.75rem;
     color: var(--text-muted);
   }
 
@@ -704,75 +757,45 @@ const nameSchema = {
     border-radius: var(--radius-md);
     padding: 2rem;
     box-shadow: var(--shadow-xs);
-    margin-bottom: 2.5rem;
+    margin-bottom: 2rem;
   }
 
   .box-heading {
     font-size: 1.35rem;
     font-weight: 800;
-    color: var(--text-main);
+    color: var(--text-heading);
     letter-spacing: -0.015em;
     margin-bottom: 1rem;
     padding-bottom: 0.75rem;
     border-bottom: 1px solid var(--border-subtle);
   }
 
-  .section-lead-text {
+  .editorial-body {
     font-size: 0.95rem;
-    color: var(--text-muted);
-    line-height: 1.6;
-    margin-bottom: 1.5rem;
+    line-height: 1.65;
+    color: var(--text-body);
+    margin-bottom: 1rem;
   }
 
-  /* Facts Grid */
-  .facts-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
+  .editorial-body:last-child {
+    margin-bottom: 0;
   }
 
-  .fact-row {
-    display: flex;
-    flex-direction: column;
-    padding: 0.75rem 1rem;
-    background: var(--bg-surface-warm);
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border-subtle);
-  }
-
-  .fact-label {
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-    margin-bottom: 0.2rem;
-  }
-
-  .fact-value {
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--text-main);
-  }
-
-  .font-hangul { font-family: var(--font-hangul); }
-  .font-hanja { font-family: var(--font-korean); color: var(--color-navy); }
-  .capitalize { text-transform: capitalize; }
-
-  /* Syllables Cards */
+  /* Syllables Breakdown */
   .syllables-cards-list {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: 1rem;
+    margin-top: 1rem;
   }
 
   .syllable-detail-card {
     display: flex;
     gap: 1.5rem;
-    padding: 1.5rem;
+    padding: 1.25rem 1.5rem;
     background: var(--bg-surface-warm);
     border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-sm);
   }
 
   .syl-left-badge {
@@ -780,8 +803,8 @@ const nameSchema = {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-width: 120px;
-    padding: 1rem;
+    min-width: 110px;
+    padding: 0.75rem;
     background: var(--bg-surface);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-sm);
@@ -793,22 +816,22 @@ const nameSchema = {
     font-weight: 700;
     color: var(--text-muted);
     text-transform: uppercase;
-    margin-bottom: 0.35rem;
+    margin-bottom: 0.25rem;
   }
 
   .syl-chars {
     font-family: var(--font-korean);
-    font-size: 1.75rem;
+    font-size: 1.5rem;
     font-weight: 900;
     color: var(--text-main);
     line-height: 1.1;
   }
 
   .syl-rom {
-    font-size: 0.8rem;
+    font-size: 0.775rem;
     font-weight: 700;
     color: var(--color-jade);
-    margin-top: 0.25rem;
+    margin-top: 0.2rem;
   }
 
   .syl-right-info {
@@ -818,9 +841,9 @@ const nameSchema = {
   }
 
   .syl-meaning-title {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     color: var(--text-main);
-    margin-bottom: 0.65rem;
+    margin-bottom: 0.5rem;
   }
 
   .syl-meaning-title em {
@@ -833,17 +856,17 @@ const nameSchema = {
     list-style: none;
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
+    gap: 0.3rem;
     font-size: 0.85rem;
     color: var(--text-body);
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
   }
 
   .sub-def-fallback {
     font-size: 0.85rem;
     color: var(--text-muted);
     line-height: 1.5;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
   }
 
   .hanja-lookup-link {
@@ -851,64 +874,314 @@ const nameSchema = {
     font-weight: 700;
     color: var(--color-jade);
     margin-top: auto;
+    text-decoration: none;
   }
 
   .hanja-lookup-link:hover {
-    color: var(--color-jade);
     text-decoration: underline;
   }
 
-  /* Culture Box */
-  .culture-body-text {
-    font-size: 0.95rem;
-    line-height: 1.7;
-    color: var(--text-body);
-    margin-bottom: 1.5rem;
+  /* Multi-Hanja Combinations */
+  .matrix-heading-bar {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
   }
 
-  .alternate-hanja-block {
-    margin-top: 1.5rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--border-subtle);
+  .matrix-badge {
+    background: var(--bg-surface-muted);
+    color: var(--color-jade);
+    font-weight: 700;
+    font-size: 0.75rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: var(--radius-full);
   }
 
-  .alt-heading {
-    font-size: 1.05rem;
-    color: var(--text-main);
-    margin-bottom: 0.4rem;
+  .combinations-matrix-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
   }
 
-  .alt-sub {
-    font-size: 0.85rem;
+  .combination-card {
+    background: var(--bg-surface-warm);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 1.25rem;
+  }
+
+  .combination-card.popular-combo {
+    border-color: var(--color-gold);
+    background: #FCFAF5;
+  }
+
+  .combo-card-header {
+    margin-bottom: 0.5rem;
+  }
+
+  .combo-chars {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .combo-index {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
     color: var(--text-muted);
-    margin-bottom: 1rem;
   }
 
-  .alt-hanja-grid {
+  .combo-hanja {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: var(--color-navy);
+  }
+
+  .combo-hangul {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+  }
+
+  .combo-interpretation {
+    font-size: 0.9rem;
+    color: var(--text-main);
+    line-height: 1.5;
+    margin-bottom: 0.75rem;
+  }
+
+  .combo-syllables-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 0.75rem;
+    background: var(--bg-surface);
+    padding: 0.75rem;
+    border-radius: var(--radius-xs);
+    border: 1px solid var(--border-subtle);
+    margin-bottom: 0.5rem;
   }
 
-  .alt-item {
+  .combo-syllable-item {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 0.65rem 0.85rem;
+    gap: 0.65rem;
+  }
+
+  .combo-syl-char {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--color-jade);
+    line-height: 1;
+  }
+
+  .combo-syl-details {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .combo-syl-hangul {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-main);
+  }
+
+  .combo-syl-meaning {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  .combo-syl-meta {
+    font-size: 0.7rem;
+    color: var(--color-gold);
+    font-weight: 600;
+  }
+
+  .combo-context-note {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  /* Fun Facts List */
+  .fun-facts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .fun-fact-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
     background: var(--bg-surface-warm);
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-sm);
   }
 
-  .alt-hanja {
-    font-size: 1.25rem;
-    font-weight: 900;
-    color: var(--color-navy);
+  .fact-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--color-jade);
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 800;
+    flex-shrink: 0;
   }
 
-  .alt-meaning {
-    font-size: 0.8rem;
+  .fact-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-heading);
+    margin-bottom: 0.2rem;
+  }
+
+  .fact-desc {
+    font-size: 0.875rem;
+    line-height: 1.55;
+    color: var(--text-body);
+    margin: 0;
+  }
+
+  /* Nicknames */
+  .nicknames-pills-wrap {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+
+  .nickname-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35rem 0.85rem;
+    background: var(--bg-surface-warm);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-full);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-main);
+  }
+
+  /* Famous People */
+  .famous-names-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+
+  .famous-person-card {
+    padding: 0.85rem 1rem;
+    background: var(--bg-surface-warm);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+  }
+
+  .person-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-heading);
+    margin-bottom: 0.15rem;
+  }
+
+  .person-role {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-jade);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .person-note {
+    font-size: 0.825rem;
     color: var(--text-muted);
+    margin: 0.25rem 0 0 0;
+  }
+
+  /* Sibling Ideas Box */
+  .sibling-columns-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin-top: 1.25rem;
+  }
+
+  .sibling-subheading {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-heading);
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .sibling-names-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .sibling-mini-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    background: var(--bg-surface-warm);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    transition: all 0.15s ease;
+  }
+
+  .sibling-mini-card:hover {
+    border-color: var(--color-jade);
+    background: var(--bg-surface);
+  }
+
+  .mini-card-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+
+  .mini-name-link {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--color-jade);
+    text-decoration: none;
+  }
+
+  .mini-name-link:hover {
+    text-decoration: underline;
+  }
+
+  .mini-hangul {
+    font-family: var(--font-korean);
+    font-size: 0.85rem;
+    color: var(--text-main);
+  }
+
+  .mini-meaning {
+    font-size: 0.775rem;
+    color: var(--text-muted);
+  }
+
+  /* Similar Names Grid */
+  .similar-names-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+    margin-top: 1rem;
   }
 
   /* Surname Pairings Grid */
@@ -916,6 +1189,7 @@ const nameSchema = {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 0.75rem;
+    margin-top: 1rem;
   }
 
   .pairing-card {
@@ -923,7 +1197,7 @@ const nameSchema = {
     flex-direction: column;
     align-items: center;
     text-align: center;
-    padding: 1rem 0.5rem;
+    padding: 0.85rem 0.5rem;
     background: var(--bg-surface-warm);
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-sm);
@@ -931,16 +1205,16 @@ const nameSchema = {
 
   .full-hangul-text {
     font-family: var(--font-korean);
-    font-size: 1.35rem;
+    font-size: 1.25rem;
     font-weight: 900;
     color: var(--text-main);
     margin-bottom: 0.2rem;
   }
 
   .full-english-text {
-    font-size: 0.825rem;
+    font-size: 0.8rem;
     color: var(--color-jade);
-    margin-bottom: 0.35rem;
+    margin-bottom: 0.25rem;
   }
 
   .surname-hanja-badge {
@@ -948,32 +1222,13 @@ const nameSchema = {
     color: var(--text-muted);
   }
 
-  /* Related Names Section */
-  .related-names-section {
-    margin-top: 3.5rem;
-  }
-
-  .related-heading {
-    font-size: 1.45rem;
-    font-weight: 800;
-    color: var(--text-main);
-    margin-bottom: 1.5rem;
-  }
-
-  .related-cards-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.25rem;
-  }
-
   @media (max-width: 768px) {
-    .name-hero-profile { padding: 1.5rem; }
-    .hangul-hero-text { font-size: 2.75rem; }
-    .hanja-hero-text { font-size: 1.75rem; }
-    .facts-grid { grid-template-columns: 1fr; }
-    .syllable-detail-card { flex-direction: column; gap: 1rem; }
+    .hero-name-title { font-size: 2rem; }
+    .hero-action-bar { grid-template-columns: repeat(2, 1fr); }
+    .quick-stats-box { grid-template-columns: 1fr; }
+    .syllable-detail-card { flex-direction: column; gap: 0.75rem; }
+    .sibling-columns-grid { grid-template-columns: 1fr; }
+    .similar-names-grid { grid-template-columns: 1fr; }
     .pairings-grid { grid-template-columns: repeat(2, 1fr); }
-    .alt-hanja-grid { grid-template-columns: 1fr; }
-    .related-cards-grid { grid-template-columns: 1fr; }
   }
 </style>

@@ -4,13 +4,13 @@
   /* ==========================================================================
      Modern Korean Heritage Brand Identity Tokens
      ========================================================================== */
-  /* Primary Page Background: Warm Ivory */
-  --bg-primary: #F7F4EC;
+  /* Primary Page Background: Clean Minimal White / Soft Ivory */
+  --bg-primary: #FFFFFF;
   --bg-surface: #FFFFFF;
-  --bg-surface-warm: #FDFCF9;
-  --bg-surface-muted: #EFECE2;
-  --bg-hero: #F2EFE6;
-  --bg-hero-accent: #E9E4D5;
+  --bg-surface-warm: #FAF9F7;
+  --bg-surface-muted: #F4F3EF;
+  --bg-hero: #F8F6F2;
+  --bg-hero-accent: #EFECE6;
 
   /* Primary Brand: Deep Jade Green */
   --color-jade: #174C3C;
